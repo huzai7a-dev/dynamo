@@ -1,0 +1,73 @@
+<template>
+  <div class="min-h-screen bg-white">
+    <Banner
+      backgroundImage="/images/custom-patches/Hero.webp"
+      title="Custom Patches"
+      description="Elevate your brand or style with our custom patches that bear the mark of craftsmanship. From intricate designs to flawless execution, our team ensures your patches are a testament to our dedication."
+    />
+    <section class="relative max-w-6xl mx-auto px-4 py-16 overflow-hidden">
+      <!-- Gradient Background Accent -->
+      <div class="absolute inset-0 -z-10 bg-gradient-to-br from-yellow-50 via-white to-blue-50"></div>
+      <!-- Blurred Decorative Shape -->
+      <div class="absolute -top-24 -left-24 w-96 h-96 bg-yellow-200 opacity-30 rounded-full blur-3xl -z-10"></div>
+      <div class="absolute bottom-0 right-0 w-80 h-80 bg-blue-200 opacity-20 rounded-full blur-2xl -z-10"></div>
+      <!-- Main Heading Centered -->
+      <h2 class="text-4xl font-extrabold !text-primary mb-10 text-center leading-tight">Custom Patches: Crafted for Impact</h2>
+      <div class="relative flex flex-col md:flex-row items-center gap-12 mb-16">
+        <!-- Card Content -->
+        <div class="bg-white/80 backdrop-blur-lg border border-gray-200 shadow-2xl rounded-2xl p-10 md:w-2/3 w-full relative z-10">
+          <span class="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 shadow">Premium Patch Service</span>
+          <p class="text-lg text-gray-700 mb-8">Elevate your brand or style with our custom patches that bear the mark of craftsmanship. From intricate designs to flawless execution, our team ensures your patches are a testament to our dedication.</p>
+        </div>
+        <!-- Main Image -->
+        <div class="md:w-1/3 w-full flex justify-center relative">
+          <div class="rounded-2xl shadow-2xl overflow-hidden border-4 border-yellow-400 bg-white/60 backdrop-blur-lg">
+            <img src="/images/custom-patches/Front.jpg" alt="Custom Patch Example" class="object-cover w-full h-96 md:h-full" />
+          </div>
+        </div>
+      </div>
+      <!-- Features as Cards with Lucide Icons -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 mb-16">
+        <div v-for="feature in features" :key="feature.title" class="bg-white/90 border border-gray-100 shadow-lg rounded-xl p-6 flex flex-col gap-3 hover:shadow-2xl transition-shadow">
+          <div class="flex items-center gap-3 mb-2">
+            <component :is="feature.icon" class="text-secondary w-8 h-8" />
+            <h3 class="text-xl font-bold text-primary">{{ feature.title }}</h3>
+          </div>
+          <p class="text-gray-700">{{ feature.description }}</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script setup>
+import Banner from '@/components/Banner.vue'
+import { Pen, Layers, BadgePercent } from 'lucide-vue-next'
+
+const features = [
+  {
+    title: 'Embroidery Patches',
+    description: `Wear your brand with pride. Our embroidered patches are crafted with care, adding a touch of professionalism to your apparel. Add a tactile element to your brand that leaves an unforgettable impression.`,
+    icon: Pen
+  },
+  {
+    title: 'Woven Patches',
+    description: `Quality that's woven into every thread. For a tactile branding experience, choose our woven patches. These durable patches offer a high-quality, textured look that adds a unique touch to your products.`,
+    icon: Layers
+  },
+  {
+    title: 'Leather Patches',
+    description: `Add a touch of sophistication and durability to your branding with custom leather patches. Our leather patches are stylish and sophisticated, making a lasting impression on your audience.`,
+    icon: BadgePercent
+  }
+]
+</script>
+
+<style scoped>
+.text-primary {
+  color: #1e293b;
+}
+.text-secondary {
+  color: #eab308;
+}
+</style>
