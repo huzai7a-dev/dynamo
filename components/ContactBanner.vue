@@ -31,7 +31,7 @@
               <div class="ml-4">
                 <p class="font-display text-sm">Hotline</p>
                 <p class="font-display text-xl font-bold">
-                  +1 469-250-5833
+                  +1 303-800-6078
                 </p>
               </div>
             </div>

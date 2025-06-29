@@ -1,80 +1,58 @@
-
 <template>
-  <section class="py-16 bg-gray-50">
-    <div class="container mx-auto px-4">
-      <div class="text-center max-w-3xl mx-auto mb-16">
-        <span class="text-secondary font-medium">Our Portfolio</span>
-        <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-6 text-primary">Our Exceptional Work</h2>
-        <p class="text-gray-600">
-          Browse through our collection of custom embroidery projects. Each piece represents our commitment to quality, 
-          precision, and customer satisfaction.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div 
-          v-for="(item, index) in galleryItems" 
-          :key="index"
-          class="group relative overflow-hidden rounded-lg shadow-lg bg-white transition-transform hover:scale-105"
-        >
-          <div class="aspect-square overflow-hidden">
-            <img 
-              :src="item.imageSrc" 
-              :alt="item.title"
-              class="w-full h-full object-cover transition-transform group-hover:scale-110"
-            />
-          </div>
-          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <div class="absolute bottom-4 left-4 right-4 transform translate-y-4 group-hover:translate-y-0 transition-transform opacity-0 group-hover:opacity-100">
-            <h3 class="text-white font-bold text-lg mb-1">{{ item.title }}</h3>
-            <p class="text-secondary text-sm">{{ item.category }}</p>
-          </div>
+  <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full mx-4 p-6 overflow-y-auto max-h-[90vh]">
+      <button @click="$emit('close')" class="absolute top-4 right-4 text-gray-400 hover:text-primary text-2xl font-bold focus:outline-none">&times;</button>
+      <h2 v-if="title" class="text-2xl font-bold text-primary mb-6 text-center">{{ title }}</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div v-for="(img, idx) in images" :key="idx" class="group relative cursor-pointer">
+          <img :src="img" @click="openImage(idx)" class="rounded-lg shadow-lg object-cover w-full h-48 transition-transform group-hover:scale-105" />
         </div>
       </div>
-      
-      <div class="text-center mt-12">
-        <NuxtLink 
-          to="/gallery"
-          class="bg-secondary hover:bg-secondary/90 text-white px-6 py-3 rounded-md font-medium transition-colors inline-block"
+      <div v-if="selectedIndex !== null" class="fixed inset-0 z-60 flex items-center justify-center bg-black/80">
+        <button @click="selectedIndex = null" class="absolute top-8 right-8 text-white text-3xl font-bold">&times;</button>
+        <button
+          @click="prevImage"
+          :disabled="selectedIndex === 0"
+          class="absolute left-8 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-secondary text-primary hover:text-white rounded-full w-12 h-12 flex items-center justify-center text-2xl shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          View All Projects
-        </NuxtLink>
+          &#8592;
+        </button>
+        <img :src="images[selectedIndex]" class="max-h-[80vh] max-w-full rounded-xl shadow-2xl border-4 border-white" />
+        <button
+          @click="nextImage"
+          :disabled="selectedIndex === images.length - 1"
+          class="absolute right-8 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-secondary text-primary hover:text-white rounded-full w-12 h-12 flex items-center justify-center text-2xl shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          &#8594;
+        </button>
       </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script setup>
-const galleryItems = [
-  {
-    imageSrc: "https://images.unsplash.com/photo-1574201635302-388dd92a4c3f?q=80&w=1965&auto=format&fit=crop",
-    title: "Corporate Uniforms",
-    category: "Business Apparel"
-  },
-  {
-    imageSrc: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=2070&auto=format&fit=crop",
-    title: "Team Jerseys",
-    category: "Athletic Wear"
-  },
-  {
-    imageSrc: "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?q=80&w=2070&auto=format&fit=crop",
-    title: "Custom Hats",
-    category: "Accessories"
-  },
-  {
-    imageSrc: "https://images.unsplash.com/photo-1552642986-ccb41e7059e7?q=80&w=1974&auto=format&fit=crop",
-    title: "Logo Embroidery",
-    category: "Corporate Branding"
-  },
-  {
-    imageSrc: "https://images.unsplash.com/photo-1618354691551-44de113f0164?q=80&w=1915&auto=format&fit=crop",
-    title: "Personal Gifts",
-    category: "Special Occasions"
-  },
-  {
-    imageSrc: "https://images.unsplash.com/photo-1605812860427-4024433a70fd?q=80&w=1935&auto=format&fit=crop",
-    title: "School Uniforms",
-    category: "Educational Institutions"
-  }
-]
+import { ref, watch } from 'vue'
+const props = defineProps({
+  images: { type: Array, required: true },
+  open: { type: Boolean, required: true },
+  title: { type: String, default: '' }
+})
+const emit = defineEmits(['close'])
+const selectedIndex = ref(null)
+function openImage(idx) {
+  selectedIndex.value = idx
+}
+function prevImage() {
+  if (selectedIndex.value > 0) selectedIndex.value--
+}
+function nextImage() {
+  if (selectedIndex.value < props.images.length - 1) selectedIndex.value++
+}
+watch(() => props.open, (val) => {
+  if (!val) selectedIndex.value = null
+})
 </script>
+
+<style scoped>
+/* Modal styles for theme consistency */
+</style>

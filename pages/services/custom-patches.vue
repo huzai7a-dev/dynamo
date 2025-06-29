@@ -14,16 +14,16 @@
       <!-- Main Heading Centered -->
       <h2 class="text-4xl font-extrabold !text-primary mb-10 text-center leading-tight">Custom Patches: Crafted for Impact</h2>
       <div class="relative flex flex-col md:flex-row items-center gap-12 mb-16">
-        <!-- Card Content -->
-        <div class="bg-white/80 backdrop-blur-lg border border-gray-200 shadow-2xl rounded-2xl p-10 md:w-2/3 w-full relative z-10">
-          <span class="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 shadow">Premium Patch Service</span>
-          <p class="text-lg text-gray-700 mb-8">Elevate your brand or style with our custom patches that bear the mark of craftsmanship. From intricate designs to flawless execution, our team ensures your patches are a testament to our dedication.</p>
-        </div>
         <!-- Main Image -->
         <div class="md:w-1/3 w-full flex justify-center relative">
           <div class="rounded-2xl shadow-2xl overflow-hidden border-4 border-yellow-400 bg-white/60 backdrop-blur-lg">
             <img src="/images/custom-patches/Front.jpg" alt="Custom Patch Example" class="object-cover w-full h-96 md:h-full" />
           </div>
+        </div>
+        <!-- Card Content -->
+        <div class="bg-white/80 backdrop-blur-lg border border-gray-200 shadow-2xl rounded-2xl p-10 md:w-2/3 w-full relative z-10">
+          <span class="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 shadow">Premium Patch Service</span>
+          <p class="text-lg text-gray-700 mb-8">Elevate your brand or style with our custom patches that bear the mark of craftsmanship. From intricate designs to flawless execution, our team ensures your patches are a testament to our dedication.</p>
         </div>
       </div>
       <!-- Features as Cards with Lucide Icons -->
@@ -37,12 +37,39 @@
         </div>
       </div>
     </section>
+    <div class="flex justify-center mb-16">
+      <button @click="showGallery = true" class="bg-secondary hover:bg-secondary/90 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+        View work
+      </button>
+    </div>
+    <Gallery
+      :images="galleryImages"
+      :open="showGallery"
+      title="Custom Patches Portfolio"
+      @close="showGallery = false"
+    />
   </div>
 </template>
 
 <script setup>
 import Banner from '@/components/Banner.vue'
+import Gallery from '@/components/Gallery.vue'
 import { Pen, Layers, BadgePercent } from 'lucide-vue-next'
+import { ref } from 'vue'
+
+const showGallery = ref(false)
+const galleryImages = [
+  '/images/custom-patches/Patches-1.jpeg',
+  '/images/custom-patches/Patches-2.jpg',
+  '/images/custom-patches/Patches-3.webp',
+  '/images/custom-patches/Patches-4.jpg',
+  '/images/custom-patches/Patches-5.webp',
+  '/images/custom-patches/Patches-6.jpg',
+  '/images/custom-patches/Patches-7.jpg',
+  '/images/custom-patches/Patches-8.jpg',
+  '/images/custom-patches/Patches-9.jpg',
+  '/images/custom-patches/Patches-10.jpg',
+]
 
 const features = [
   {

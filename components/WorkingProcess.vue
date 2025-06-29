@@ -57,7 +57,7 @@ const processSteps = [
             <component :is="step.icon" class="w-12 h-12 text-primary
                                              transition-colors duration-300 group-hover:text-primary/80" />
           </div>
-          <h3 class="text-xl font-bold text-secondary
+          <h3 class="text-xl font-bold text-secondary px-3 bg-white
                      transition-all duration-300 group-hover:text-primary group-hover:scale-105">{{ step.title }}</h3>
         </div>
       </div>

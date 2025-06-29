@@ -1,16 +1,21 @@
 <template>
   <!-- Contact Info Bar (scrolls away) -->
-  <div class="bg-[#212529] text-white py-3">
+  <div class="bg-[#212529] text-white py-3 hidden md:block">
     <div class="container mx-auto flex justify-between items-center text-sm">
-      <div class="flex items-center gap-4">
-        <a href="mailto:order@eaglestitches.com" class="flex items-center gap-2 hover:text-primary">
+      <div class="flex items-center gap-4 flex-wrap">
+        <a href="mailto:order@dynamostitches.com" class="flex items-center gap-2 hover:text-primary">
           <Mail size="16" />
-          <span>order@eaglestitches.com</span>
+          <span>order@dynamostitches.com</span>
         </a>
         <span class="text-gray-500">•</span>
-        <a href="tel:+14692505833" class="flex items-center gap-2 hover:text-primary">
+        <a href="mailto:accounts@dynamostitches.com" class="flex items-center gap-2 hover:text-primary">
+          <Mail size="16" />
+          <span>accounts@dynamostitches.com</span>
+        </a>
+        <span class="text-gray-500">•</span>
+        <a href="tel:+13038006078" class="flex items-center gap-2 hover:text-primary">
           <Phone size="16" />
-          <span>+1 469-250-5833</span>
+          <span>+1 (303)-800-6078</span>
         </a>
         <span class="text-gray-500">•</span>
         <div class="flex items-center gap-2">
@@ -19,10 +24,13 @@
         </div>
       </div>
       <div class="flex items-center gap-4">
-        <a href="#" class="hover:text-primary"><Facebook size="16" /></a>
-        <a href="#" class="hover:text-primary"><Twitter size="16" /></a>
-        <a href="#" class="hover:text-primary"><Instagram size="16" /></a>
-        <a href="#" class="hover:text-primary"><Linkedin size="16" /></a>
+        <a href="https://www.instagram.com/dynamostitches/" target="_blank" rel="noopener" class="hover:text-primary"><Instagram size="16" /></a>
+        <a href="https://www.facebook.com/share/1F4ALyjdsc/?mibextid=wwXIfr" target="_blank" rel="noopener" class="hover:text-primary"><Facebook size="16" /></a>
+        <a href="https://www.linkedin.com/company/dynamo-stitches/" target="_blank" rel="noopener" class="hover:text-primary"><Linkedin size="16" /></a>
+        <a href="https://x.com/dynamo_stitches?s=21&t=Yicfow9aDy2i9X737PPplA" target="_blank" rel="noopener" class="hover:text-primary"><Twitter size="16" /></a>
+        <a href="https://www.behance.net/dynamostitches" target="_blank" rel="noopener" class="hover:text-primary">
+          <img src="/images/icons/behance.svg" alt="Behance" width="20" height="20" class="inline align-middle invert" />
+        </a>
       </div>
     </div>
   </div>
@@ -115,6 +123,10 @@ const navItems = [
   {
     label: 'Contact',
     url: '/contact'
+  },
+  {
+    label: 'Privacy & Terms',
+    url: '/privacy-terms'
   },
 ]
 </script>

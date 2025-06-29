@@ -1,3 +1,71 @@
+<script setup>
+import { ref } from 'vue'
+import { Mail, Phone, Clock } from 'lucide-vue-next'
+
+const form = ref({
+  firstName: '',
+  lastName: '',
+  contact: '',
+  email: '',
+  message: ''
+})
+
+const isLoading = ref(false)
+const successMessage = ref('')
+const errorMessage = ref('')
+
+function validateForm() {
+  if (!form.value.firstName.trim() || !form.value.lastName.trim() || !form.value.contact.trim() || !form.value.email.trim() || !form.value.message.trim()) {
+    errorMessage.value = 'Please fill in all fields.'
+    return false
+  }
+  // Simple email validation
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailPattern.test(form.value.email)) {
+    errorMessage.value = 'Please enter a valid email address.'
+    return false
+  }
+  errorMessage.value = ''
+  return true
+}
+
+const handleSubmit = async () => {
+  successMessage.value = ''
+  errorMessage.value = ''
+  if (!validateForm()) return
+  isLoading.value = true
+  const payload = {
+    service_id: 'service_rbnoe6k',
+    template_id: 'template_blbpau7',
+    user_id: 'nelQCqkxxyBdiLCUR',
+    template_params: {
+      name: `${form.value.firstName} ${form.value.lastName}`,
+      email: form.value.email,
+      message: form.value.message
+    }
+  }
+  try {
+    const response = await $fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: payload
+    })
+    successMessage.value = 'Your message has been sent successfully!'
+    form.value = { firstName: '', lastName: '', contact: '', email: '', message: '' }
+  } catch (error) {
+    errorMessage.value = 'Failed to send your message. Please try again later.'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+definePageMeta({
+  title: 'Contact Us - Dynamo Stitches'
+})
+</script>
+
 <template>
   <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
     <Banner
@@ -30,55 +98,36 @@
             Contact Information
           </h3>
           <div class="space-y-6">
-            <div class="flex items-start space-x-4 group hover:bg-gray-50 p-3 rounded-lg transition-colors duration-200">
-              <div class="flex-shrink-0">
-                <div class="w-10 h-10 bg-primary-light rounded-full flex items-center justify-center group-hover:bg-purple-200 transition-colors duration-200">
-                  <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                  </svg>
-                </div>
-              </div>
-              <div>
-                <h4 class="text-lg font-medium text-gray-900">Location</h4>
-                <p class="mt-1 text-gray-600">123 Fashion Street, Design District, City</p>
-              </div>
-            </div>
 
             <div class="flex items-start space-x-4 group hover:bg-gray-50 p-3 rounded-lg transition-colors duration-200">
               <div class="flex-shrink-0">
                 <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center group-hover:bg-pink-200 transition-colors duration-200">
-                  <svg class="h-5 w-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                  </svg>
+                  
+                  <Mail class="h-5 w-5 text-pink-600" />
                 </div>
               </div>
               <div>
                 <h4 class="text-lg font-medium text-gray-900">Email</h4>
-                <p class="mt-1 text-gray-600">contact@dynamostitches.com</p>
+                <p class="mt-1 text-gray-600">order@dynamostitches.com</p>
               </div>
             </div>
 
             <div class="flex items-start space-x-4 group hover:bg-gray-50 p-3 rounded-lg transition-colors duration-200">
               <div class="flex-shrink-0">
                 <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center group-hover:bg-purple-200 transition-colors duration-200">
-                  <svg class="h-5 w-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                  </svg>
+                  <Phone class="h-5 w-5 text-purple-600" />
                 </div>
               </div>
               <div>
-                <h4 class="text-lg font-medium text-gray-900">Phone / WhatsApp</h4>
-                <p class="mt-1 text-gray-600">+1 (555) 123-4567</p>
+                <h4 class="text-lg font-medium text-gray-900">Phone</h4>
+                <p class="mt-1 text-gray-600">+1 (303)-800-6078</p>
               </div>
             </div>
           </div>
 
           <div class="mt-8 pt-8 border-t border-gray-200">
             <h4 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
-              <svg class="h-5 w-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
+              <Clock class="h-5 w-5 text-purple-600 mr-2" />
               Working Hours
             </h4>
             <p class="text-gray-600">Monday - Friday, 09:00am - 05:00pm</p>
@@ -97,25 +146,48 @@
           </h3>
           <p class="text-gray-600 mb-8">Drop us a line and let's start crafting your vision into reality.</p>
           
-          <form class="space-y-6">
+          <form class="space-y-6" @submit.prevent="handleSubmit">
+            <div v-if="successMessage" class="mb-4 text-green-600 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-center">{{ successMessage }}</div>
+            <div v-if="errorMessage" class="mb-4 text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-center">{{ errorMessage }}</div>
             <div class="group">
-              <label for="name" class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-primary transition-colors duration-200">Name</label>
+              <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-primary transition-colors duration-200">First Name</label>
               <div class="relative">
                 <input 
                   type="text" 
-                  id="name" 
-                  name="name" 
+                  id="firstName" 
+                  name="firstName" 
+                  v-model="form.firstName"
                   class="block w-full rounded-lg border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 shadow-sm transition-all duration-200 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 focus:outline-none placeholder:text-gray-400"
-                  placeholder="Enter your name"
+                  placeholder="Enter your first name"
                 >
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <svg class="h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                </div>
               </div>
             </div>
-
+            <div class="group">
+              <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-primary transition-colors duration-200">Last Name</label>
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="lastName" 
+                  name="lastName" 
+                  v-model="form.lastName"
+                  class="block w-full rounded-lg border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 shadow-sm transition-all duration-200 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 focus:outline-none placeholder:text-gray-400"
+                  placeholder="Enter your last name"
+                >
+              </div>
+            </div>
+            <div class="group">
+              <label for="contact" class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-primary transition-colors duration-200">Contact</label>
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="contact" 
+                  name="contact" 
+                  v-model="form.contact"
+                  class="block w-full rounded-lg border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 shadow-sm transition-all duration-200 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 focus:outline-none placeholder:text-gray-400"
+                  placeholder="Enter your contact number"
+                >
+              </div>
+            </div>
             <div class="group">
               <label for="email" class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-primary transition-colors duration-200">Email</label>
               <div class="relative">
@@ -123,6 +195,7 @@
                   type="email" 
                   id="email" 
                   name="email" 
+                  v-model="form.email"
                   class="block w-full rounded-lg border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 shadow-sm transition-all duration-200 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 focus:outline-none placeholder:text-gray-400"
                   placeholder="Enter your email"
                 >
@@ -133,7 +206,6 @@
                 </div>
               </div>
             </div>
-
             <div class="group">
               <label for="message" class="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-primary transition-colors duration-200">Message</label>
               <div class="relative">
@@ -141,6 +213,7 @@
                   id="message" 
                   name="message" 
                   rows="4" 
+                  v-model="form.message"
                   class="block w-full rounded-lg border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 shadow-sm transition-all duration-200 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 focus:outline-none placeholder:text-gray-400 resize-none"
                   placeholder="Type your message here..."
                 ></textarea>
@@ -151,9 +224,12 @@
                 </div>
               </div>
             </div>
-
-            <button type="submit" class="w-full bg-teal-gradient text-white px-6 py-3 rounded-lg hover:opacity-90 transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-              Send Message
+            <button type="submit" :disabled="isLoading" class="w-full bg-teal-gradient text-white px-6 py-3 rounded-lg hover:opacity-90 transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 flex items-center justify-center">
+              <svg v-if="isLoading" class="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+              <span>{{ isLoading ? 'Sending...' : 'Send Message' }}</span>
             </button>
           </form>
         </div>
@@ -162,8 +238,3 @@
   </div>
 </template>
 
-<script setup>
-definePageMeta({
-  title: 'Contact Us - Dynamo Stitches'
-})
-</script>

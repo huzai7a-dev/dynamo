@@ -14,16 +14,16 @@
       <!-- Main Heading Centered -->
       <h2 class="text-4xl font-extrabold !text-primary mb-10 text-center leading-tight">Bring Your Vision to Life with Crisp, Scalable Vector Art</h2>
       <div class="relative flex flex-col md:flex-row items-center gap-12 mb-16">
-        <!-- Card Content -->
-        <div class="bg-white/80 backdrop-blur-lg border border-gray-200 shadow-2xl rounded-2xl p-10 md:w-2/3 w-full relative z-10">
-          <span class="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 shadow">Premium Vector Service</span>
-          <p class="text-lg text-gray-700 mb-8">Our expert artists transform your ideas into crisp, scalable vector artwork perfect for any application. From logos to detailed illustrations, we ensure your designs look flawless at any size and on any medium. Experience the power of professional vector art for your brand or project.</p>
-        </div>
         <!-- Main Image -->
         <div class="md:w-1/3 w-full flex justify-center relative">
           <div class="rounded-2xl shadow-2xl overflow-hidden border-4 border-yellow-400 bg-white/60 backdrop-blur-lg">
             <img src="/images/vector/Vector-Art-front.jpg" alt="Vector Art Example" class="object-cover w-full h-96 md:h-full" />
           </div>
+        </div>
+        <!-- Card Content -->
+        <div class="bg-white/80 backdrop-blur-lg border border-gray-200 shadow-2xl rounded-2xl p-10 md:w-2/3 w-full relative z-10">
+          <span class="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 shadow">Premium Vector Service</span>
+          <p class="text-lg text-gray-700 mb-8">Our expert artists transform your ideas into crisp, scalable vector artwork perfect for any application. From logos to detailed illustrations, we ensure your designs look flawless at any size and on any medium. Experience the power of professional vector art for your brand or project.</p>
         </div>
       </div>
       <!-- Features as Cards with Lucide Icons -->
@@ -36,30 +36,42 @@
           <p class="text-gray-700">{{ feature.description }}</p>
         </div>
       </div>
-      <!-- Gallery -->
-      <div>
-        <h3 class="text-2xl font-semibold text-primary mb-6 text-center">Gallery</h3>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          <img src="/images/vector/Illustration.jpg" alt="Illustration" class="rounded-lg shadow-md object-cover w-full h-40" />
-          <img src="/images/vector/Halftones.jpg" alt="Halftones" class="rounded-lg shadow-md object-cover w-full h-40" />
-          <img src="/images/vector/Graphics.jpg" alt="Graphics" class="rounded-lg shadow-md object-cover w-full h-40" />
-          <img src="/images/vector/Colorseparation.png" alt="Color Separation" class="rounded-lg shadow-md object-cover w-full h-40" />
-          <img src="/images/vector/CMYK.png" alt="CMYK" class="rounded-lg shadow-md object-cover w-full h-40" />
-        </div>
-      </div>
+      
     </section>
+    <div class="flex justify-center mb-16">
+      <button @click="showGallery = true" class="bg-secondary hover:bg-secondary/90 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+        View work
+      </button>
+    </div>
+    <Gallery
+      :images="galleryImages"
+      :open="showGallery"
+      title="Line Artwork Portfolio"
+      @close="showGallery = false"
+    />
   </div>
 </template>
 
 <script setup>
 import Banner from '@/components/Banner.vue'
-import { Vector, Brush, Palette, CircleDot, PenTool, Layers, PaintBucket, Image } from 'lucide-vue-next'
+import Gallery from '@/components/Gallery.vue'
+import { Pen, Brush, Palette, CircleDot, PenTool, PaintBucket } from 'lucide-vue-next'
+import { ref } from 'vue'
+
+const showGallery = ref(false)
+const galleryImages = [
+  '/images/vector/Illustration.jpg',
+  '/images/vector/Halftones.jpg',
+  '/images/vector/Graphics.jpg',
+  '/images/vector/Colorseparation.png',
+  '/images/vector/CMYK.png',
+]
 
 const features = [
   {
     title: 'Vector Art',
     description: `Our accomplished artists harness the power of vector graphics to craft designs that are not only visually appealing but also infinitely scalable. Experience the finesse of vector art with our adept professionals.`,
-    icon: Vector
+    icon: Pen
   },
   {
     title: 'Illustration',

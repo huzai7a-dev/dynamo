@@ -14,16 +14,16 @@
       <!-- Main Heading Centered -->
       <h2 class="text-4xl font-extrabold !text-primary mb-10 text-center leading-tight">Feeling Invisible in a Crowded Market and Need a Design Savior?</h2>
       <div class="relative flex flex-col md:flex-row items-center gap-12 mb-16">
-        <!-- Card Content -->
-        <div class="bg-white/80 backdrop-blur-lg border border-gray-200 shadow-2xl rounded-2xl p-10 md:w-2/3 w-full relative z-10">
-          <span class="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 shadow">Premium Service</span>
-          <p class="text-lg text-gray-700 mb-8">With years of expertise and a powerhouse team of creative minds, we're geared up to elevate your brand like never before. Our passion? Crafting designs that not only catch eyes but also speak directly to your ideal customers. Let's team up today for a design journey that promises to go above and beyond your expectations.</p>
-        </div>
         <!-- Main Image -->
         <div class="md:w-1/3 w-full flex justify-center relative">
           <div class="rounded-2xl shadow-2xl overflow-hidden border-4 border-yellow-400 bg-white/60 backdrop-blur-lg">
             <img src="/images/digitizing/Digitizing-front.jpg" alt="Digitizing Example" class="object-cover w-full h-96 md:h-full" />
           </div>
+        </div>
+        <!-- Card Content -->
+        <div class="bg-white/80 backdrop-blur-lg border border-gray-200 shadow-2xl rounded-2xl p-10 md:w-2/3 w-full relative z-10">
+          <span class="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 shadow">Premium Service</span>
+          <p class="text-lg text-gray-700 mb-8">With years of expertise and a powerhouse team of creative minds, we're geared up to elevate your brand like never before. Our passion? Crafting designs that not only catch eyes but also speak directly to your ideal customers. Let's team up today for a design journey that promises to go above and beyond your expectations.</p>
         </div>
       </div>
       <!-- Features as Cards with Lucide Icons -->
@@ -36,25 +36,41 @@
           <p class="text-gray-700">{{ feature.description }}</p>
         </div>
       </div>
-      <!-- Gallery -->
-      <!-- <div>
-        <h3 class="text-2xl font-semibold text-primary mb-6 text-center">Gallery</h3>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          <div v-for="n in 10" :key="n" class="relative group overflow-hidden rounded-xl shadow-lg">
-            <img :src="`/images/digitizing/Digitizing-${n}.jpeg`" :alt="`Digitizing sample ${n}`" class="object-cover w-full h-40 group-hover:scale-110 transition-transform duration-300" />
-            <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <span class="text-white font-semibold">View</span>
-            </div>
-          </div>
-        </div>
-      </div> -->
+      
     </section>
+    <div class="flex justify-center mb-16">
+      <button @click="showGallery = true" class="bg-primary hover:bg-primary/60 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+        View work
+      </button>
+    </div>
+    <Gallery
+      :images="galleryImages"
+      :open="showGallery"
+      title="Digitizing Portfolio"
+      @close="showGallery = false"
+    />
   </div>
 </template>
 
 <script setup>
 import Banner from '@/components/Banner.vue'
+import Gallery from '@/components/Gallery.vue'
 import { Shirt, Move3d, Layers, Badge, PenTool, Image, Waves, ShoppingBag } from 'lucide-vue-next'
+import { ref } from 'vue'
+
+const showGallery = ref(false)
+const galleryImages = [
+  '/images/digitizing/Digitizing-1.jpeg',
+  '/images/digitizing/Digitizing-2.jpeg',
+  '/images/digitizing/Digitizing-3.jpeg',
+  '/images/digitizing/Digitizing-4.jpeg',
+  '/images/digitizing/Digitizing-5.jpeg',
+  '/images/digitizing/Digitizing-6.jpeg',
+  '/images/digitizing/Digitizing-7.jpeg',
+  '/images/digitizing/Digitizing-8.jpeg',
+  '/images/digitizing/Digitizing-9.jpeg',
+  '/images/digitizing/Digitizing-10.jpeg',
+]
 
 const features = [
   {
