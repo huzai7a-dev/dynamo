@@ -2,7 +2,7 @@
   <section id="services" class="py-16 bg-white">
     <div class="container mx-auto px-4">
       <div class="text-center max-w-3xl mx-auto mb-16">
-        <h2 class="text-4xl md:text-5xl font-extrabold mb-4 text-primary leading-10">
+        <h2 class="text-4xl md:text-5xl font-extrabold mb-4 text-primary leading-10" style="line-height: 1.2;">
           We Provide <span class="bg-primary text-white px-2"> Best </span> <br /> Designing Services
         </h2>
       </div>

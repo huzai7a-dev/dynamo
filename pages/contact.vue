@@ -35,13 +35,14 @@ const handleSubmit = async () => {
   if (!validateForm()) return
   isLoading.value = true
   const payload = {
-    service_id: 'service_rbnoe6k',
-    template_id: 'template_blbpau7',
-    user_id: 'nelQCqkxxyBdiLCUR',
+    service_id: 'service_cr9z37p',
+    template_id: 'template_lg2he5p',
+    user_id: 'Kn6u7tXfYFZlVjOwp',
     template_params: {
       name: `${form.value.firstName} ${form.value.lastName}`,
       email: form.value.email,
-      message: form.value.message
+      message: form.value.message,
+      phone: form.value.contact
     }
   }
   try {
@@ -69,7 +70,7 @@ definePageMeta({
 <template>
   <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
     <Banner
-      backgroundImage="/images/contact-banner.webp"
+      backgroundImage="/images/contact-banner.jpeg"
       title="Contact Us"
       description="Let's Create Something Extraordinary Together"
     />

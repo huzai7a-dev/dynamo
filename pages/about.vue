@@ -53,10 +53,10 @@
             <h2 class="absolute bottom-4 left-4 text-3xl font-bold text-white font-display">Our Mission</h2>
           </div>
           <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-            <p class="text-gray-600 mb-6">
-              At Dynamo Stitches, our mission is simple: to transform your vision into reality. Whether you're looking to digitize a logo, create embroidered art, or vectorize a design, we're here to help. Our team of experts is dedicated to delivering top-notch service and stunning results, every time.
-            </p>
             <p class="text-gray-600">
+              At Dynamo Stitches, our mission is simple: to transform your vision into reality. Whether you're looking to digitize a logo, create embroidered art, or vectorize a design, we're here to help. Our team of experts is dedicated to delivering top-notch service and stunning results, every time. <span class="text-primary cursor-pointer" @click="showMore = !showMore">{{ showMore ? 'Show less' : 'Read more'  }}</span>
+            </p>
+            <p v-if="showMore" class="text-gray-600">
               We envision a world where art knows no bounds, where creativity is limitless, and where every design tells a story. Through our work, we aim to inspire others to embrace their creativity, push boundaries, and see the world from a new perspective.
             </p>
           </div>
@@ -66,7 +66,7 @@
       <!-- Call to Action -->
       <div class="text-center animate-fade-in" style="animation-delay: 1000ms">
         <div class="relative mb-8">
-          <img src="/images/contact-banner.webp" alt="Join Us" class="w-full h-[300px] object-cover rounded-2xl" />
+          <img src="/images/contact-banner.jpeg" alt="Join Us" class="w-full h-[300px] object-cover rounded-2xl" />
           <div class="absolute inset-0 bg-gradient-to-r from-primary/80 to-secondary/80 rounded-2xl"></div>
           <div class="absolute inset-0 flex flex-col items-center justify-center text-white">
             <h2 class="text-3xl font-bold mb-4 font-display">Join the Dynamo Family</h2>
@@ -81,11 +81,18 @@
       </div>
     </div>
   </section>
+  <div class="mb-12">
+    <ContactBanner />
+  </div>
     </main>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
+const showMore = ref(false)
+
 definePageMeta({
   title: 'About Us - Dynamo Stitches'
 })

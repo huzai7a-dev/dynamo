@@ -28,12 +28,26 @@
       </div>
       <!-- Features as Cards with Lucide Icons -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 mb-16">
-        <div v-for="feature in features" :key="feature.title" class="bg-white/90 border border-gray-100 shadow-lg rounded-xl p-6 flex flex-col gap-3 hover:shadow-2xl transition-shadow">
-          <div class="flex items-center gap-3 mb-2">
-            <component :is="feature.icon" class="text-secondary w-8 h-8" />
-            <h3 class="text-xl font-bold text-primary">{{ feature.title }}</h3>
+        <div
+          v-for="(feature, idx) in features"
+          :key="feature.title"
+          class="group bg-white/90 border-2 border-transparent hover:border-yellow-400 shadow-lg rounded-2xl flex flex-col md:flex-row overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.03] relative"
+          style="backdrop-filter: blur(6px);"
+        >
+          <!-- Image Section -->
+          <div class="md:w-1/3 w-full h-44 md:h-auto relative flex-shrink-0">
+            <img :src="feature.bg" class="w-full h-full object-cover rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none" alt="" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
           </div>
-          <p class="text-gray-700">{{ feature.description }}</p>
+          <!-- Text/Icon Section -->
+          <div class="flex-1 p-6 flex flex-col justify-center relative z-10 bg-white/70 backdrop-blur-xl rounded-b-2xl md:rounded-bl-none md:rounded-r-2xl">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="inline-block w-2 h-8 rounded bg-gradient-to-b from-yellow-400 to-yellow-600 mr-2"></span>
+              <component :is="feature.icon" class="text-secondary w-8 h-8 drop-shadow" />
+              <h3 class="text-xl font-bold text-primary">{{ feature.title }}</h3>
+            </div>
+            <p class="text-gray-700">{{ feature.description }}</p>
+          </div>
         </div>
       </div>
       
@@ -60,43 +74,50 @@ import { ref } from 'vue'
 
 const showGallery = ref(false)
 const galleryImages = [
-  '/images/vector/Illustration.jpg',
-  '/images/vector/Halftones.jpg',
-  '/images/vector/Graphics.jpg',
-  '/images/vector/Colorseparation.png',
-  '/images/vector/CMYK.png',
+  '/images/vector/vector-art-1.jpeg',
+  '/images/vector/vector-art-2.jpeg',
+  '/images/vector/vector-art-3.jpeg',
+  '/images/vector/vector-art-4.jpeg',
+  '/images/vector/vector-art-5.jpeg',
+  '/images/vector/vector-art-6.jpeg',
 ]
 
 const features = [
   {
     title: 'Vector Art',
     description: `Our accomplished artists harness the power of vector graphics to craft designs that are not only visually appealing but also infinitely scalable. Experience the finesse of vector art with our adept professionals.`,
-    icon: Pen
+    icon: Pen,
+    bg: '/images/vector/bgs/VectorArt.jpeg'
   },
   {
     title: 'Illustration',
     description: `Illustrations are more than just drawings; they're stories waiting to be told. Whether for advertising, editorial, or personal projects, our illustrations are crafted with precision and flair, adding a unique touch to your visuals. We make them detailed and dynamic, providing a clear blueprint for your project.`,
-    icon: Brush
+    icon: Brush,
+    bg: '/images/vector/bgs/Illustration.jpg'
   },
   {
     title: 'Color-Separation',
     description: `Precision in every shade. Our color-separation techniques ensure your prints are vibrant and true to your brand's colors. We'll make your colors pop just right resulting in stunning and true-to-life prints.`,
-    icon: Palette
+    icon: Palette,
+    bg: '/images/vector/bgs/Colorseparation.png'
   },
   {
     title: 'Half-Tones',
     description: `Create depth and texture with halftone effects. Our designs add visual interest, making your prints stand out from the crowd. Let us expertly incorporate them into your branding.`,
-    icon: CircleDot
+    icon: CircleDot,
+    bg: '/images/vector/bgs/Halftones.jpg'
   },
   {
     title: 'Graphic Designing',
     description: `Transform ideas into visuals that speak louder than words, making your brand stand out in a sea of ordinary. Our graphic wizards will turn ideas into visual masterpieces. Let's paint your brand's narrative across digital and print landscapes with creativity that captivates.`,
-    icon: PenTool
+    icon: PenTool,
+    bg: '/images/vector/bgs/Graphics.jpg'
   },
   {
     title: 'CMYK Design',
     description: `Unlock the full spectrum of color for your print materials with our CMYK expertise. From subtle shades to bold hues, we'll make your designs pop off the page. Let's bring your designs to life with a splash of colors, ensuring your prints are not just seen but felt.`,
-    icon: PaintBucket
+    icon: PaintBucket,
+    bg: '/images/vector/bgs/CMYK.png'
   }
 ]
 </script>

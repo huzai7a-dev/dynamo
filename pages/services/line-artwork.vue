@@ -28,12 +28,26 @@
       </div>
       <!-- Features as Cards with Lucide Icons -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 mb-16">
-        <div v-for="feature in features" :key="feature.title" class="bg-white/90 border border-gray-100 shadow-lg rounded-xl p-6 flex flex-col gap-3 hover:shadow-2xl transition-shadow">
-          <div class="flex items-center gap-3 mb-2">
-            <component :is="feature.icon" class="text-secondary w-8 h-8" />
-            <h3 class="text-xl font-bold text-primary">{{ feature.title }}</h3>
+        <div
+          v-for="(feature, idx) in features"
+          :key="feature.title"
+          class="group bg-white/90 border-2 border-transparent hover:border-yellow-400 shadow-lg rounded-2xl flex flex-col md:flex-row overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.03] relative"
+          style="backdrop-filter: blur(6px);"
+        >
+          <!-- Image Section -->
+          <div class="md:w-1/3 w-full h-44 md:h-auto relative flex-shrink-0">
+            <img :src="feature.bg" class="w-full h-full object-cover rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none" alt="" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
           </div>
-          <p class="text-gray-700">{{ feature.description }}</p>
+          <!-- Text/Icon Section -->
+          <div class="flex-1 p-6 flex flex-col justify-center relative z-10 bg-white/70 backdrop-blur-xl rounded-b-2xl md:rounded-bl-none md:rounded-r-2xl">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="inline-block w-2 h-8 rounded bg-gradient-to-b from-yellow-400 to-yellow-600 mr-2"></span>
+              <component :is="feature.icon" class="text-secondary w-8 h-8 drop-shadow" />
+              <h3 class="text-xl font-bold text-primary">{{ feature.title }}</h3>
+            </div>
+            <p class="text-gray-700">{{ feature.description }}</p>
+          </div>
         </div>
       </div>
     </section>
@@ -71,27 +85,32 @@ const features = [
   {
     title: 'Custom Line Artwork',
     description: `Our custom line artwork is a testament to your unique vision, meticulously crafted to reflect your individuality and style. Each line is infused with meaning and purpose, creating a piece of art that is truly one-of-a-kind.`,
-    icon: PenTool
+    icon: PenTool,
+    bg: '/images/line-artwork/bgs/Custom Line Artwork.jpg'
   },
   {
     title: 'Digital Line Artwork',
     description: `Digital line artwork combines the precision of digital technology with the creativity of hand-drawn art. Our digital line artwork is clean and crisp, with each line carefully placed to create a stunning visual impact.`,
-    icon: Pencil
+    icon: Pencil,
+    bg: '/images/line-artwork/bgs/Digital.jpg'
   },
   {
     title: 'Technical Illustration',
     description: `Technical illustration is more than just drawings; it's a form of visual communication that requires precision and clarity. Our technical illustrations are expertly crafted to convey complex concepts in a way that is easy to understand and visually appealing.`,
-    icon: Ruler
+    icon: Ruler,
+    bg: '/images/line-artwork/bgs/Technical.jpg'
   },
   {
     title: 'Pen and Ink Drawing',
     description: `Pen and ink drawing is an art form that requires skill and patience, and our drawings are no exception. Each stroke is carefully placed to create intricate patterns and textures, resulting in drawings that are both captivating and timeless.`,
-    icon: PenLine
+    icon: PenLine,
+    bg: '/images/line-artwork/bgs/Pen & Ink.jpg'
   },
   {
     title: 'Sketch Drawing',
     description: `Sketch drawing is where ideas are born, and our sketches capture the essence of creativity in its purest form. Each sketch is a glimpse into the artist's mind, capturing fleeting moments with spontaneity and emotion.`,
-    icon: FileSignature
+    icon: FileSignature,
+    bg: '/images/line-artwork/bgs/Sketch.jpeg'
   }
 ]
 </script>

@@ -28,12 +28,26 @@
       </div>
       <!-- Features as Cards with Lucide Icons -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 mb-16">
-        <div v-for="feature in features" :key="feature.title" class="bg-white/90 border border-gray-100 shadow-lg rounded-xl p-6 flex flex-col gap-3 hover:shadow-2xl transition-shadow">
-          <div class="flex items-center gap-3 mb-2">
-            <component :is="feature.icon" class="text-secondary w-8 h-8" />
-            <h3 class="text-xl font-bold text-primary">{{ feature.title }}</h3>
+        <div
+          v-for="(feature, idx) in features"
+          :key="feature.title"
+          class="group bg-white/90 border-2 border-transparent hover:border-yellow-400 shadow-lg rounded-2xl flex flex-col md:flex-row overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.03] relative"
+          style="backdrop-filter: blur(6px);"
+        >
+          <!-- Image Section -->
+          <div class="md:w-1/3 w-full h-44 md:h-auto relative flex-shrink-0">
+            <img :src="feature.bg" class="w-full h-full object-cover rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none" alt="" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
           </div>
-          <p class="text-gray-700">{{ feature.description }}</p>
+          <!-- Text/Icon Section -->
+          <div class="flex-1 p-6 flex flex-col justify-center relative z-10 bg-white/70 backdrop-blur-xl rounded-b-2xl md:rounded-bl-none md:rounded-r-2xl">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="inline-block w-2 h-8 rounded bg-gradient-to-b from-yellow-400 to-yellow-600 mr-2"></span>
+              <component :is="feature.icon" class="text-secondary w-8 h-8 drop-shadow" />
+              <h3 class="text-xl font-bold text-primary">{{ feature.title }}</h3>
+            </div>
+            <p class="text-gray-700">{{ feature.description }}</p>
+          </div>
         </div>
       </div>
     </section>
@@ -75,17 +89,20 @@ const features = [
   {
     title: 'Embroidery Patches',
     description: `Wear your brand with pride. Our embroidered patches are crafted with care, adding a touch of professionalism to your apparel. Add a tactile element to your brand that leaves an unforgettable impression.`,
-    icon: Pen
+    icon: Pen,
+    bg: '/images/custom-patches/bgs/Embroidery Patches.jpg'
   },
   {
     title: 'Woven Patches',
     description: `Quality that's woven into every thread. For a tactile branding experience, choose our woven patches. These durable patches offer a high-quality, textured look that adds a unique touch to your products.`,
-    icon: Layers
+    icon: Layers,
+    bg: '/images/custom-patches/bgs/Woven Patches.jpg'
   },
   {
     title: 'Leather Patches',
     description: `Add a touch of sophistication and durability to your branding with custom leather patches. Our leather patches are stylish and sophisticated, making a lasting impression on your audience.`,
-    icon: BadgePercent
+    icon: BadgePercent,
+    bg: '/images/custom-patches/bgs/Leather Patches.jpg'
   }
 ]
 </script>

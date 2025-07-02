@@ -34,11 +34,11 @@
         <div>
           <h3 class="text-lg font-bold mb-6">Services</h3>
           <ul class="space-y-3">
-            <li><NuxtLink to="/services/custom-patches" class="text-gray-300 hover:text-secondary transition-colors">Custom Patches</NuxtLink></li>
             <li><NuxtLink to="/services/digitizing" class="text-gray-300 hover:text-secondary transition-colors">Digitizing</NuxtLink></li>
+            <li><NuxtLink to="/services/vector-artwork" class="text-gray-300 hover:text-secondary transition-colors">Vector Artwork</NuxtLink></li>
             <li><NuxtLink to="/services/line-artwork" class="text-gray-300 hover:text-secondary transition-colors">Line Artwork</NuxtLink></li>
             <li><NuxtLink to="/services/logo-designing" class="text-gray-300 hover:text-secondary transition-colors">Logo Designing</NuxtLink></li>
-            <li><NuxtLink to="/services/vector-artwork" class="text-gray-300 hover:text-secondary transition-colors">Vector Artwork</NuxtLink></li>
+            <li><NuxtLink to="/services/custom-patches" class="text-gray-300 hover:text-secondary transition-colors">Custom Patches</NuxtLink></li>
           </ul>
         </div>
         

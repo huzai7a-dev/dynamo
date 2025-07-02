@@ -15,7 +15,7 @@
     <!-- Slides -->
     <div class="overflow-hidden w-full">
       <div class="flex transition-transform duration-500"
-        :style="{ transform: `translateX(-${currentSlide * (100 / visibleSlides)}%)` }"
+        :style="{ transform: `translateX(-${slideTranslate}%)` }"
       >
         <div v-for="(item, idx) in items" :key="idx"
           class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-2 py-4"
@@ -48,7 +48,7 @@ const props = defineProps({
     default: () => ({
       0: 1,
       768: 2,
-      1024: 3
+      1024: 3,
     })
   }
 });
@@ -85,11 +85,13 @@ watch(() => props.items.length, () => {
 });
 
 const pageCount = computed(() => {
-  return Math.ceil(props.items.length / visibleSlides.value);
+  return Math.max(1, props.items.length - visibleSlides.value + 1);
 });
 
 const isPrevDisabled = computed(() => currentSlide.value === 0);
-const isNextDisabled = computed(() => currentSlide.value >= pageCount.value - 1);
+const isNextDisabled = computed(() => {
+  return currentSlide.value >= pageCount.value - 1;
+});
 
 function prevSlide() {
   if (currentSlide.value > 0) currentSlide.value--;
@@ -100,6 +102,13 @@ function nextSlide() {
 function goToSlide(idx) {
   currentSlide.value = idx;
 }
+
+const slideTranslate = computed(() => {
+  // Maximum translate so last item is fully visible
+  const maxTranslate = ((props.items.length - visibleSlides.value) * (100 / visibleSlides.value));
+  const rawTranslate = currentSlide.value * (100 / visibleSlides.value);
+  return Math.min(rawTranslate, maxTranslate > 0 ? maxTranslate : 0);
+});
 </script>
 
 <style scoped>

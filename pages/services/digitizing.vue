@@ -70,6 +70,8 @@ const galleryImages = [
   '/images/digitizing/Digitizing-8.jpeg',
   '/images/digitizing/Digitizing-9.jpeg',
   '/images/digitizing/Digitizing-10.jpeg',
+  '/images/digitizing/Digitizing-11.jpeg',
+  '/images/digitizing/Digitizing-12.jpeg',
 ]
 
 const features = [

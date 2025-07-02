@@ -14,7 +14,6 @@
       <div class="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
         <h2 class="text-4xl md:text-5xl font-extrabold mb-4 text-primary leading-10 relative inline-block">
           Meet Our <span class="bg-primary text-white px-2">Team</span>
-          <span class="absolute -bottom-2 left-0 w-full h-1 bg-teal-gradient rounded-full"></span>
         </h2>
         <p class="text-xl text-gray-600 mt-4">
           Dedicated professionals passionate about bringing your vision to life.
@@ -23,17 +22,13 @@
 
       <CustomSwiper :items="teamMembers">
         <template #card="{ item }">
-          <div class="bg-white border border-primary/10 rounded-2xl shadow-xl flex flex-col min-h-[320px] py-6 px-4 items-center justify-between transition-all duration-300 hover:shadow-2xl">
+          <div class="bg-white border border-primary/10 rounded-2xl flex flex-col min-h-[250px] py-6 px-4 items-center justify-between transition-all duration-300 hover:shadow-2xl">
             <div class="flex flex-col items-center w-full">
               <div class="w-24 h-24 rounded-full bg-gradient-to-br from-primary/10 to-blue-100 border-4 border-primary/20 mb-4 flex items-center justify-center overflow-hidden">
                 <img :src="item.image" :alt="item.name" class="w-full h-full object-cover" />
               </div>
               <h3 class="text-lg font-bold text-primary mb-1">{{ item.name }}</h3>
               <p class="text-secondary text-xs font-medium mb-2">{{ item.position }}</p>
-              <div v-if="item.email" class="flex items-center justify-center gap-2 mb-2">
-                <Mail class="text-primary"/>
-                <a :href="`mailto:${item.email}`" class="text-gray-700 text-xs underline hover:text-primary transition-colors break-all">{{ item.email }}</a>
-              </div>
             </div>
             <div class="flex justify-center gap-3 mt-4 w-full">
               <a v-if="item.social?.instagram" :href="item.social.instagram" target="_blank" class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-pink-500 hover:bg-pink-50 transition-colors">
@@ -47,6 +42,9 @@
               </a>
               <a v-if="item.social?.x" :href="item.social.x" target="_blank" class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-black hover:bg-gray-100 transition-colors">
                 <X class="w-5 h-5" />
+              </a>
+              <a v-if="item.email" :href="`mailto:${item.email}`" class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-primary hover:bg-primary/10 transition-colors">
+                <Mail class="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -67,7 +65,7 @@ const teamMembers = [
     name: 'Dynamo Stitches',
     position: 'Social Media Team',
     email: 'order@dynamostitches.com',
-    image: '/images/logo.png',
+    image: '/images/user.png',
     social: {
       instagram: 'https://www.instagram.com/dynamostitches/',
       facebook: 'https://www.facebook.com/share/1F4ALyjdsc/?mibextid=wwXIfr',
@@ -78,21 +76,21 @@ const teamMembers = [
     name: 'Sam Khan',
     position: 'Administrator',
     email: 'sam.dynamostitches@gmail.com',
-    image: 'https://randomuser.me/api/portraits/men/32.jpg',
+    image: '/images/user.png',
     social: {}
   },
   {
     name: 'Richard Steven',
     position: 'Accounts Department',
     email: 'accounts@dynamostitches.com',
-    image: 'https://randomuser.me/api/portraits/men/33.jpg',
+    image: '/images/user.png',
     social: {}
   },
   {
     name: 'Jack Smith',
     position: 'Sales Manager',
     email: 'jack.dynamostitches@gmail.com',
-    image: 'https://randomuser.me/api/portraits/men/34.jpg',
+    image: '/images/user.png',
     social: {
       instagram: 'https://www.instagram.com/jack.smith7477/',
       x: 'https://x.com/jack_smith7477?s=11'
@@ -102,7 +100,7 @@ const teamMembers = [
     name: 'Kevin Anthony',
     position: 'Sales Executive',
     email: 'kevin.dynamostitches@gmail.com',
-    image: 'https://randomuser.me/api/portraits/men/35.jpg',
+    image: '/images/user.png',
     social: {
       instagram: 'https://www.instagram.com/kevinanthony5358/'
     }
@@ -111,7 +109,7 @@ const teamMembers = [
     name: 'Frank Robert',
     position: 'Sales Executive',
     email: 'frank.dynamostitches@gmail.com',
-    image: 'https://randomuser.me/api/portraits/men/36.jpg',
+    image: '/images/user.png',
     social: {
       instagram: 'https://www.instagram.com/frankrobert_2/'
     }
@@ -120,7 +118,7 @@ const teamMembers = [
     name: 'Jonathan Henry',
     position: 'Sales Executive',
     email: 'jonathan.dynamostitches@gmail.com',
-    image: 'https://randomuser.me/api/portraits/men/37.jpg',
+    image: '/images/user.png',
     social: {
       instagram: 'https://www.instagram.com/jonathanhenry185/'
     }

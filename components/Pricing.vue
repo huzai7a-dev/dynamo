@@ -25,8 +25,9 @@
                   <span class="leading-relaxed">{{ feature }}</span>
                 </li>
               </ul>
-              <button v-if="item.cta" class="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold shadow hover:bg-primary-dark transition-colors duration-300">
+              <button v-if="item.cta" class="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold shadow hover:bg-primary-dark transition-colors duration-300 flex items-center justify-center">                
                 {{ item.cta }}
+                <ArrowRight class="w-4 h-4 ml-2" />
               </button>
             </div>
           </div>
@@ -45,6 +46,7 @@
 
 <script setup>
 import CustomSwiper from '@/components/CustomSwiper.vue';
+import { ArrowRight } from 'lucide-vue-next'
 
 const pricingPlans = [
   {
@@ -56,7 +58,7 @@ const pricingPlans = [
       'Free Edits and Revisions',
       'Premium Customer Support (24/7)'
     ],
-    cta: 'Get Started'
+    cta: 'Order Now'
   },
   {
     title: 'Vector Artwork',
@@ -67,18 +69,7 @@ const pricingPlans = [
       'Expert review by professional artists',
       'Premium Customer Support (24/7)'
     ],
-    cta: 'Get Started'
-  },
-  {
-    title: 'Logo Design',
-    price: 'Starting at $65 – $1000+',
-    features: [
-      'Premium-quality Design',
-      'Transparent and Fair Pricing',
-      'Fast Turnaround Times',
-      'Premium Customer Support (24/7)'
-    ],
-    cta: 'Get Started'
+    cta: 'Order Now'
   },
   {
     title: 'Line Artwork',
@@ -89,7 +80,18 @@ const pricingPlans = [
       'Streamlined ordering process',
       'Premium Customer Support (24/7)'
     ],
-    cta: 'Get Started'
+    cta: 'Order Now'
+  },
+  {
+    title: 'Logo Design',
+    price: 'Starting at $65 – $1000+',
+    features: [
+      'Premium-quality Design',
+      'Transparent and Fair Pricing',
+      'Fast Turnaround Times',
+      'Premium Customer Support (24/7)'
+    ],
+    cta: 'Order Now'
   },
   {
     title: 'Custom Patches',
@@ -100,8 +102,8 @@ const pricingPlans = [
       'No charge for additional colors',
       'Premium Customer Support (24/7)'
     ],
-    cta: 'Get Started'
-  }
+    cta: 'Order Now'
+  },
 ];
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-white">
     <Banner
-      backgroundImage="/images/vector/Vector-Art-Hero.jpg"
+      backgroundImage="/images/logo-designing/logo-hero.jpeg"
       title="Logo Designing"
       description="Crafting memorable logos and brand identities that leave a lasting impression. Elevate your brand with our creative expertise!"
     />
@@ -17,11 +17,11 @@
         <!-- Main Image -->
         <div class="md:w-1/3 w-full flex justify-center relative">
           <div class="rounded-2xl shadow-2xl overflow-hidden border-4 border-yellow-400 bg-white/60 backdrop-blur-lg">
-            <img src="/images/vector/Vector-Art-front.jpg" alt="Logo Design Example" class="object-cover w-full h-96 md:h-full" />
+            <img src="/images/logo-designing/logo-front.jpg" alt="Logo Design Example" class="object-cover w-full h-96 md:h-full" />
           </div>
         </div>
         <!-- Card Content -->
-        <div class="bg-white/80 backdrop-blur-lg border border-gray-200 shadow-2xl rounded-2xl p-10 md:w-2/3 w-full relative z-10">
+        <div class="bg-white/80 backdrop-blur-lg border border-gray-200 shadow-2xl rounded-2xl px-10 py-6 md:w-2/3 w-full relative z-10">
           <span class="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 shadow">Premium Logo Service</span>
           <p class="text-lg text-gray-700 mb-8">A logo is the face of your identity, and our designers understand its significance. With an arsenal of innovative ideas, they craft logos that encapsulate your essence, leaving a lasting impact.</p>
         </div>
@@ -80,6 +80,8 @@ const galleryImages = [
   '/images/logo-designing/Logo-Designing-5.png',
   '/images/logo-designing/Logo-Designing-6.png',
   '/images/logo-designing/Logo-Designing-7.png',
+  '/images/logo-designing/Logo-Designing-8.jpeg',
+  '/images/logo-designing/Logo-Designing-9.jpeg',
 ]
 
 const features = [
