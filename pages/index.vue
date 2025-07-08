@@ -13,12 +13,16 @@
 </template>
 
 <script setup>
-import WorkingProcess from '~/components/WorkingProcess.vue'
-import OurTeam from '~/components/OurTeam.vue'
-import Pricing from '~/components/Pricing.vue'
-import OurApproach from '~/components/OurApproach.vue'
+import { defineAsyncComponent } from 'vue'
+
+// Lazy load heavy components
+const WorkingProcess = defineAsyncComponent(() => import('~/components/WorkingProcess.vue'))
+const OurTeam = defineAsyncComponent(() => import('~/components/OurTeam.vue'))
+const Pricing = defineAsyncComponent(() => import('~/components/Pricing.vue'))
+const OurApproach = defineAsyncComponent(() => import('~/components/OurApproach.vue'))
+
 // Page meta
-definePageMeta({
-  title: 'Dynamo Stitches - Premium Embroidery Services'
-})
+// useHead({
+//   title: 'Dynamo Stitches - Premium Embroidery Services',
+// })
 </script>

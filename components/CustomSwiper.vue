@@ -57,6 +57,11 @@ const currentSlide = ref(0);
 const visibleSlides = ref(1);
 
 function getSlidesPerView() {
+  // Check if we're in browser environment
+  if (typeof window === 'undefined') {
+    return 1; // Default for SSR
+  }
+  
   const width = window.innerWidth;
   const sorted = Object.keys(props.breakpoints).map(Number).sort((a, b) => a - b);
   let slides = 1;

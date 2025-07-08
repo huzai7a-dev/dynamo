@@ -1,4 +1,7 @@
+
 <template>
+    <NuxtLoadingIndicator/>
+    <Head/>
     <LayoutHeader />
     <slot />
     <LayoutFooter />

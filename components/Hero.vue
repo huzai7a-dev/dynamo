@@ -1,14 +1,15 @@
 <template>
   <section 
     id="home" 
-    class="min-h-screen flex items-center relative overflow-hidden"
+    class="min-h-screen flex items-center relative overflow-hidden md-pt-0 pt-6"
   >
     <!-- Background Image with Gradient Overlay -->
     <div class="absolute inset-0">
-      <img 
+      <NuxtImg
         src="/images/hero-3.jpeg" 
         alt="Background" 
         class="w-full h-full object-cover"
+        fetchpriority="high"
       />
       <div class="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/80 to-secondary/90"></div>
     </div>
@@ -40,6 +41,7 @@
             </NuxtLink>
             <NuxtLink 
               to="/contact"
+              key="/contact"
               class="group border-2 border-white text-white hover:bg-white hover:text-primary px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 inline-flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105"
             >
               <span class="font-bold">Contact Us</span>

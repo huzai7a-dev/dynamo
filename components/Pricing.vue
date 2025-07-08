@@ -2,7 +2,7 @@
   <section class="py-20 bg-gray-50">
     <div class="container mx-auto px-4">
       <!-- Section Header -->
-      <div class="text-center mb-16" data-aos="fade-up" data-aos-duration="1000">
+      <div class="text-center mb-16">
         <h2 class="text-4xl font-extrabold text-primary mb-4 font-display tracking-tight drop-shadow">Our Pricing Plans</h2>
         <p class="text-lg text-gray-600 max-w-2xl mx-auto">
           Choose the perfect plan for your needs. All plans include premium quality and expert craftsmanship.
@@ -27,7 +27,7 @@
               </ul>
               <button v-if="item.cta" class="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold shadow hover:bg-primary-dark transition-colors duration-300 flex items-center justify-center">                
                 {{ item.cta }}
-                <ArrowRight class="w-4 h-4 ml-2" />
+                <Icon name="ArrowRight" class="w-4 h-4 ml-2" />
               </button>
             </div>
           </div>
@@ -35,9 +35,9 @@
       </CustomSwiper>
 
       <!-- Additional Info -->
-      <div class="text-center mt-16" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400">
+      <div class="text-center mt-16">
         <p class="text-gray-600">
-          Need a custom plan? <a href="#" class="text-primary hover:text-primary-dark font-semibold">Contact us</a> for a tailored solution.
+          Need a custom plan? <NuxtLink href="/contact" class="text-primary hover:text-primary-dark font-semibold">Contact us</NuxtLink> for a tailored solution.
         </p>
       </div>
     </div>
@@ -45,8 +45,9 @@
 </template>
 
 <script setup>
-import CustomSwiper from '@/components/CustomSwiper.vue';
-import { ArrowRight } from 'lucide-vue-next'
+import { defineAsyncComponent } from 'vue';
+
+const CustomSwiper = defineAsyncComponent(() => import('@/components/CustomSwiper.vue'));
 
 const pricingPlans = [
   {

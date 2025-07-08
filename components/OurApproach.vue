@@ -5,7 +5,8 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start mb-16">
         <div class="relative group">
           <div class="relative z-10 transform transition-transform duration-300 group-hover:scale-[1.02]">
-            <img 
+            <NuxtImg
+               
               src="/images/about-us.jpeg" 
               alt="About Our Embroidery Business" 
               class="rounded-lg shadow-xl w-full h-[500px] object-cover"

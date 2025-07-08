@@ -5,12 +5,19 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     'nuxt-lucide-icons',
-    'nuxt-aos',
     'nuxt-swiper',
+    '@nuxt/image',
   ],
+  ssr: true,
   vite: {
-    server: {
-      allowedHosts: ['555d-39-35-230-124.ngrok-free.app']
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'lucide-icons': ['lucide-vue-next'],
+          }
+        }
+      }
     }
   },
 })

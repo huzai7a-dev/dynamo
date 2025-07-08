@@ -17,7 +17,7 @@
         <!-- Main Image -->
         <div class="md:w-1/3 w-full flex justify-center relative">
           <div class="rounded-2xl shadow-2xl overflow-hidden border-4 border-yellow-400 bg-white/60 backdrop-blur-lg">
-            <img src="/images/custom-patches/Front.jpg" alt="Custom Patch Example" class="object-cover w-full h-96 md:h-full" />
+            <NuxtImg format="webp" src="/images/custom-patches/Front.jpg" alt="Custom Patch Example" class="object-cover w-full h-96 md:h-full" />
           </div>
         </div>
         <!-- Card Content -->
@@ -36,14 +36,14 @@
         >
           <!-- Image Section -->
           <div class="md:w-1/3 w-full h-44 md:h-auto relative flex-shrink-0">
-            <img :src="feature.bg" class="w-full h-full object-cover rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none" alt="" />
+            <NuxtImg format="webp" :src="feature.bg" class="w-full h-full object-cover rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none" alt="" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
           </div>
           <!-- Text/Icon Section -->
           <div class="flex-1 p-6 flex flex-col justify-center relative z-10 bg-white/70 backdrop-blur-xl rounded-b-2xl md:rounded-bl-none md:rounded-r-2xl">
             <div class="flex items-center gap-3 mb-2">
               <span class="inline-block w-2 h-8 rounded bg-gradient-to-b from-yellow-400 to-yellow-600 mr-2"></span>
-              <component :is="feature.icon" class="text-secondary w-8 h-8 drop-shadow" />
+              <Icon :name="feature.icon" class="text-secondary w-8 h-8 drop-shadow" />
               <h3 class="text-xl font-bold text-primary">{{ feature.title }}</h3>
             </div>
             <p class="text-gray-700">{{ feature.description }}</p>
@@ -70,6 +70,11 @@ import Banner from '@/components/Banner.vue'
 import Gallery from '@/components/Gallery.vue'
 import { Pen, Layers, BadgePercent } from 'lucide-vue-next'
 import { ref } from 'vue'
+import Icon from '~/components/Icon.vue'
+
+useHead({
+  title: 'Custom Patches - Dynamo Stitches',
+})
 
 const showGallery = ref(false)
 const galleryImages = [
@@ -82,27 +87,27 @@ const galleryImages = [
   '/images/custom-patches/Patches-7.jpg',
   '/images/custom-patches/Patches-8.jpg',
   '/images/custom-patches/Patches-9.jpg',
-  '/images/custom-patches/Patches-10.jpg',
+  '/images/custom-patches/Patches-10.jpg'
 ]
 
 const features = [
   {
     title: 'Embroidery Patches',
     description: `Wear your brand with pride. Our embroidered patches are crafted with care, adding a touch of professionalism to your apparel. Add a tactile element to your brand that leaves an unforgettable impression.`,
-    icon: Pen,
-    bg: '/images/custom-patches/bgs/Embroidery Patches.jpg'
+    icon: 'Pen',
+    bg: '/images/custom-patches/bgs/Embroidery-Patches.jpg'
   },
   {
     title: 'Woven Patches',
     description: `Quality that's woven into every thread. For a tactile branding experience, choose our woven patches. These durable patches offer a high-quality, textured look that adds a unique touch to your products.`,
-    icon: Layers,
-    bg: '/images/custom-patches/bgs/Woven Patches.jpg'
+    icon: 'Layers',
+    bg: '/images/custom-patches/bgs/Woven-Patches.jpg'
   },
   {
     title: 'Leather Patches',
     description: `Add a touch of sophistication and durability to your branding with custom leather patches. Our leather patches are stylish and sophisticated, making a lasting impression on your audience.`,
-    icon: BadgePercent,
-    bg: '/images/custom-patches/bgs/Leather Patches.jpg'
+    icon: 'BadgePercent',
+    bg: '/images/custom-patches/bgs/Leather-Patches.jpg'
   }
 ]
 </script>

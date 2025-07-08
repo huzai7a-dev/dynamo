@@ -25,26 +25,26 @@
           <div class="bg-white border border-primary/10 rounded-2xl flex flex-col min-h-[250px] py-6 px-4 items-center justify-between transition-all duration-300 hover:shadow-2xl">
             <div class="flex flex-col items-center w-full">
               <div class="w-24 h-24 rounded-full bg-gradient-to-br from-primary/10 to-blue-100 border-4 border-primary/20 mb-4 flex items-center justify-center overflow-hidden">
-                <img :src="item.image" :alt="item.name" class="w-full h-full object-cover" />
+                <NuxtImg format="webp" :src="item.image" :alt="item.name" class="w-full h-full object-cover" loading="lazy" />
               </div>
               <h3 class="text-lg font-bold text-primary mb-1">{{ item.name }}</h3>
               <p class="text-secondary text-xs font-medium mb-2">{{ item.position }}</p>
             </div>
             <div class="flex justify-center gap-3 mt-4 w-full">
               <a v-if="item.social?.instagram" :href="item.social.instagram" target="_blank" class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-pink-500 hover:bg-pink-50 transition-colors">
-                <Instagram class="w-5 h-5" />
+                <Icon name="Instagram" class="w-5 h-5" />
               </a>
               <a v-if="item.social?.facebook" :href="item.social.facebook" target="_blank" class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-blue-600 hover:bg-blue-50 transition-colors">
-                <Facebook class="w-5 h-5" />
+                <Icon name="Facebook" class="w-5 h-5" />
               </a>
               <a v-if="item.social?.linkedin" :href="item.social.linkedin" target="_blank" class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-secondary hover:bg-secondary/10 transition-colors">
-                <Linkedin class="w-5 h-5" />
+                <Icon name="Linkedin" class="w-5 h-5" />
               </a>
               <a v-if="item.social?.x" :href="item.social.x" target="_blank" class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-black hover:bg-gray-100 transition-colors">
-                <X class="w-5 h-5" />
+                <Icon name="X" class="w-5 h-5" />
               </a>
               <a v-if="item.email" :href="`mailto:${item.email}`" class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-primary hover:bg-primary/10 transition-colors">
-                <Mail class="w-5 h-5" />
+                <Icon name="Mail" class="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -56,9 +56,10 @@
 </template>
 
 <script setup>
-import CustomSwiper from '@/components/CustomSwiper.vue';
-import ContactBanner from './ContactBanner.vue';
-import { Instagram, Facebook, Linkedin, X, Mail } from 'lucide-vue-next';
+import { defineAsyncComponent } from 'vue';
+const ContactBanner = defineAsyncComponent(() => import('./ContactBanner.vue'));
+
+const CustomSwiper = defineAsyncComponent(() => import('@/components/CustomSwiper.vue'));
 
 const teamMembers = [
   {

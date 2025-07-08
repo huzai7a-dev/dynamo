@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue'
-import { Mail, Phone, Clock } from 'lucide-vue-next'
 
 const form = ref({
   firstName: '',
@@ -62,9 +61,9 @@ const handleSubmit = async () => {
   }
 }
 
-definePageMeta({
-  title: 'Contact Us - Dynamo Stitches'
-})
+// useHead({
+//   title: 'Contact Us - Dynamo Stitches',
+// })
 </script>
 
 <template>
@@ -89,59 +88,51 @@ definePageMeta({
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
         <!-- Contact Information -->
-        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
-          <h3 class="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
-            <span class="w-8 h-8 bg-teal-gradient rounded-full flex items-center justify-center mr-3">
-              <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-              </svg>
+        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 border-2 border-black-100 w-full h-full flex flex-col">
+          <div class="flex items-center mb-8">
+            <span class="w-10 h-10 bg-teal-700 rounded-full flex items-center justify-center mr-4">
+              <Icon name="Mail" class="h-6 w-6 text-white" />
             </span>
-            Contact Information
-          </h3>
-          <div class="space-y-6">
-
-            <div class="flex items-start space-x-4 group hover:bg-gray-50 p-3 rounded-lg transition-colors duration-200">
-              <div class="flex-shrink-0">
-                <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center group-hover:bg-pink-200 transition-colors duration-200">
-                  
-                  <Mail class="h-5 w-5 text-pink-600" />
-                </div>
-              </div>
-              <div>
-                <h4 class="text-lg font-medium text-gray-900">Email</h4>
-                <p class="mt-1 text-gray-600">order@dynamostitches.com</p>
-              </div>
-            </div>
-
-            <div class="flex items-start space-x-4 group hover:bg-gray-50 p-3 rounded-lg transition-colors duration-200">
-              <div class="flex-shrink-0">
-                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center group-hover:bg-purple-200 transition-colors duration-200">
-                  <Phone class="h-5 w-5 text-purple-600" />
-                </div>
-              </div>
-              <div>
-                <h4 class="text-lg font-medium text-gray-900">Phone</h4>
-                <p class="mt-1 text-gray-600">+1 (303)-800-6078</p>
-              </div>
-            </div>
+            <h3 class="text-2xl font-bold text-gray-900">Contact Information</h3>
           </div>
 
-          <div class="mt-8 pt-8 border-t border-gray-200">
-            <h4 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
-              <Clock class="h-5 w-5 text-purple-600 mr-2" />
-              Working Hours
-            </h4>
-            <p class="text-gray-600">Monday - Friday, 09:00am - 05:00pm</p>
+          <div class="space-y-7 flex-1">
+            <div class="flex items-start gap-4">
+              <span class="w-10 h-10 rounded-full flex items-center justify-center bg-pink-100">
+                <Icon name="Mail" class="h-6 w-6 text-pink-500" />
+              </span>
+              <div>
+                <div class="font-semibold text-lg text-gray-900">Email</div>
+                <div class="text-gray-500">order@dynamostitches.com</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <span class="w-10 h-10 rounded-full flex items-center justify-center bg-purple-100">
+                <Icon name="Phone" class="h-6 w-6 text-purple-500" />
+              </span>
+              <div>
+                <div class="font-semibold text-lg text-gray-900">Phone</div>
+                <div class="text-gray-500">+1 (303)-800-6078</div>
+              </div>
+            </div>
+            <div class="border-t border-gray-200 my-4"></div>
+            <div class="flex items-start gap-4">
+              <span class="w-10 h-10 rounded-full flex items-center justify-center bg-indigo-100">
+                <Icon name="Clock" class="h-6 w-6 text-indigo-500" />
+              </span>
+              <div>
+                <div class="font-semibold text-lg text-gray-900">Working Hours</div>
+                <div class="text-gray-500">Monday - Friday, 09:00am - 05:00pm</div>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Contact Form -->
-        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
-          <h3 class="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
-            <span class="w-8 h-8 bg-teal-gradient rounded-full flex items-center justify-center mr-3">
-              <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-              </svg>
+        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 border-2 border-black-100 w-full h-full flex flex-col">
+          <h3 class="text-2xl font-bold text-gray-900 mb-2 flex items-center">
+            <span class="w-10 h-10 bg-teal-700 rounded-full flex items-center justify-center mr-4">
+              <Icon name="MessageSquare" class="h-6 w-6 text-white" />
             </span>
             Get In Touch
           </h3>

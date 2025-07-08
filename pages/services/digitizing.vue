@@ -17,7 +17,7 @@
         <!-- Main Image -->
         <div class="md:w-1/3 w-full flex justify-center relative">
           <div class="rounded-2xl shadow-2xl overflow-hidden border-4 border-yellow-400 bg-white/60 backdrop-blur-lg">
-            <img src="/images/digitizing/Digitizing-front.jpg" alt="Digitizing Example" class="object-cover w-full h-96 md:h-full" />
+            <NuxtImg format="webp" src="/images/digitizing/Digitizing-front.jpg" alt="Digitizing Example" class="object-cover w-full h-96 md:h-full" />
           </div>
         </div>
         <!-- Card Content -->
@@ -30,7 +30,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 mb-16">
         <div v-for="feature in features" :key="feature.title" class="bg-white/90 border border-gray-100 shadow-lg rounded-xl p-6 flex flex-col gap-3 hover:shadow-2xl transition-shadow">
           <div class="flex items-center gap-3 mb-2">
-            <component :is="feature.icon" class="text-secondary w-8 h-8" />
+            <Icon :name="feature.icon" class="text-secondary w-8 h-8" />
             <h3 class="text-xl font-bold text-primary">{{ feature.title }}</h3>
           </div>
           <p class="text-gray-700">{{ feature.description }}</p>
@@ -53,10 +53,26 @@
 </template>
 
 <script setup>
-import Banner from '@/components/Banner.vue'
-import Gallery from '@/components/Gallery.vue'
-import { Shirt, Move3d, Layers, Badge, PenTool, Image, Waves, ShoppingBag } from 'lucide-vue-next'
-import { ref } from 'vue'
+import { defineAsyncComponent, ref } from 'vue'
+import img1 from '~/public/images/digitizing/Digitizing-1.jpeg'
+import img2 from '~/public/images/digitizing/Digitizing-2.jpeg'
+import img3 from '~/public/images/digitizing/Digitizing-3.jpeg'
+import img4 from '~/public/images/digitizing/Digitizing-4.jpeg'
+import img5 from '~/public/images/digitizing/Digitizing-5.jpeg'
+import img6 from '~/public/images/digitizing/Digitizing-6.jpeg'
+import img7 from '~/public/images/digitizing/Digitizing-7.jpeg'
+import img8 from '~/public/images/digitizing/Digitizing-8.jpeg'
+import img9 from '~/public/images/digitizing/Digitizing-9.jpeg'
+import img10 from '~/public/images/digitizing/Digitizing-10.jpeg'
+import img11 from '~/public/images/digitizing/Digitizing-11.jpeg'
+import img12 from '~/public/images/digitizing/Digitizing-12.jpeg'
+
+// useHead({
+//   title: 'Digitizing - Dynamo Stitches',
+// })
+
+const Banner = defineAsyncComponent(() => import('@/components/Banner.vue'))
+const Gallery = defineAsyncComponent(() => import('@/components/Gallery.vue'))
 
 const showGallery = ref(false)
 const galleryImages = [
@@ -71,49 +87,44 @@ const galleryImages = [
   '/images/digitizing/Digitizing-9.jpeg',
   '/images/digitizing/Digitizing-10.jpeg',
   '/images/digitizing/Digitizing-11.jpeg',
-  '/images/digitizing/Digitizing-12.jpeg',
+  '/images/digitizing/Digitizing-12.jpeg'
 ]
 
 const features = [
   {
-    title: 'Left Chest / Hat Digitizing',
-    description: 'Immerse yourself in the world of finely crafted digitized designs, meticulously tailored for the left chest and hats. With a quick turnaround, our professional designers bestow elegance, forging connections between style and substance.',
-    icon: Shirt
+    title: 'Cap Digitizing',
+    description: 'Our cap digitizing service transforms your designs into embroidery-ready files that perfectly adapt to the unique contours and challenges of cap embroidery.',
+    icon: 'Shirt'
   },
   {
-    title: 'Puff Digitizing',
-    description: 'Elevate your designs with a 3D effect that pops. Creating dimensionality is an art, and our designers are masters of it. They expertly enhance designs with puff digitizing, adding depth and allure to your embroidered creations.',
-    icon: Move3d
+    title: '3D Puff Digitizing',
+    description: 'Elevate your designs with our 3D puff digitizing service. We create raised, textured embroidery that adds depth and dimension to your garments.',
+    icon: 'Move3d'
   },
   {
     title: 'Appliqué Digitizing',
-    description: 'The art of appliqué is taken to new heights by our designers who seamlessly merge fabrics and thread, resulting in designs that are a fusion of elegance and innovation. With a deep understanding of fabric interaction, they create applique effects that catch the eye.',
-    icon: Layers
+    description: 'Our appliqué digitizing combines fabric pieces with embroidery to create stunning, multi-dimensional designs that stand out.',
+    icon: 'Layers'
   },
   {
     title: 'Patch Digitizing',
-    description: 'Patches carry stories, and our designers ensure those stories are told flawlessly through their digitization skills. From intricate logos to meaningful symbols, our designers excel in translating every detail into dynamic patches.',
-    icon: Badge
+    description: 'Transform your artwork into embroidered patches with our specialized patch digitizing service.',
+    icon: 'Badge'
   },
   {
-    title: 'Vector Artwork',
-    description: 'Breathe life into your visions through vector artwork, producing scalable designs that retain their beauty and clarity across all platforms. Transform your concepts into crisp, versatile vector designs, amplifying your artistic visions with our designers\' mastery over lines and curves.',
-    icon: PenTool
-  },
-  {
-    title: 'Towel Digitizing',
-    description: 'Towels transform into canvases of luxury under the skilled hands of our designers. With a deep understanding of textures and materials, we turn your visions into towel masterpieces that are not only visually stunning but also tactilely engaging.',
-    icon: Waves
+    title: 'Logo Digitizing',
+    description: 'Convert your logos into precise embroidery files that maintain clarity and detail at any size.',
+    icon: 'PenTool'
   },
   {
     title: 'Sleeves Digitizing',
     description: 'The curve of a sleeve presents a unique canvas. Our designers skillfully adapt your designs to the constraints of sleeve contours, resulting in a harmonious blend of aesthetics and functionality.',
-    icon: Image
+    icon: 'Image'
   },
   {
     title: 'Bag Digitizing',
     description: 'Our designers\' expertise shines through in every bag digitization, as they masterfully adapt designs to suit the unique shape and characteristics of each bag, leaving no detail overlooked.',
-    icon: ShoppingBag
+    icon: 'ShoppingBag'
   }
 ]
 </script>

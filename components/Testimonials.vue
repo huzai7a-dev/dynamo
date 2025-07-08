@@ -9,13 +9,14 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div v-for="(testimonial, index) in testimonials" :key="index" 
              class="bg-gradient-to-br from-white to-gray-50
-                    border border-gray-100
+                    border border-primary-100
                     p-8 rounded-2xl
                     transition-all duration-500 ease-in-out
                     hover:shadow-2xl hover:-translate-y-2
                     hover:bg-gradient-to-br hover:from-primary/5 hover:to-primary/10
                     group cursor-pointer
-                    relative overflow-hidden">
+                    relative overflow-hidden
+                    flex flex-col h-full min-h-[420px]">
           <div class="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/0 
                       group-hover:from-primary/5 group-hover:to-primary/10 
                       transition-all duration-500"></div>
@@ -42,12 +43,13 @@
             "{{ testimonial.text }}"
           </p>
 
-          <!-- Author Info -->
-          <div class="flex items-center relative z-10">
-            <img :src="testimonial.avatar" :alt="testimonial.name" 
+          <!-- Author Info at Bottom -->
+          <div class="flex items-center relative z-10 mt-auto pt-4">
+            <NuxtImg format="webp" :src="testimonial.avatar" :alt="testimonial.name" 
                  class="w-14 h-14 rounded-full mr-4 border-2 border-primary/20
                         transition-transform duration-300
-                        group-hover:scale-110 group-hover:border-primary/40">
+                        group-hover:scale-110 group-hover:border-primary/40"
+                 loading="lazy"/>
             <div>
               <p class="font-semibold text-lg text-primary group-hover:text-primary/90 transition-colors duration-300">
                 {{ testimonial.name }}
@@ -66,22 +68,22 @@
 <script setup>
 const testimonials = [
   {
-    text: "Dynamo Stitches transformed our company uniforms with exceptional quality embroidery. The attention to detail and professional service exceeded our expectations.",
-    name: "Sarah Johnson",
-    position: "HR Manager, Tech Corp",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    text: "So, I was in a pinch needing some custom embroidery for my Etsy shop, and Dynamo Stitches came through big time. I sent them this super intricate design, and they nailed it. Like, the detail was spot-on, and they got it done faster than I expected. They really listened to what I wanted. Honestly, if you need killer embroidery digitizing, these guys are where it's at.",
+    name: "Jordan Rivera",
+    position: "Etsy Shop Owner",
+    avatar: "/images/user.png"
   },
   {
-    text: "Outstanding work on our team jerseys! The embroidery quality is top-notch and the turnaround time was incredibly fast. Highly recommended!",
-    name: "Mike Chen",
-    position: "Coach, City Basketball Team",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=100&h=100&auto=format&fit=crop&crop=face"
+    text: "I had this last-minute project and desperately needed some clean vector art. Dynamo Stitches brought my super rough ideas to life better than I imagined. They even tweaked the design based on my feedback without any hassle. And the price is totally reasonable. I'll definitely be back for more.",
+    name: "Riley Greene",
+    position: "Designer",
+    avatar: "/images/user.png"
   },
   {
-    text: "Professional service from start to finish. They helped digitize our logo and the embroidered polo shirts look fantastic. Will definitely use them again.",
-    name: "Emily Rodriguez",
-    position: "Marketing Director, Local Business",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=100&h=100&auto=format&fit=crop&crop=face"
+    text: "I'm always very satisfied with your work! You're one of the best digitizers. You're very friendly, fast, and deliver high-quality results. I'll always come back to you for digitization needs.",
+    name: "Celine Radtke",
+    position: "Embroidery Business Owner",
+    avatar: "/images/user.png"
   }
 ]
 </script>

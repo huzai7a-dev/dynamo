@@ -21,19 +21,21 @@
           <div class="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/0 
                       group-hover:from-primary/5 group-hover:to-primary/10 
                       transition-all duration-500"></div>
-          <component :is="service.icon" 
-                    class="w-16 h-16 text-primary mb-6 
-                           transition-all duration-500 ease-in-out
-                           group-hover:scale-110 group-hover:text-primary/90
-                           relative z-10" />
-          <h3 class="text-2xl font-bold text-secondary mb-4 
-                     transition-colors duration-300
-                     group-hover:text-primary
-                     relative z-10">{{ service.title }}</h3>
-          <p class="text-secondary/80 max-w-xs 
-                     transition-colors duration-300
-                     group-hover:text-secondary/90
-                     relative z-10">{{ service.description }}</p>
+          <div class="text-center">
+            <Icon :name="service.icon" 
+                  class="w-16 h-16 text-primary mb-6 
+                         transition-all duration-500 ease-in-out
+                         group-hover:scale-110 group-hover:text-primary/90
+                         relative z-10" />
+            <h3 class="text-2xl font-bold text-secondary mb-4 
+                       transition-colors duration-300
+                       group-hover:text-primary
+                       relative z-10">{{ service.title }}</h3>
+            <p class="text-secondary/80 max-w-xs 
+                       transition-colors duration-300
+                       group-hover:text-secondary/90
+                       relative z-10">{{ service.description }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -41,31 +43,29 @@
 </template>
 
 <script setup>
-import { Anchor, PenTool, Palette, BadgePercent, PenLine } from 'lucide-vue-next'
-
 const services = [
   {
-    icon: Anchor,
+    icon: 'Anchor',
     title: 'Embroidery digitizing',
     description: 'We have designers with nearly years of expertise in this industry who understand the depth of the design and intricacy of the LOGOs.'
   },
   {
-    icon: PenTool,
+    icon: 'PenTool',
     title: 'Vector Artwork',
     description: 'We provide a variety of services, including screen print art. We will always be on your side, no matter how intricate the design or how rough the image is.'
   },
   {
-    icon: Palette,
+    icon: 'Palette',
     title: 'Logo Designing',
     description: 'Trust the experts to create a logo that perfectly represents your business and connects with your target audience.'
   },
   {
-    icon: BadgePercent,
+    icon: 'BadgePercent',
     title: 'Custom Patches',
     description: 'We specialize in a variety of custom patches. Our team is equipped with the knowledge and skills necessary to bring your vision to life.'
   },
   {
-    icon: PenLine,
+    icon: 'PenLine',
     title: 'Line Artwork',
     description: 'In our Line Art Services, precision meets creativity. Our trained technicians will provide you with excellent outcomes.',
     colStart: 'md:col-start-2'

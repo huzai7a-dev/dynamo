@@ -5,7 +5,7 @@
       <h2 v-if="title" class="text-2xl font-bold text-primary mb-6 text-center">{{ title }}</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <div v-for="(img, idx) in images" :key="idx" class="group relative cursor-pointer">
-          <img :src="img" @click="openImage(idx)" class="rounded-lg shadow-lg object-cover w-full h-48 transition-transform group-hover:scale-105" />
+          <img :src="img" @click="openImage(idx)" class="rounded-lg shadow-lg object-cover w-full md:h-48 h-auto transition-transform group-hover:scale-105" loading="lazy" />
         </div>
       </div>
       <div v-if="selectedIndex !== null" class="fixed inset-0 z-60 flex items-center justify-center bg-black/80">
@@ -17,7 +17,7 @@
         >
           &#8592;
         </button>
-        <img :src="images[selectedIndex]" class="max-h-[80vh] max-w-full rounded-xl shadow-2xl border-4 border-white" />
+        <img :src="images[selectedIndex]" class="max-h-[80vh] max-w-full rounded-xl shadow-2xl border-4 border-white" loading="lazy" />
         <button
           @click="nextImage"
           :disabled="selectedIndex === images.length - 1"

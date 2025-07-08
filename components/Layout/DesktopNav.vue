@@ -15,7 +15,7 @@
           </NuxtLink>
         </div>
       </div>
-      <NuxtLink v-else :to="item.url" :class="[navLinkClass, { 'text-primary-light font-semibold': $route.path === item.url }]">{{ item.label }}</NuxtLink>
+      <NuxtLink v-else :key="item.url" :to="item.url" :class="[navLinkClass, { 'text-primary-light font-semibold': $route.path === item.url }]">{{ item.label }}</NuxtLink>
     </template>
   </nav>
 </template>

@@ -10,6 +10,36 @@ export default {
         './plugins/**/*.{js,ts}',
       ],
 	prefix: "",
+	// Enable JIT mode for better performance
+	mode: 'jit',
+	// Safelist critical classes that might be dynamically generated
+	safelist: [
+		'bg-primary',
+		'text-primary',
+		'bg-secondary',
+		'text-secondary',
+		'text-white',
+		'bg-white',
+		'text-black',
+		'bg-black',
+		'hidden',
+		'block',
+		'flex',
+		'grid',
+		'container',
+		'mx-auto',
+		'px-4',
+		'py-16',
+		'text-center',
+		'font-bold',
+		'text-4xl',
+		'text-2xl',
+		'text-xl',
+		'text-lg',
+		'text-base',
+		'text-sm',
+		'text-xs'
+	],
 	theme: {
 		container: {
 			center: true,
@@ -126,7 +156,7 @@ export default {
 				'float': 'float 6s ease-in-out infinite'
 			},
 			backgroundImage: {
-				'contact-banner': "url('/images/contact-banner.webp')",
+				'contact-banner': "url('/images/contact-banner.jpeg')",
 				'teal-gradient': 'linear-gradient(to right, #008080, #20b2aa)',
 				'teal-white': 'linear-gradient(to right, #008080, #ffffff)'
 			}
