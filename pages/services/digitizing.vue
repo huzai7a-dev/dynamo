@@ -16,8 +16,13 @@
       <div class="relative flex flex-col md:flex-row items-center gap-12 mb-16">
         <!-- Main Image -->
         <div class="md:w-1/3 w-full flex justify-center relative">
-          <div class="rounded-2xl shadow-2xl overflow-hidden border-4 border-yellow-400 bg-white/60 backdrop-blur-lg">
-            <NuxtImg format="webp" src="/images/digitizing/Digitizing-front.jpg" alt="Digitizing Example" class="object-cover w-full h-96 md:h-full" />
+          <div class="rounded-2xl shadow-2xl overflow-hidden border-4 border-yellow-400 bg-white/60 backdrop-blur-lg flex items-center justify-center w-80 h-80">
+            <NuxtImg
+              format="webp"
+              src="/images/digitizing/Digitizing-front.jpg"
+              alt="Digitizing Example"
+              class="object-cover w-full h-full max-w-full max-h-full rotate-90"
+            />
           </div>
         </div>
         <!-- Card Content -->
@@ -54,22 +59,20 @@
 
 <script setup>
 import { defineAsyncComponent, ref } from 'vue'
-import img1 from '~/public/images/digitizing/Digitizing-1.jpeg'
-import img2 from '~/public/images/digitizing/Digitizing-2.jpeg'
-import img3 from '~/public/images/digitizing/Digitizing-3.jpeg'
-import img4 from '~/public/images/digitizing/Digitizing-4.jpeg'
-import img5 from '~/public/images/digitizing/Digitizing-5.jpeg'
-import img6 from '~/public/images/digitizing/Digitizing-6.jpeg'
-import img7 from '~/public/images/digitizing/Digitizing-7.jpeg'
-import img8 from '~/public/images/digitizing/Digitizing-8.jpeg'
-import img9 from '~/public/images/digitizing/Digitizing-9.jpeg'
-import img10 from '~/public/images/digitizing/Digitizing-10.jpeg'
-import img11 from '~/public/images/digitizing/Digitizing-11.jpeg'
-import img12 from '~/public/images/digitizing/Digitizing-12.jpeg'
 
-// useHead({
-//   title: 'Digitizing - Dynamo Stitches',
-// })
+
+useHead({
+  title: 'Digitizing - Dynamo Stitches',
+  meta: [
+    { name: 'description', content: 'Professional embroidery digitizing services for caps, patches, logos, and more. Dynamo Stitches delivers expert digitizing with fast turnaround and creative solutions.' },
+    { name: 'keywords', content: 'embroidery digitizing, cap digitizing, patch digitizing, logo digitizing, Dynamo Stitches, digitizing services, embroidery files' },
+    { property: 'og:title', content: 'Digitizing - Dynamo Stitches' },
+    { property: 'og:description', content: 'Get expert embroidery digitizing for your brand or project. Dynamo Stitches offers premium digitizing services for caps, patches, and more.' },
+    { property: 'og:image', content: '/images/digitizing/Digitizing-hero.jpg' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: 'https://dynamostitches.com/services/digitizing' }
+  ]
+})
 
 const Banner = defineAsyncComponent(() => import('@/components/Banner.vue'))
 const Gallery = defineAsyncComponent(() => import('@/components/Gallery.vue'))

@@ -89,7 +89,7 @@ const pricingPlans = [
     features: [
       'Premium-quality Design',
       'Transparent and Fair Pricing',
-      'Fast Turnaround Times',
+      'Fast Turnaround Time',
       'Premium Customer Support (24/7)'
     ],
     cta: 'Order Now'

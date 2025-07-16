@@ -74,6 +74,15 @@ import Icon from '~/components/Icon.vue'
 
 useHead({
   title: 'Custom Patches - Dynamo Stitches',
+  meta: [
+    { name: 'description', content: 'Order high-quality custom patches from Dynamo Stitches. Durable, expertly crafted patches for brands, teams, and personal projects. Fast turnaround and premium service.' },
+    { name: 'keywords', content: 'custom patches, embroidery patches, woven patches, leather patches, Dynamo Stitches, patch design, premium patches, custom embroidery' },
+    { property: 'og:title', content: 'Custom Patches - Dynamo Stitches' },
+    { property: 'og:description', content: 'Elevate your brand or style with custom patches from Dynamo Stitches. Explore our premium, durable, and expertly crafted patch services.' },
+    { property: 'og:image', content: '/images/custom-patches/Hero.webp' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: 'https://dynamostitches.com/services/custom-patches' }
+  ]
 })
 
 const showGallery = ref(false)
@@ -108,6 +117,12 @@ const features = [
     description: `Add a touch of sophistication and durability to your branding with custom leather patches. Our leather patches are stylish and sophisticated, making a lasting impression on your audience.`,
     icon: 'BadgePercent',
     bg: '/images/custom-patches/bgs/Leather-Patches.jpg'
+  },
+  {
+    title: 'Chenille Patches',
+    description: "We specialize in high-quality chenille patch services, perfect for varsity jackets, uniforms, and custom apparel. Our patches are crafted with precision, durability, and vibrant colors to make your designs stand out. Whether you need classic lettering or custom shapes, we've got you covered.",
+    icon: 'Spool',
+    bg: '/images/custom-patches/bgs/Chenille-Patches.webp'
   }
 ]
 </script>

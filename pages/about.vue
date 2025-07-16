@@ -92,7 +92,16 @@ import { ref } from 'vue'
 
 const showMore = ref(false)
 
-// useHead({
-//   title: 'About Us - Dynamo Stitches',
-// })
+useHead({
+  title: 'About Us - Dynamo Stitches',
+  meta: [
+    { name: 'description', content: 'Learn about Dynamo Stitches, a leader in embroidery digitizing, vector art, and creative design. Discover our story, mission, and commitment to transforming your vision into reality with expert craftsmanship and innovative technology.' },
+    { name: 'keywords', content: 'About Dynamo Stitches, embroidery digitizing, vector art, creative design, our story, our mission, embroidery company, digitizing services, vectorizing, custom embroidery, design innovation' },
+    { property: 'og:title', content: 'About Us - Dynamo Stitches' },
+    { property: 'og:description', content: 'Discover the story and mission of Dynamo Stitches. We blend creativity, technology, and expert craftsmanship to deliver outstanding embroidery and design services.' },
+    { property: 'og:image', content: '/images/hero-3.jpeg' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: 'https://dynamostitches.com/about' }
+  ]
+})
 </script>

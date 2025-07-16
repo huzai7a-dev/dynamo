@@ -61,9 +61,18 @@ const handleSubmit = async () => {
   }
 }
 
-// useHead({
-//   title: 'Contact Us - Dynamo Stitches',
-// })
+useHead({
+  title: 'Contact Us - Dynamo Stitches',
+  meta: [
+    { name: 'description', content: 'Contact Dynamo Stitches for embroidery digitizing, vector artwork, logo design, and custom patch services. Let’s collaborate and bring your creative ideas to life.' },
+    { name: 'keywords', content: 'contact Dynamo Stitches, embroidery digitizing, vector artwork, logo design, custom patches, creative collaboration, embroidery support' },
+    { property: 'og:title', content: 'Contact Us - Dynamo Stitches' },
+    { property: 'og:description', content: 'Get in touch with Dynamo Stitches for expert embroidery, digitizing, and design services. We’re here to help you create something extraordinary.' },
+    { property: 'og:image', content: '/images/contact-banner.jpeg' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: 'https://dynamostitches.com/contact' }
+  ]
+})
 </script>
 
 <template>

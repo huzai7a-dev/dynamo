@@ -7,7 +7,21 @@ export default defineNuxtConfig({
     'nuxt-lucide-icons',
     'nuxt-swiper',
     '@nuxt/image',
+    '@nuxtjs/sitemap',
+    ['@nuxtjs/robots', {
+      rules: {
+          UserAgent: '*',
+          Allow: ['/'],
+          Disallow: []
+      },
+      sitemap: 'https://dynamostitches.com/sitemap.xml'
+    }]
   ],
+  site: {
+    url:'https://dynamostitches.com',
+    autoLastmod: true,
+    include: ['/**'],   
+  }, 
   ssr: true,
   vite: {
     build: {

@@ -19,7 +19,7 @@
         <span class="text-gray-500">•</span>
         <span class="flex items-center gap-2">
           <Icon name="Clock" size="16" />
-          <span>Mon-Fri: 9AM-6PM</span>
+          <span>Mon-Fri: 9:00AM-6:00PM</span>
         </span>
       </div>
       <div class="flex items-center gap-2 sm:gap-4 mt-2 xl:mt-0">

@@ -73,6 +73,14 @@ const iconMap = {
   Menu: ()=> import('lucide-vue-next').then(m => m.Menu),
   Shirt: ()=> import('lucide-vue-next').then(m => m.Shirt),
   Pen: ()=> import('lucide-vue-next').then(m => m.Pen),
+  Building: ()=> import('lucide-vue-next').then(m => m.Building),
+  Type: ()=> import('lucide-vue-next').then(m => m.Type),
+  Zap: ()=> import('lucide-vue-next').then(m => m.Zap),
+  Slash: ()=> import('lucide-vue-next').then(m => m.Slash),
+  Box: ()=> import('lucide-vue-next').then(m => m.Box),
+  PawPrint: ()=> import('lucide-vue-next').then(m => m.PawPrint),
+  Heart: ()=> import('lucide-vue-next').then(m => m.Heart),
+  Spool: ()=> import('lucide-vue-next').then(m => m.Spool),
 }
 
 const iconComponent = computed(() => {

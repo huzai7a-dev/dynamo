@@ -252,7 +252,16 @@ import { defineAsyncComponent, ref } from 'vue'
 const Banner = defineAsyncComponent(() => import('@/components/Banner.vue'))
 const activeTab = ref('privacy')
 
-// useHead({
-//   title: 'Privacy Policy & Terms - Dynamo Stitches',
-// })
+useHead({
+  title: 'Privacy Policy & Terms - Dynamo Stitches',
+  meta: [
+    { name: 'description', content: 'Read the privacy policy and terms of service for Dynamo Stitches. Learn how we protect your information and the terms that govern our embroidery and design services.' },
+    { name: 'keywords', content: 'privacy policy, terms of service, Dynamo Stitches, data protection, user agreement, embroidery services, design services' },
+    { property: 'og:title', content: 'Privacy Policy & Terms - Dynamo Stitches' },
+    { property: 'og:description', content: 'Understand how Dynamo Stitches protects your privacy and the terms that apply to our embroidery and design services.' },
+    { property: 'og:image', content: '/images/privacy-policy.jpg' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: 'https://dynamostitches.com/privacy-terms' }
+  ]
+})
 </script> 

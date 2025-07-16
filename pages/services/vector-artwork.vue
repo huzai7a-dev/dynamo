@@ -73,9 +73,18 @@ import { Pen, Brush, Palette, CircleDot, PenTool, PaintBucket } from 'lucide-vue
 import { ref } from 'vue'
 import Icon from '~/components/Icon.vue'
 
-// useHead({
-//   title: 'Vector Artwork - Dynamo Stitches',
-// })
+useHead({
+  title: 'Vector Artwork - Dynamo Stitches',
+  meta: [
+    { name: 'description', content: 'Professional vector artwork services for logos, illustrations, graphics, and more. Dynamo Stitches makes your designs scalable, crisp, and stunning.' },
+    { name: 'keywords', content: 'vector artwork, vector art, scalable design, Dynamo Stitches, illustration, graphic design, CMYK, color separation, halftones' },
+    { property: 'og:title', content: 'Vector Artwork - Dynamo Stitches' },
+    { property: 'og:description', content: 'Bring your vision to life with crisp, scalable vector artwork from Dynamo Stitches. Perfect for logos, graphics, and illustrations.' },
+    { property: 'og:image', content: '/images/vector/Vector-Art-Hero.jpg' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: 'https://dynamostitches.com/services/vector-artwork' }
+  ]
+})
 
 const showGallery = ref(false)
 const galleryImages = [

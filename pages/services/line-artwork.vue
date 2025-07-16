@@ -71,9 +71,18 @@ import Gallery from '@/components/Gallery.vue'
 import { Pencil, PenTool, Brush, Ruler, PenLine, FileSignature } from 'lucide-vue-next'
 import { ref } from 'vue'
 
-// useHead({
-//   title: 'Line Artwork - Dynamo Stitches',
-// })
+useHead({
+  title: 'Line Artwork - Dynamo Stitches',
+  meta: [
+    { name: 'description', content: 'Minimalist, expressive, and precise line artwork services for brands, products, and personal projects. Dynamo Stitches delivers creative and custom line art.' },
+    { name: 'keywords', content: 'line artwork, minimalist art, custom line art, Dynamo Stitches, line drawing, technical illustration, pen and ink, sketch art' },
+    { property: 'og:title', content: 'Line Artwork - Dynamo Stitches' },
+    { property: 'og:description', content: 'Discover the beauty of simplicity with Dynamo Stitches line artwork services. Minimalist, expressive, and custom line art for every need.' },
+    { property: 'og:image', content: '/images/line-artwork/line-artwork-hero.png' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: 'https://dynamostitches.com/services/line-artwork' }
+  ]
+})
 
 const showGallery = ref(false)
 const galleryImages = [
