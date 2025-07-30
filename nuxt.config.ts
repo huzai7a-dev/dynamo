@@ -2,6 +2,9 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
+  runtimeConfig: {
+    databaseUrl: process.env.DATABASE_URL,
+  },
   modules: [
     '@nuxtjs/tailwindcss',
     'nuxt-lucide-icons',

@@ -18,6 +18,15 @@
 
       <DesktopNav :nav-items="navItems" />
 
+      <div>
+        <NuxtLink to="/login" class="btn btn-primary">
+          <UiButton rounded size="lg">Login</UiButton>
+        </NuxtLink>
+        <NuxtLink to="/register" class="btn btn-primary ml-4">
+          <UiButton rounded size="lg">Register</UiButton>
+        </NuxtLink>
+      </div>
+
       <!-- Mobile Toggle -->
       <button @click="isMenuOpen = !isMenuOpen" class="md:hidden text-white">
         <Icon name="Menu" size="24" />
@@ -30,6 +39,7 @@
 </template>
 
 <script setup>
+import { UiButton } from '#components'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { defineAsyncComponent } from 'vue'
 
