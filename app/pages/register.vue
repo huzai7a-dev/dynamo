@@ -185,8 +185,9 @@
 
 <script setup lang="ts">
 import { useForm } from "vee-validate";
-import { z } from "zod";
 import { toTypedSchema } from "@vee-validate/zod";
+import { RegisterSchema } from "~~/shared/validationSchema";
+import { useToast } from "~/composables/useToast";
 
 const countryOptions = [
   { label: "United States", value: "United States" },
@@ -195,36 +196,9 @@ const countryOptions = [
   { label: "Germany", value: "Germany" },
 ];
 
-const schema = z.object({
-  user_name: z.string().min(3, "Username must be at least 3 characters"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-
-  primary_email: z.email("Invalid primary email"),
-  secondary_email: z
-    .email("Invalid secondary email")
-    .optional()
-    .or(z.literal("")),
-  invoice_email: z.email("Invalid invoice email").optional().or(z.literal("")),
-
-  company_name: z.string().min(1, "Company name is required"),
-  contact_name: z.string().min(1, "Contact name is required"),
-
-  phone_number: z.string().min(1, "Phone number is required"),
-  cell_number: z.string().optional(),
-  fax_number: z.string().optional(),
-
-  country: z.string().min(1, "Country is required"),
-  city: z.string().optional(),
-  zip_code: z.string().optional(),
-  state: z.string().optional(),
-
-  reference: z.string().optional(),
-  website: z.url("Invalid URL").optional().or(z.literal("")),
-  address: z.string().optional(),
-});
-
-const { handleSubmit, defineField, errors, isSubmitting, values } = useForm({
-  validationSchema: toTypedSchema(schema),
+const toast = useToast()
+const { handleSubmit, defineField, errors, isSubmitting } = useForm({
+  validationSchema: toTypedSchema(RegisterSchema),
   initialValues: {
     country: "United States",
     user_name: "",
@@ -246,7 +220,6 @@ const { handleSubmit, defineField, errors, isSubmitting, values } = useForm({
   },
 });
 
-// Define fields using vee-validate's defineField
 const [user_name] = defineField("user_name");
 const [password] = defineField("password");
 const [primary_email] = defineField("primary_email");
@@ -265,14 +238,17 @@ const [reference] = defineField("reference");
 const [website] = defineField("website");
 const [address] = defineField("address");
 
-const onSubmit = handleSubmit((values) => {
-  console.log("✅ Submitted!", values);
-  // Replace with API POST
-  // Example:
-  // await $fetch('/api/register', {
-  //   method: 'POST',
-  //   body: values
-  // })
+const onSubmit = handleSubmit(async(values) => {
+  try {
+    await $fetch('/api/auth/register', {
+      method: 'POST',
+      body: values
+    });
+    toast.success('Registration successful');
+    navigateTo('/login');
+  } catch (error: any) {
+    toast.error(error?.data?.message || error?.data?.statusMessage || 'Something went wrong');
+  }
 });
 
 definePageMeta({

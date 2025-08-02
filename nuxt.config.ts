@@ -18,7 +18,8 @@ export default defineNuxtConfig({
           Disallow: []
       },
       sitemap: 'https://dynamostitches.com/sitemap.xml'
-    }]
+    }],
+    'nuxt-auth-utils',
   ],
   site: {
     url:'https://dynamostitches.com',
@@ -37,4 +38,5 @@ export default defineNuxtConfig({
       }
     }
   },
+
 })
