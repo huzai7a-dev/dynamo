@@ -1,7 +1,8 @@
 import { RegisterSchema } from '#shared/validationSchema'
 import type { IUser } from "~~/shared/types";
 import UserService from "./user.service";
-
+import { LoginSchema } from "~~/shared/validationSchema";
+import type { z } from 'zod';
 class AuthService {
     private static validateUser(requestBody: IUser) {
         const { success, error, data } = RegisterSchema.safeParse(requestBody);
@@ -42,12 +43,39 @@ class AuthService {
 
         const createdUser = await UserService.createUser({...data, password: encryptedPassword});
 
-        //return response with 201 status code
         return {
             statusCode: 201,
             statusMessage: 'User created successfully',
             data: createdUser
         }
+    }
+
+    async login(user: z.infer<typeof LoginSchema>) {
+        const userExist = await UserService.getUserByEmailOrUserName(user.emailOrUsername, user.emailOrUsername);
+
+        if(!userExist) {
+            throw createError({
+                statusCode: 401,
+                statusMessage: 'Invalid credentials',
+            });
+        }
+
+        const isPasswordValid = await verifyPassword(userExist.password, user.password);
+
+        if(!isPasswordValid) {
+            throw createError({
+                statusCode: 401,
+                statusMessage: 'Invalid credentials',
+            });
+        }
+
+        return {
+            id: userExist.id,
+            email: userExist.primary_email,
+            userName: userExist.user_name,
+            fullName: userExist.contact_name
+        }
+        
     }
 
 }

@@ -179,6 +179,13 @@
           Register
         </UiButton>
       </div>
+
+      <div class="text-center text-sm text-muted-foreground">
+          Already have an account?
+          <NuxtLink to="/login" class="font-medium text-primary hover:underline">
+            Login here
+          </NuxtLink>
+        </div>
     </form>
   </div>
 </template>

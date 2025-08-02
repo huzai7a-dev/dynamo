@@ -81,6 +81,12 @@ const iconMap = {
   PawPrint: ()=> import('lucide-vue-next').then(m => m.PawPrint),
   Heart: ()=> import('lucide-vue-next').then(m => m.Heart),
   Spool: ()=> import('lucide-vue-next').then(m => m.Spool),
+  Logout: ()=> import('lucide-vue-next').then(m => m.LogOut),
+  ChartNoAxesCombined: ()=> import('lucide-vue-next').then(m => m.ChartNoAxesCombined),
+  ReceiptText: ()=> import('lucide-vue-next').then(m => m.ReceiptText),
+  ChevronDown: ()=> import('lucide-vue-next').then(m => m.ChevronDown),
+  ChevronUp: ()=> import('lucide-vue-next').then(m => m.ChevronUp),
+  Settings: ()=> import('lucide-vue-next').then(m => m.Settings),
 }
 
 const iconComponent = computed(() => {

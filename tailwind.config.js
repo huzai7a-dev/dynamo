@@ -92,6 +92,7 @@ export default {
 				charcoal: '#374151',
 				'light-gray': '#f8fafc',
 				'primary-light': '#dff7f6', 
+				'primary-dark': '#055d57',
 				'solid-light': '#f3f4f6',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',

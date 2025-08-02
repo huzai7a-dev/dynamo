@@ -15,7 +15,10 @@
       @click="onClick"
     >
       <span v-if="loading" class="loader mr-2" />
-      <slot />
+      <div class="flex items-center gap-2">
+        <Icon v-if="props.icon" :name="props.icon"  />
+        <slot />
+      </div>
     </button>
   </template>
   
@@ -39,6 +42,7 @@
     disabled?: boolean
     fullWidth?: boolean
     rounded?: boolean
+    icon?: string
   }>()
   
   const emit = defineEmits<{

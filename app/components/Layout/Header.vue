@@ -10,10 +10,7 @@
   ]">
     <div class="container mx-auto flex items-center justify-between">
       <NuxtLink key="/" to="/">
-        <div class="flex items-center gap-4">
-          <NuxtImg format="webp"src="/images/logo.png"  alt="Logo" class="w-14 h-14 invert" />
-          <h1 class="text-2xl font-display text-white">Dynamo Stitches</h1>
-        </div>
+       <UiLogo class="text-2xl"/>
       </NuxtLink>
 
       <DesktopNav :nav-items="navItems" />
