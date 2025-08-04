@@ -30,7 +30,7 @@ const router = useRouter();
 const navItems = [
   { label: "Dashboard", path: "/dashboard", icon: "ChartNoAxesCombined" },
   { label: "Orders", path: "/orders", icon: "ShoppingCart" },
-  { label: "Invoice", path: "/invoices", icon: "ReceiptText" },
+  { label: "Invoices", path: "/invoices", icon: "ReceiptText" },
 ];
 
 const isActive = (path: string) => {
