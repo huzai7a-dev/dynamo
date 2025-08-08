@@ -101,7 +101,24 @@ const LoginSchema = z.object({
 });
 
 
+const OrderSchema = z.object({
+  orderName: z.string().min(1, 'Order name is required'),
+  poNumber: z.string().optional(),
+  requiredFormat: z.string().min(1, 'Required format is required'),
+  width: z.string().optional(),
+  height: z.string().optional(),
+  fabric: z.string().min(1, 'Fabric is required'),
+  placement: z.string().min(1, 'Placement is required'),
+  numColors: z.string().regex(/^\d+$/, 'Must be a number').optional(),
+  blending: z.enum(['No', 'Yes', 'Not Sure']),
+  rush: z.enum(['No', 'Yes']),
+  instructions: z.string().optional(),
+  attachment1: z.any().nullable(),
+  attachment2: z.any().nullable(),
+})
+
 export {
     RegisterSchema,
-    LoginSchema
+    LoginSchema,
+    OrderSchema
 }

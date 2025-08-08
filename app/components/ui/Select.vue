@@ -7,12 +7,14 @@
         class="block mb-1 text-sm font-medium text-foreground"
       >
         {{ label }}
+        <span v-if="required" class="text-red-500 text-lg ml-0.5">*</span>
       </label>
+
   
       <!-- Select Wrapper -->
       <div
         :class="[
-          'relative rounded-xl transition-all shadow-sm',
+          'relative rounded-xl transition-all shadow-md',
           'bg-muted/20 hover:bg-muted/30',
           'flex items-center',
           sizeClass,
@@ -89,6 +91,7 @@
     readonly?: boolean
     helperText?: string
     error?: string
+    required?: boolean
   }>()
   
   const emit = defineEmits<{

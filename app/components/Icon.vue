@@ -85,11 +85,14 @@ const iconMap = {
   ChartNoAxesCombined: ()=> import('lucide-vue-next').then(m => m.ChartNoAxesCombined),
   ReceiptText: ()=> import('lucide-vue-next').then(m => m.ReceiptText),
   ChevronDown: ()=> import('lucide-vue-next').then(m => m.ChevronDown),
+  ChevronsUpDown: ()=> import('lucide-vue-next').then(m => m.ChevronsUpDown),
   ChevronUp: ()=> import('lucide-vue-next').then(m => m.ChevronUp),
   Settings: ()=> import('lucide-vue-next').then(m => m.Settings),
   Rows3: ()=> import('lucide-vue-next').then(m => m.Rows3),
   Quote: ()=> import('lucide-vue-next').then(m => m.Quote),
   DollarSign: ()=> import('lucide-vue-next').then(m => m.DollarSign),
+  Plus: ()=> import('lucide-vue-next').then(m => m.Plus),
+  Trash: ()=> import('lucide-vue-next').then(m => m.Trash),
 }
 
 const iconComponent = computed(() => {
