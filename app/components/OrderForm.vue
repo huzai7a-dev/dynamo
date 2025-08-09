@@ -46,18 +46,12 @@
     </div>
     <UiInput v-model="instructions" label="Additional Instructions" placeholder="Enter Additional Instructions" type="textarea" :error="errors.instructions" />
 
-    <UiImageUploader/>
-    <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <label class="block text-sm font-medium mb-2">Attachment 1</label>
-        <input type="file" @change="e => handleFileChange(e, 1)" class="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium mb-2">Attachment 2</label>
-        <input type="file" @change="e => handleFileChange(e, 2)" class="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" />
-      </div>
-    </div> -->
-
+    <UiImageUploader
+      v-model:files="attachments"
+      :multiple="true"
+      accept="image/*"
+      :max-files="12"
+    />
     <UiButton type="submit" fullWidth size="lg" :disabled="disabledSubmit">Submit</UiButton>
   </form>
 </template>
@@ -83,8 +77,7 @@ const { handleSubmit, values, errors, defineField, setFieldValue } = useForm({
     blending: 'No',
     rush: 'No',
     instructions: '',
-    attachment1: null,
-    attachment2: null,
+    attachments: [],
   },
 })
 
@@ -100,27 +93,43 @@ const [numColors] = defineField('numColors')
 const [blending] = defineField('blending')
 const [rush] = defineField('rush')
 const [instructions] = defineField('instructions')
+const [attachments]     = defineField('attachments')
 
 const disabledSubmit = computed(()=> Object.keys(errors.value).length > 0)
 // Handle file input
-function handleFileChange(e: Event, which: 1 | 2) {
-  const files = (e.target as HTMLInputElement).files
-  if (files?.length) {
-    setFieldValue(which === 1 ? 'attachment1' : 'attachment2', files[0])
-  }
-}
 
 // Submit logic
-const onSubmit = handleSubmit((formValues) => {
-  const fd = new FormData()
-  fd.append('image', formValues.attachment1)
+const onSubmit = handleSubmit(async (formValues) => {
   try {
-    $fetch('/api/orders/post', {
-      method:'POST',
+    // Build multipart form data
+    const fd = new FormData()
+    
+    fd.append('orderName', formValues.orderName)
+    fd.append('poNumber', formValues.poNumber ?? '')
+    fd.append('requiredFormat', formValues.requiredFormat)
+    fd.append('width', formValues.width ?? '')
+    fd.append('height', formValues.height ?? '')
+    fd.append('fabric', formValues.fabric)
+    fd.append('placement', formValues.placement)
+    fd.append('numColors', formValues.numColors ?? '')
+    fd.append('blending', formValues.blending)
+    fd.append('rush', formValues.rush)
+    fd.append('instructions', formValues.instructions ?? '')
+
+    // append files (use the name your API expects)
+    formValues.attachments.forEach((file, i) => {
+      fd.append('attachments', file) // or `attachments[]`
+    })
+
+    // send to backend (Nuxt $fetch respects FormData => multipart)
+    await $fetch('/api/orders/create', {
+      method: 'POST',
       body: fd,
-    });
+    })
+
+    // success UI here...
   } catch (error) {
-    console.log(error)
-  }
-})
+    console.error(error)
+  }})
+
 </script>

@@ -18,6 +18,7 @@
     "@tawk.to/tawk-messenger-vue-3": "^1.0.3",
     "@vee-validate/zod": "^4.15.1",
     "chart.js": "^4.5.0",
+    "cloudinary": "^2.7.0",
     "nuxt": "^4.0.1",
     "nuxt-auth-utils": "^0.5.22",
     "nuxt-lucide-icons": "^1.0.5",

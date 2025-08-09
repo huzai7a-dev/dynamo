@@ -1,3 +1,7 @@
-import type { RegisterSchema } from "../validationSchema";
+import type { OrderSchema, RegisterSchema } from "../validationSchema";
 
-type IUser = z.infer<typeof RegisterSchema>
+export type IUser = z.infer<typeof RegisterSchema>
+
+export type OrderRequest = z.infer<typeof OrderSchema>;
+export type OrderFieldsRequest = Omit<OrderRequest, 'attachments'>;
+export type OrderFilesRequest = OrderRequest['attachments']; 

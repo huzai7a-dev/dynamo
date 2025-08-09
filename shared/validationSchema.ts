@@ -113,8 +113,7 @@ const OrderSchema = z.object({
   blending: z.enum(['No', 'Yes', 'Not Sure']),
   rush: z.enum(['No', 'Yes']),
   instructions: z.string().optional(),
-  attachment1: z.any().nullable(),
-  attachment2: z.any().nullable(),
+  attachments: z.array(z.instanceof(File)).default([]),
 })
 
 export {
