@@ -15,22 +15,32 @@
       class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/80"
       @click="openFilePicker"
     >
-      Select Images
+      Select Files
     </button>
 
-    <!-- Thumbnails -->
+    <!-- Thumbnails or icons -->
     <div class="flex flex-wrap gap-4">
       <div
         v-for="(item, index) in items"
         :key="item.id"
-        class="relative w-24 h-24 border rounded overflow-hidden"
+        class="relative w-24 h-24 border rounded overflow-hidden flex items-center justify-center"
       >
-        <img :src="item.url" alt="Preview" class="w-full h-full object-cover" />
+        <!-- Image preview for images, else show file icon -->
+        <template v-if="item.file.type.startsWith('image/')">
+          <img :src="item.url as string" alt="Preview" class="w-full h-full object-cover" />
+        </template>
+        <template v-else>
+          <div  class="flex flex-col items-center justify-center">
+            <Icon name="File" class="w-8 h-8 text-gray-400" />
+            <span class="text-xs text-center">{{ item.file.name }}</span>
+          </div>
+        </template>
+
         <button
           type="button"
           class="absolute top-0 right-0 bg-black/60 text-white rounded-bl px-1 text-xs"
           @click="removeAt(index)"
-          aria-label="Remove image"
+          aria-label="Remove file"
           title="Remove"
         >
           ×
@@ -47,11 +57,12 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import Icon from '../Icon.vue';
 
 type PreviewItem = {
   id: string;
   file: File;
-  url: string; // Object URL
+  url: string | null; // Object URL or null
 };
 
 const props = withDefaults(defineProps<{
@@ -65,7 +76,7 @@ const props = withDefaults(defineProps<{
   maxFiles?: number;
 }>(), {
   files: () => [],
-  accept: 'image/*',
+  accept: '*/*',  // Accept all file types by default
   multiple: true,
   maxFiles: undefined
 });
@@ -81,11 +92,11 @@ const items = ref<PreviewItem[]>([]);
 /** Build internal preview list from incoming controlled files */
 function syncFromProps(incoming: File[]) {
   // revoke previous
-  items.value.forEach(i => URL.revokeObjectURL(i.url));
+  items.value.forEach(i => URL.revokeObjectURL(i.url as string));
   items.value = incoming.map((f) => ({
     id: crypto.randomUUID(),
     file: f,
-    url: URL.createObjectURL(f)
+    url: f.type.startsWith('image/') ? URL.createObjectURL(f) : null // Only create object URL for images
   }));
 }
 
@@ -96,7 +107,6 @@ syncFromProps(props.files);
 watch(
   () => props.files,
   (newFiles) => {
-    // naive check: re-sync if lengths differ or references changed
     if (!newFiles) return;
     if (newFiles.length !== items.value.length ||
         newFiles.some((f, i) => items.value[i]?.file !== f)) {
@@ -126,19 +136,17 @@ function onFileChange(e: Event) {
 }
 
 function addFiles(newFiles: File[]) {
-  const images = newFiles.filter((f) => f.type.startsWith('image/'));
-
   // Enforce maxFiles if provided
   const remaining = props.maxFiles
     ? Math.max(props.maxFiles - items.value.length, 0)
-    : images.length;
+    : newFiles.length;
 
-  const toAdd = props.maxFiles ? images.slice(0, remaining) : images;
+  const toAdd = props.maxFiles ? newFiles.slice(0, remaining) : newFiles;
 
   const next: PreviewItem[] = toAdd.map((f) => ({
     id: crypto.randomUUID(),
     file: f,
-    url: URL.createObjectURL(f)
+    url: f.type.startsWith('image/') ? URL.createObjectURL(f) : null // Only create object URL for images
   }));
 
   items.value.push(...next);
@@ -146,12 +154,12 @@ function addFiles(newFiles: File[]) {
 
 function removeAt(index: number) {
   const [removed] = items.value.splice(index, 1);
-  if (removed) URL.revokeObjectURL(removed.url);
+  if (removed && removed.url) URL.revokeObjectURL(removed.url); // Clean up the object URL for images
 }
 
 // Cleanup all object URLs on unmount
 onBeforeUnmount(() => {
-  items.value.forEach(i => URL.revokeObjectURL(i.url));
+  items.value.forEach(i => i.url && URL.revokeObjectURL(i.url));
 });
 </script>
 

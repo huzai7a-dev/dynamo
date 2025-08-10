@@ -1,16 +1,19 @@
+import { OrderSchema } from "~~/shared/validationSchema";
 import OrderService from "../../services/order.service"
 import { parseMultipart } from "../../utils/multiplart"
 
-export default defineEventHandler(async (event)=> {
+export default defineEventHandler(async (event) => {
+    // await readValidatedBody(event, (body) => OrderSchema.parse(body));
+    const { id: userId } = event.context.user;
 
     try {
         const { fields, files } = await parseMultipart(event);
 
-        const response = await OrderService.createOrder(fields, files)
-        
+        const order = await OrderService.createOrder(userId, fields, files)
+
         return {
             message: 'Order created successfully',
-            data: response
+            data: order
         }
     } catch (error) {
         console.log(error)
@@ -19,5 +22,5 @@ export default defineEventHandler(async (event)=> {
             data: JSON.stringify(error),
         })
     }
-   }
+}
 )

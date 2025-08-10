@@ -1,4 +1,4 @@
-import type { IUser } from "~~/shared/types";
+import type { IUser } from "#shared/types";
 
 class UserService {
     private db: ReturnType<typeof useDb>;

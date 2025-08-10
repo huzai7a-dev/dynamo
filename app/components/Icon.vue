@@ -93,6 +93,7 @@ const iconMap = {
   DollarSign: ()=> import('lucide-vue-next').then(m => m.DollarSign),
   Plus: ()=> import('lucide-vue-next').then(m => m.Plus),
   Trash: ()=> import('lucide-vue-next').then(m => m.Trash),
+  File: ()=> import('lucide-vue-next').then(m => m.File),
 }
 
 const iconComponent = computed(() => {

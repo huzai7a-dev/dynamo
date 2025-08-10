@@ -2,7 +2,7 @@
   <div>
     <DataTable @create-order="showOrderModal = true" />
     <UiModal v-model="showOrderModal">
-      <OrderForm />
+      <OrderForm @success="onOrderSuccess" />
     </UiModal>
   </div>
 </template>
@@ -18,5 +18,11 @@ definePageMeta({
   middleware: ['auth']
 })
 
+const { data: orders, pending, error } = useFetch(`/api/orders`);
+
 const showOrderModal = ref(false)
+
+const onOrderSuccess = () => {
+  showOrderModal.value = false
+}
 </script>

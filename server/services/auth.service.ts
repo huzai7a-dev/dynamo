@@ -1,7 +1,7 @@
 import { RegisterSchema } from '#shared/validationSchema'
-import type { IUser } from "~~/shared/types";
+import type { IUser } from "#shared/types";
 import UserService from "./user.service";
-import { LoginSchema } from "~~/shared/validationSchema";
+import { LoginSchema } from "#shared/validationSchema";
 import type { z } from 'zod';
 class AuthService {
     private static validateUser(requestBody: IUser) {

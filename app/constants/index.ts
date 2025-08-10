@@ -27,6 +27,8 @@ export const fabricOptions = [
     { label: 'Fleece', value: 'fleece' },
     { label: 'Towel', value: 'towel' },
     { label: 'Leather', value: 'leather' },
+    { label: 'Bag', value: 'bag' },
+    { label: 'Socks', value: 'socks' },
     { label: 'Other', value: 'other' }
   ]
 export const placementOptions = [

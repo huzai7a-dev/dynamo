@@ -3,7 +3,7 @@
       <Transition name="fade">
         <div
           v-if="modelValue"
-          class="fixed inset-0 max-h-svh overflow-auto z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          class="fixed inset-0 max-h-svh overflow-auto z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm"
         >
           <div
             class="relative w-auto mx-auto bg-white rounded-2xl shadow-xl transition-all"
