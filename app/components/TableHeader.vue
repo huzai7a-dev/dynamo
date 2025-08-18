@@ -16,8 +16,8 @@
         <!-- Customer Name Search -->
         <div class="flex-1 min-w-0">
           <UiInput
-            :model-value="searchCustomerName"
-            @update:modelValue="$emit('update:searchCustomerName', $event)"
+            :model-value="searchOrderName"
+            @update:modelValue="$emit('update:searchOrderName', $event)"
             label="Customer Name"
             placeholder="Search by customer name..."
             size="md"
@@ -62,7 +62,7 @@ const props = defineProps({
     type: String,
     default: ''
   },
-  searchCustomerName: {
+  searchOrderName: {
     type: String,
     default: ''
   },

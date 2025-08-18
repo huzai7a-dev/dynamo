@@ -1,4 +1,8 @@
-import type { OrderFieldsRequest, OrderFilesRequest, OrderParams } from "#shared/types";
+import type {
+  OrderFieldsRequest,
+  OrderFilesRequest,
+  OrderParams,
+} from "#shared/types";
 import uploadService, { type UploadedAsset } from "./upload.service";
 
 class OrderService {
@@ -7,7 +11,11 @@ class OrderService {
     this.db = useDb();
   }
 
-  async createOrder(userId:string, fields: OrderFieldsRequest, files: OrderFilesRequest) {
+  async createOrder(
+    userId: string,
+    fields: OrderFieldsRequest,
+    files: OrderFilesRequest
+  ) {
     const attachmentsInput = (files || []).filter(
       (f: any) => f.fieldName === "attachments" || f.fieldName == null
     );
@@ -83,62 +91,105 @@ class OrderService {
     return { orderId };
   }
 
-  async getOrders(orderParams:OrderParams) {
-
-    console.log(orderParams, 'orderParams')
-    const { user_id, limit = 10, page = 1, order_number, order_name, date_from, date_to } = orderParams
-
-    const queryParts = [
-      'SELECT * FROM orders WHERE user_id = $1', // Base query part
-    ];
-    
-    const values = [user_id]; // Start with user_id
-    
-    let paramIndex = 2; // Start the parameter index for the next placeholders ($2, $3, etc.)
-    
-    // Dynamically add conditions to the query and values array based on provided filters
+  async getOrders(orderParams: OrderParams, isAdmin = false) {
+    const {
+      user_id,
+      limit = 10,
+      page = 1,
+      order_number,
+      order_name,
+      date_from,
+      date_to,
+    } = orderParams;
+  
+    // Start with a neutral WHERE so we can append conditions uniformly
+    const whereParts: string[] = ['FROM orders WHERE 1=1'];
+    const values: any[] = [];
+    let i = 1; // next $ placeholder index
+  
+    // Only non-admins are restricted to their own orders
+    if (!isAdmin) {
+      whereParts.push(`AND user_id = $${i++}`);
+      values.push(user_id);
+    }
+  
     if (order_number) {
-      queryParts.push(`AND order_number = $${paramIndex}`);
+      whereParts.push(`AND id = $${i++}`);
       values.push(order_number);
-      paramIndex++;
     }
-    
+  
     if (order_name) {
-      queryParts.push(`AND order_name = $${paramIndex}`);
-      values.push(order_name);
-      paramIndex++;
+      whereParts.push(`AND order_name ILIKE $${i++}`);
+      values.push(`%${order_name}%`);
     }
-    
+  
     if (date_from) {
-      queryParts.push(`AND created_at >= $${paramIndex}`);
+      whereParts.push(`AND created_at >= $${i++}`);
       values.push(date_from);
-      paramIndex++;
     }
-    
+  
     if (date_to) {
-      queryParts.push(`AND created_at <= $${paramIndex}`);
+      whereParts.push(`AND created_at <= $${i++}`);
       values.push(date_to);
-      paramIndex++;
     }
-    
-    // Add the ORDER BY, LIMIT, and OFFSET clauses
-    queryParts.push('ORDER BY created_at DESC');
-    queryParts.push(`LIMIT $${paramIndex}`);
-    values.push(String(limit));
-    paramIndex++;
-    
-    queryParts.push(`OFFSET $${paramIndex}`);
-    values.push(String(limit * (page - 1)));
-    
-    // Join the query parts into a single query string
-    const query = queryParts.join(' ');
-    
-    // Execute the query with the dynamically constructed parts and values
-    const orders = await this.db.query(query, values);
-    
+  
+    // Count
+    const countQuery = `SELECT COUNT(*) ${whereParts.join(' ')}`;
+    const countRows = await this.db.query(countQuery, values);
+    const totalRecords = Number(countRows[0].count) || 0;
+    const totalPage = Math.max(1, Math.ceil(totalRecords / limit));
+  
+    // Data
+    const dataQuery = [
+      `SELECT
+         id,
+         order_name,
+         price,
+         status,
+         payment_status,
+         created_at
+       ${whereParts.join(' ')}`,
+      `ORDER BY created_at DESC`,
+      `LIMIT $${i++}`,
+      `OFFSET $${i++}`,
+    ].join(' ');
+  
+    const dataValues = [...values, limit, (page - 1) * limit];
+    const orders = await this.db.query(dataQuery, dataValues);
+  
     return {
       orders,
-    }
+      pagination: {
+        totalPage,
+        currentPage: page,
+      },
+    };
+  }
+  
+
+  async getOrderDetails(isAdmin: boolean, orderId: number, userId: number) {
+    const order = await this.db`
+  SELECT
+    o.*,
+    COALESCE(att.attachments, '[]'::jsonb) AS attachments
+  FROM orders AS o
+  LEFT JOIN LATERAL (
+    SELECT jsonb_agg(
+             jsonb_build_object(
+               'url', a.url,
+               'resource_type', a.resource_type,
+               'format', a.format,
+               'bytes', a.bytes
+             )
+             ORDER BY a.created_at
+           ) AS attachments
+    FROM attachments AS a
+    WHERE a.order_id = o.id
+  ) AS att ON TRUE
+  WHERE o.id = ${orderId}
+  ${!isAdmin ? this.db`AND o.user_id = ${userId}` : this.db``}
+`;
+    return order[0];
   }
 }
 

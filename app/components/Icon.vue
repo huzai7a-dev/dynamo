@@ -94,6 +94,7 @@ const iconMap = {
   Plus: ()=> import('lucide-vue-next').then(m => m.Plus),
   Trash: ()=> import('lucide-vue-next').then(m => m.Trash),
   File: ()=> import('lucide-vue-next').then(m => m.File),
+  Eye: ()=> import('lucide-vue-next').then(m => m.Eye),
 }
 
 const iconComponent = computed(() => {

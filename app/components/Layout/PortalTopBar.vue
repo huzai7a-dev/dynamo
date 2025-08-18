@@ -47,6 +47,7 @@
           <li>
             <button
               class="w-full text-left flex items-center px-4 py-2 text-sm hover:bg-gray-200"
+              @click="handleLogOut"
             >
               <Icon color="red" name="Logout" class="mr-3 h-5 w-5" />
               <span class="text-red-500">Logout</span>
@@ -62,13 +63,19 @@
 import type { IUser } from "~~/shared/types";
 
 
-const { user } = useUserSession();
+const { user, clear: logout } = useUserSession();
 const route = useRoute();
+const router = useRouter();
 
 const isMenuOpen = ref(false);
 
 const activeRouteName = computed(() => {
   return route.name?.toString().toUpperCase();
 });
+
+const handleLogOut = async () => {
+  await logout();
+  router.push("/login");
+};
 
 </script>

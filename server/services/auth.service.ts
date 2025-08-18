@@ -73,7 +73,8 @@ class AuthService {
             id: userExist.id,
             email: userExist.primary_email,
             userName: userExist.user_name,
-            fullName: userExist.contact_name
+            fullName: userExist.contact_name,
+            role: userExist.role
         }
         
     }
