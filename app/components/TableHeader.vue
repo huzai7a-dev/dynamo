@@ -13,11 +13,21 @@
             size="md"
           />
         </div>
-        <!-- Customer Name Search -->
+        <!-- Order Name Search -->
         <div class="flex-1 min-w-0">
           <UiInput
             :model-value="searchOrderName"
             @update:modelValue="$emit('update:searchOrderName', $event)"
+            label="Order Name"
+            placeholder="Search by order name..."
+            size="md"
+          />
+        </div>
+        <!-- Customer Name Search (Admin Only) -->
+        <div v-if="isAdmin" class="flex-1 min-w-0">
+          <UiInput
+            :model-value="searchCustomerName"
+            @update:modelValue="$emit('update:searchCustomerName', $event)"
             label="Customer Name"
             placeholder="Search by customer name..."
             size="md"
@@ -25,12 +35,11 @@
         </div>
         <!-- Date Range Select -->
         <div class="flex-1 min-w-0">
-          <UiSelect
+          <UiDateRangeSelect
             :model-value="selectedDateRange"
             @update:modelValue="$emit('update:selectedDateRange', $event)"
             label="Date Range"
             placeholder="Select date range..."
-            :options="dateRangeOptions"
             size="md"
           />
         </div>
@@ -53,11 +62,16 @@
 
 <script lang="ts" setup>
 import UiInput from './ui/Input.vue'
-import UiSelect from './ui/Select.vue'
+import UiDateRangeSelect from './ui/DateRangeSelect.vue'
 import UiButton from './ui/Button.vue'
 import type { PropType } from 'vue'
 
-const props = defineProps({
+interface DateRange {
+  from: Date | null
+  to: Date | null
+}
+
+defineProps({
   searchOrderNumber: {
     type: String,
     default: ''
@@ -66,13 +80,25 @@ const props = defineProps({
     type: String,
     default: ''
   },
-  selectedDateRange: {
+  searchCustomerName: {
     type: String,
     default: ''
   },
-  dateRangeOptions: {
-    type: Array as PropType<Array<{ label: string; value: string }>>,
-    default: () => []
+  selectedDateRange: {
+    type: Object as PropType<DateRange>,
+    default: () => ({ from: null, to: null })
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 })
+
+defineEmits<{
+  'update:searchOrderNumber': [value: string]
+  'update:searchOrderName': [value: string]
+  'update:searchCustomerName': [value: string]
+  'update:selectedDateRange': [value: DateRange]
+  'create-order': []
+}>()
 </script>

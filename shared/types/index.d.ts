@@ -1,4 +1,5 @@
 import type { OrderSchema, RegisterSchema } from "../validationSchema";
+import { OrderStatus, PaymentStatus } from "./enums";
 
 export type IUser = z.infer<typeof RegisterSchema>
 
@@ -6,12 +7,14 @@ export type OrderRequest = z.infer<typeof OrderSchema>;
 export type OrderFieldsRequest = Omit<OrderRequest, 'attachments'>;
 export type OrderFilesRequest = OrderRequest['attachments']; 
 
+
 export interface OrderParams {
     user_id: string;
     limit?: number;
     page?: number;
     order_number?: string;
     order_name?: string;
+    customer_name?: string;
     date_from?: string;
     date_to?: string;
 }
@@ -20,9 +23,10 @@ export interface TableOrders {
     id: string,
     order_name: string,
     price: number,
-    status: string,
-    payment_status: string,
+    status: OrderStatus,
+    payment_status: PaymentStatus,
     created_at: string 
+    customer_name?: string
 }
 
 export interface IOrder {
@@ -45,7 +49,8 @@ export interface IOrder {
     user_id: number;
     payment_status: PaymentStatus;
     price: string;
-    attachments: Attachment[]
+    order_attachments: Attachment[]
+    delivery_attachments: Attachment[]
   }
 
 export interface Pagination {

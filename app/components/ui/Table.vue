@@ -64,9 +64,9 @@
         Previous
       </button>
       <span class="text-sm">
-        Page {{ pagination.currentPage }} of {{ pagination.totalPages }}
+        Page {{ pagination.currentPage }} of {{ pagination.totalPage }}
       </span>
-      <button :disabled="pagination.currentPage >= pagination.totalPages" @click="changePage(pagination.currentPage + 1)" class="px-4 py-2 text-white bg-primary rounded disabled:opacity-50">
+      <button :disabled="pagination.currentPage >= pagination.totalPage" @click="changePage(pagination.currentPage + 1)" class="px-4 py-2 text-white bg-primary rounded disabled:opacity-50">
         Next
       </button>
     </div>

@@ -3,6 +3,8 @@ import type { Attachment } from '~~/shared/types';
 
 defineProps<{
   attachments: Attachment[]
+  title?: string
+  noAttachmentsMessage?: string
 }>()
 
 const IMAGE_FORMATS = new Set(['jpg','jpeg','png','webp','gif','avif','bmp','tiff','svg'])
@@ -30,11 +32,11 @@ const filenameFromUrl = (url: string) => {
 
 <template>
   <div>
-    <h2 class="mb-4 text-lg font-semibold text-secondary">Attachments</h2>
+    <h2 class="mb-4 text-lg font-semibold text-secondary">{{ title || 'Attachments' }}</h2>
 
     <div v-if="!attachments || attachments.length === 0"
          class="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-charcoal/70">
-      No attachments uploaded yet.
+      {{ noAttachmentsMessage || 'No attachments uploaded yet.' }}
     </div>
 
     <!-- KEY: auto-rows-fr + cards are h-full -->

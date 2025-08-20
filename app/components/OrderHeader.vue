@@ -2,10 +2,10 @@
 import { UiStatusBadge } from '#components';
 
 
-const props = defineProps<{
+defineProps<{
   order_name: string
   po_number: string | number
-  status: string
+  status: OrderStatus
 }>()
 </script>
 

@@ -32,6 +32,7 @@
     | 'accent'
     | 'muted'
     | 'outline'
+    | 'danger'
   
   type Size = 'sm' | 'md' | 'lg'
   
@@ -66,7 +67,8 @@
       destructive: `${base} bg-destructive hover:bg-red-600`,
       accent: `${base} bg-accent hover:bg-teal-500`,
       muted: `${base} bg-muted hover:bg-gray-300 text-charcoal`,
-      outline: 'border border-input text-foreground bg-transparent hover:bg-muted/30'
+      outline: 'border border-input text-foreground bg-transparent hover:bg-muted/30',
+      danger: `${base} bg-red-500 hover:bg-red-600`
     }
     return map[props.variant || 'primary']
   })
