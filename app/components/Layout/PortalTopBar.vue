@@ -93,7 +93,11 @@ const isMenuOpen = ref(false);
 const menuContainer = ref<HTMLElement>();
 
 const activeRouteName = computed(() => {
-  return route.name?.toString().toUpperCase();
+   const name = route.name?.toString();
+   if (name) {
+    return name.charAt(0).toUpperCase() + name.slice(1);
+   }
+   return '';
 });
 
 const toggleMenu = () => {

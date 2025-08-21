@@ -110,6 +110,7 @@
               @reject="updateOrderStatus(OrderStatus.REJECTED)"
               @deliver="showDeliveryModal = true"
               @cancel="updateOrderStatus(OrderStatus.CANCELLED)"
+              @edit="handleEditOrder"
             />
           </div>
         </aside>
@@ -135,6 +136,7 @@ interface OrderResponse {
 }
 
 const route = useRoute();
+const router = useRouter();
 const { user } = useUserSession();
 
 const isAdmin = computed(() => (user.value as any)?.role === ROLE.Admin);
@@ -193,6 +195,10 @@ const handleDeliveryComplete = async (deliveryData: {
     toast.error("Failed to complete delivery");
   }
 }
+
+const handleEditOrder = () => {
+  router.push(`/orders/edit/${route.params.id}`);
+};
 
 
 

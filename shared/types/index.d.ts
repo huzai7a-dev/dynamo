@@ -39,8 +39,8 @@ export interface IOrder {
     fabric: string;          
     placement: string;    
     num_colors: number;
-    blending: YesNo;
-    rush: YesNo;
+    blending: "No" | "Yes" | "Not Sure";
+    rush: "No" | "Yes";
     instructions: string | null;
     status: OrderStatus;
     created_at: string; 

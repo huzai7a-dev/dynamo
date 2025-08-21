@@ -244,6 +244,115 @@ class OrderService {
 
   // ... existing code ...
 
+  async updateOrder(
+    userId: string,
+    orderId: number,
+    fields: OrderFieldsRequest,
+    files: OrderFilesRequest,
+    existingAttachments: string[]
+  ) {
+    console.log("Updating order:", { orderId, userId, existingAttachments });
+    
+    // Check if user owns this order or is admin
+    const order = await this.db`
+      SELECT user_id FROM orders WHERE id = ${orderId}
+    `;
+    
+    if (!order[0] || order[0].user_id !== parseInt(userId)) {
+      throw new Error("Order not found or access denied");
+    }
+
+    const attachmentsInput = (files || []).filter(
+      (f: any) => f.fieldName === "attachments" || f.fieldName == null
+    );
+
+    let uploaded: UploadedAsset[] = [];
+    if (attachmentsInput.length) {
+      uploaded = await uploadService.uploadBuffers(attachmentsInput, {
+        folder: "orders",
+        tags: ["order"],
+      });
+    }
+
+    const widthNum =
+      fields.width != null && fields.width !== "" ? Number(fields.width) : null;
+    const heightNum =
+      fields.height != null && fields.height !== ""
+        ? Number(fields.height)
+        : null;
+    const colorsInt =
+      fields.numColors != null && fields.numColors !== ""
+        ? Number(fields.numColors)
+        : null;
+
+    // Update order fields
+    await this.db`
+      UPDATE orders SET
+        order_name = ${fields.orderName},
+        po_number = ${fields?.poNumber || null},
+        required_format = ${fields.requiredFormat},
+        width_in = ${widthNum},
+        height_in = ${heightNum},
+        fabric = ${fields.fabric},
+        placement = ${fields.placement},
+        num_colors = ${colorsInt},
+        blending = ${fields.blending},
+        rush = ${fields.rush},
+        instructions = ${fields?.instructions || null},
+        faceless = ${fields?.faceless || null},
+        updated_at = NOW()
+      WHERE id = ${orderId}
+    `;
+
+    // Remove old attachments that are not in existingAttachments
+    if (existingAttachments.length > 0) {
+      // Use a more explicit approach for the NOT IN clause
+      const placeholders = existingAttachments.map((_, index) => `$${index + 2}`).join(', ');
+      const query = `
+        DELETE FROM attachments 
+        WHERE order_id = $1 
+        AND field_name = 'order_attachments'
+        AND url NOT IN (${placeholders})
+      `;
+      await this.db.query(query, [orderId, ...existingAttachments]);
+    } else {
+      // If no existing attachments to keep, delete all order attachments
+      await this.db`
+        DELETE FROM attachments 
+        WHERE order_id = ${orderId} 
+        AND field_name = 'order_attachments'
+      `;
+    }
+
+    // Add new attachments
+    if (uploaded.length > 0) {
+      const rows = await this.db`
+        WITH data AS (
+          SELECT jsonb_array_elements(${JSON.stringify(uploaded)}::jsonb) AS j
+        ),
+        ins AS (
+          INSERT INTO attachments (
+            order_id, url, public_id, resource_type, format, bytes, original_filename, field_name
+          )
+          SELECT
+            ${orderId},
+            j->>'url',
+            j->>'publicId',
+            j->>'resourceType',
+            NULLIF(j->>'format','')::text,
+            NULLIF(j->>'bytes','')::bigint,
+            NULLIF(j->>'originalFilename','')::text,
+            'order_attachments'
+          FROM data
+          RETURNING 1
+        )
+        SELECT 1;
+      `;
+    }
+
+    return { orderId };
+  }
+
   async deliverOrder(fields: any, files: any) {
     const { orderId, estimateAmount, notes } = fields;
   

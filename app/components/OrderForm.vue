@@ -131,15 +131,40 @@
       :multiple="true"
       accept="'*/*'"
     />
+    
+    <!-- Show existing attachments if editing -->
+    <div v-if="isEditMode && existingAttachments?.length" class="space-y-4">
+      <h3 class="text-lg font-semibold text-gray-700">Existing Attachments</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div 
+          v-for="attachment in existingAttachments" 
+          :key="attachment.url"
+          class="relative group"
+        >
+          <img 
+            :src="attachment.url" 
+            :alt="attachment.url"
+            class="w-full h-24 object-cover rounded-lg border border-gray-200"
+          />
+          <button
+            type="button"
+            @click="removeExistingAttachment(attachment)"
+            class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+    </div>
+
     <UiButton 
       type="submit" 
       fullWidth 
       size="lg" 
       :disabled="disabledSubmit"
     >
-       {{ isLoading ? 'Creating Order...' : 'Create Order' }} 
-    </UiButton
-    >
+       {{ isLoading ? (isEditMode ? 'Updating Order...' : 'Creating Order...') : (isEditMode ? 'Update Order' : 'Create Order') }} 
+    </UiButton>
   </form>
 </template>
 
@@ -149,11 +174,20 @@ import { toTypedSchema } from "@vee-validate/zod";
 import { fabricOptions, formatOptions, placementOptions } from "~/constants";
 import { OrderSchema } from "~~/shared/validationSchema";
 
+interface Props {
+  orderData?: IOrder;
+  isEditMode?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  isEditMode: false,
+  orderData: undefined
+});
+
 const emit = defineEmits(['success', 'error']);
 
-const toast = useToast();
 
-const { handleSubmit, errors, defineField } = useForm({
+const { handleSubmit, errors, defineField, setValues } = useForm({
   validationSchema: toTypedSchema(OrderSchema),
   initialValues: {
     orderName: "",
@@ -164,9 +198,10 @@ const { handleSubmit, errors, defineField } = useForm({
     fabric: "",
     placement: "",
     numColors: "",
-    blending: "No",
-    rush: "No",
+    blending: "No" as const,
+    rush: "No" as const,
     instructions: "",
+    faceless: undefined,
     attachments: [],
   },
 });
@@ -188,7 +223,17 @@ const [attachments] = defineField("attachments");
 
 const isLoading = ref(false);
 
+// Track existing attachments for edit mode
+const existingAttachments = ref<Attachment[]>(props.orderData?.order_attachments || []);
+
 const disabledSubmit = computed(() => Object.keys(errors.value).length > 0 || isLoading.value);
+
+// Remove existing attachment
+const removeExistingAttachment = (attachment: Attachment) => {
+  existingAttachments.value = existingAttachments.value.filter(
+    att => att.url !== attachment.url
+  );
+};
 
 const onSubmit = handleSubmit(async (formValues) => {
   try {
@@ -208,24 +253,57 @@ const onSubmit = handleSubmit(async (formValues) => {
     fd.append("instructions", formValues.instructions ?? "");
     fd.append("faceless", formValues.faceless ?? "");
 
+    // Add new attachments
     formValues.attachments.forEach((file, i) => {
       fd.append("attachments", file);
     });
 
-    await $fetch("/api/orders", {
-      method: "POST",
+    // Add remaining existing attachments
+    existingAttachments.value.forEach((attachment, i) => {
+      fd.append("existingAttachments", attachment.url);
+    });
+
+    const url = props.isEditMode 
+      ? `/api/orders/${props.orderData?.id}` 
+      : "/api/orders";
+    
+    const method = props.isEditMode ? "PUT" : "POST";
+
+    await $fetch(url, {
+      method,
       body: fd,
     });
 
-    toast.success("Order created successfully!");
-    emit('success')
+    emit('success');
 
   } catch (error) {
     console.error(error);
-    toast.error("Something went wrong");
-    emit('error')
-  }finally{
-    isLoading.value = false
+    emit('error');
+  } finally {
+    isLoading.value = false;
   }
 });
+
+// Watch for orderData changes and update form
+watch(() => props.orderData, (newOrderData) => {
+  if (newOrderData && props.isEditMode) {
+    const initialValues = {
+      orderName: newOrderData.order_name || "",
+      poNumber: newOrderData.po_number || "",
+      requiredFormat: newOrderData.required_format || "",
+      width: newOrderData.width_in || "",
+      height: newOrderData.height_in || "",
+      fabric: newOrderData.fabric || "",
+      placement: newOrderData.placement || "",
+      numColors: newOrderData.num_colors?.toString() || "",
+      blending: (newOrderData.blending || "No") as "No" | "Yes" | "Not Sure",
+      rush: (newOrderData.rush || "No") as "No" | "Yes",
+      instructions: newOrderData.instructions || "",
+      faceless: newOrderData.faceless ? "with-outline" as const : "without-outline" as const,
+      attachments: [],
+    };
+    setValues(initialValues);
+    existingAttachments.value = newOrderData.order_attachments || [];
+  }
+}, { immediate: true });
 </script>

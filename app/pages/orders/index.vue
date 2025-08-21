@@ -1,7 +1,7 @@
 <template>
   <div>
     <OrderTable
-      @create-order="showOrderModal = true"
+      @create-order="$router.push('/orders/create')"
       :data="data?.data?.orders ?? []"
       :pagination="{
         currentPage: data?.data?.pagination.currentPage || 1,
@@ -20,9 +20,6 @@
       @paginate="(nextPage) => (currentPage = nextPage)"
       @row-click="$router.push(`/orders/${$event.row.id}`)"
     />
-    <UiModal v-model="showOrderModal">
-      <OrderForm @success="onOrderSuccess" />
-    </UiModal>
   </div>
 </template>
 
@@ -67,7 +64,4 @@ const { data, pending, error, refresh } = useFetch<OrderResponse>("/api/orders",
   lazy: true,
 });
 
-const onOrderSuccess = () => {
-  showOrderModal.value = false;
-};
 </script>

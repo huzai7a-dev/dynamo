@@ -30,17 +30,7 @@
             <span :class="['text-sm', isActive(item.path) ? 'font-medium' : 'font-normal']">
               {{ item.label }}
             </span>
-            <span 
-              v-if="item.badge"
-              :class="[
-                'ml-auto px-2 py-0.5 text-xs font-medium rounded-full',
-                isActive(item.path)
-                  ? 'bg-white/30 text-white'
-                  : 'bg-white/20 text-white/90'
-              ]"
-            >
-              {{ item.badge }}
-            </span>
+           
           </NuxtLink>
         </li>
       </ul>
@@ -54,7 +44,7 @@ const router = useRouter();
 // Navigation items with badges
 const navItems = [
   { label: "Dashboard", path: "/dashboard", icon: "ChartNoAxesCombined" },
-  { label: "Orders", path: "/orders", icon: "ShoppingCart", badge: "5" },
+  { label: "Orders", path: "/orders", icon: "ShoppingCart", },
   { label: "Invoices", path: "/invoices", icon: "ReceiptText" },
 ];
 
