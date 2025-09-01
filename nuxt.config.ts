@@ -23,6 +23,7 @@ export default defineNuxtConfig({
       sitemap: 'https://dynamostitches.com/sitemap.xml'
     }],
     'nuxt-auth-utils',
+    '@nuxthub/core',
   ],
   site: {
     url:'https://dynamostitches.com',

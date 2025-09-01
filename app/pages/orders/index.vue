@@ -40,7 +40,6 @@ interface OrderResponse {
   };
 }
 
-const showOrderModal = ref(false);
 const currentPage = ref(1);
 const orderNumber = ref("");
 const orderName = ref("");
@@ -56,7 +55,7 @@ const params = computed(() => ({
   ...(dateRange.value.to && { date_to: dateRange.value.to.toISOString().split('T')[0] }),
 }));
 
-const debounceParams: Ref<OrderParams> = ref(useDebounce(params, 500));
+const debounceParams: Ref<QueryParams> = ref(useDebounce(params, 500));
 
 const { data, pending, error, refresh } = useFetch<OrderResponse>("/api/orders", {
   params: debounceParams,

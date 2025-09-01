@@ -1,7 +1,7 @@
 import {
   type OrderFieldsRequest,
   type OrderFilesRequest,
-  type OrderParams,
+  type QueryParams,
 } from "#shared/types";
 import { OrderStatus } from "#shared/types/enums";
 
@@ -93,7 +93,7 @@ class OrderService {
     return { orderId };
   }
 
-  async getOrders(orderParams: OrderParams, isAdmin = false) {
+  async getOrders(orderParams: QueryParams, isAdmin = false) {
     const {
       user_id,
       limit = 10,

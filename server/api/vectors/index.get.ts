@@ -1,5 +1,5 @@
 import type { QueryParams } from "~~/shared/types";
-import OrderService from "../../services/order.service";
+import VectorService from "../../services/vector.service";
 import { ROLE } from "~~/shared/constants";
 
 export default defineEventHandler(async (event) => {
@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const { page, limit, order_name, order_number, date_from, date_to } = getQuery(event);
   const isAdmin = role === ROLE.Admin;
 
-  const orderParams: QueryParams = {
+  const queryParams: QueryParams = {
     user_id: userId,
     limit: limit ? Number(limit) : 10,
     page: page ? Number(page) : 1,
@@ -17,11 +17,11 @@ export default defineEventHandler(async (event) => {
     date_to: date_to ? String(date_to) : undefined,
   };
   try {
-    const orders = await OrderService.getOrders(orderParams, isAdmin);
+    const vectors = await VectorService.getVectors(isAdmin, queryParams);
 
     return {
-      message: "Order created successfully",
-      data: orders,
+      message: "Vector fetched successfully",
+      data: vectors,
     };
   } catch (error) {
     console.log(error);

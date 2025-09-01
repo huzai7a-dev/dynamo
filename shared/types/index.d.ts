@@ -7,8 +7,11 @@ export type OrderRequest = z.infer<typeof OrderSchema>;
 export type OrderFieldsRequest = Omit<OrderRequest, 'attachments'>;
 export type OrderFilesRequest = OrderRequest['attachments']; 
 
+export type VectorRequest = z.infer<typeof VectorSchema>;
+export type VectorFieldsRequest = Omit<VectorRequest, 'attachments'>;
+export type VectorFilesRequest = VectorRequest['attachments'];
 
-export interface OrderParams {
+export interface QueryParams {
     user_id: string;
     limit?: number;
     page?: number;
@@ -39,7 +42,7 @@ export interface IOrder {
     fabric: string;          
     placement: string;    
     num_colors: number;
-    blending: "No" | "Yes" | "Not Sure";
+    blending: "No" | "Yes";
     rush: "No" | "Yes";
     instructions: string | null;
     status: OrderStatus;
@@ -52,6 +55,36 @@ export interface IOrder {
     order_attachments: Attachment[]
     delivery_attachments: Attachment[]
   }
+
+export interface IVector {
+    id: number;
+    vector_name: string;
+    po_number: string;
+    required_format: string;
+    num_colors: number;
+    blending: "No" | "Yes";
+    rush: "No" | "Yes";
+    instructions: string | null;
+    status: OrderStatus;
+    created_at: string; 
+    updated_at: string; 
+    user_id: number;
+    payment_status: PaymentStatus;
+    price: string;
+    vector_attachments: Attachment[]
+    delivery_attachments: Attachment[]
+    contact_name: string
+}
+
+export interface TableVector {
+    id: string,
+    vector_name: string,
+    price: number,
+    status: OrderStatus,
+    payment_status: PaymentStatus,
+    created_at: string 
+    contact_name: string
+}
 
 export interface Pagination {
     currentPage: number,

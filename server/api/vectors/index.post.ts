@@ -1,5 +1,5 @@
-import OrderService from "../../services/order.service"
 import { parseMultipart } from "../../utils/multiplart"
+import VectorService from "../../services/vector.service"
 
 export default defineEventHandler(async (event) => {
     // await readValidatedBody(event, (body) => OrderSchema.parse(body));
@@ -8,10 +8,10 @@ export default defineEventHandler(async (event) => {
     try {
         const { fields, files } = await parseMultipart(event);
 
-        const order = await OrderService.createOrder(userId, fields, files)
+        const order = await VectorService.createVector(userId, fields, files)
 
         return {
-            message: 'Order created successfully',
+            message: 'Vector created successfully',
             data: order
         }
     } catch (error) {

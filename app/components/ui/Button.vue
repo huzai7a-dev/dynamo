@@ -23,7 +23,7 @@
   </template>
   
   <script lang="ts" setup>
-  import { computed, defineEmits } from 'vue'
+  import { computed } from 'vue'
   
   type Variant =
     | 'primary'

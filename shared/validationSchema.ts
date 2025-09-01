@@ -117,8 +117,20 @@ const OrderSchema = z.object({
   faceless: z.enum(['with-outline', 'without-outline']).optional(),
 })
 
+const VectorSchema = z.object({
+  vectorName: z.string().min(1, 'Vector name is required'),
+  poNumber: z.string().optional(),
+  requiredFormat: z.string().min(1, 'Required format is required'),
+  blending: z.enum(['No', 'Yes', 'Not Sure']),
+  rush: z.enum(['No', 'Yes']),
+  numColors: z.string().regex(/^\d+$/, 'Must be a number').optional(),
+  instructions: z.string().optional(),
+  attachments: z.array(z.instanceof(File)),
+})
+
 export {
     RegisterSchema,
     LoginSchema,
-    OrderSchema
+    OrderSchema,
+    VectorSchema
 }

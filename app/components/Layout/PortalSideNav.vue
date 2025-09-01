@@ -45,6 +45,7 @@ const router = useRouter();
 const navItems = [
   { label: "Dashboard", path: "/dashboard", icon: "ChartNoAxesCombined" },
   { label: "Orders", path: "/orders", icon: "ShoppingCart", },
+  { label: "Vectors", path: "/vectors", icon: "PenTool", },
   { label: "Invoices", path: "/invoices", icon: "ReceiptText" },
 ];
 
