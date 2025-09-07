@@ -32,7 +32,7 @@ const handleError = () => {
 };
 
 definePageMeta({
-  name: "Create Order",
+  name: "Create Vector",
   layout: "portal",
   middleware: ["auth"],
 });

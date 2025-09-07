@@ -4,6 +4,7 @@ import {
   type QueryParams,
 } from "#shared/types";
 import { OrderStatus } from "#shared/types/enums";
+import OrderRepository from "../repositories/order.respository";
 
 import uploadService, { type UploadedAsset } from "./upload.service";
 
@@ -30,67 +31,7 @@ class OrderService {
       });
     }
 
-    const widthNum =
-      fields.width != null && fields.width !== "" ? Number(fields.width) : null;
-    const heightNum =
-      fields.height != null && fields.height !== ""
-        ? Number(fields.height)
-        : null;
-    const colorsInt =
-      fields.numColors != null && fields.numColors !== ""
-        ? Number(fields.numColors)
-        : null;
-
-    const rows = await this.db`
-    WITH new_order AS (
-      INSERT INTO orders (
-        order_name, po_number, required_format,
-        width_in, height_in, fabric, placement,
-        num_colors, blending, rush, instructions, 
-        faceless, user_id
-      )
-      VALUES (
-        ${fields.orderName},
-        ${fields?.poNumber || null},
-        ${fields.requiredFormat},
-        ${widthNum},
-        ${heightNum},
-        ${fields.fabric},
-        ${fields.placement},
-        ${colorsInt},
-        ${fields.blending},   -- enum
-        ${fields.rush},       -- enum
-        ${fields?.instructions || null},
-        ${fields?.faceless || null},
-        ${userId}
-
-      )
-      RETURNING id
-    ),
-    data AS (
-      SELECT jsonb_array_elements(${JSON.stringify(uploaded)}::jsonb) AS j
-    ),
-    ins AS (
-      INSERT INTO attachments (
-        order_id, url, public_id, resource_type, format, bytes, original_filename, field_name
-      )
-      SELECT
-        (SELECT id FROM new_order),
-        j->>'url',
-        j->>'publicId',
-        j->>'resourceType',
-        NULLIF(j->>'format','')::text,
-        NULLIF(j->>'bytes','')::bigint,
-        NULLIF(j->>'originalFilename','')::text,
-        'order_attachments'
-      FROM data
-      RETURNING 1
-    )
-    SELECT id AS order_id FROM new_order;
-  `;
-
-    const orderId = rows[0]?.order_id as number;
-    return { orderId };
+    return await OrderRepository.createOrder(userId, fields, uploaded, {type: DataSource.ORDER});
   }
 
   async getOrders(orderParams: QueryParams, isAdmin = false) {
@@ -104,19 +45,20 @@ class OrderService {
       date_from,
       date_to,
     } = orderParams;
-  
+
     const values: any[] = [];
     let i = 1; // next $ placeholder index
-  
+
     // Build WHERE conditions
     const whereConditions: string[] = [];
-  
-    // Only non-admins are restricted to their own orders
+    whereConditions.push(`o.metadata->>'type' = $${i++}`);
+    values.push(DataSource.ORDER);
+
     if (!isAdmin) {
       whereConditions.push(`o.user_id = $${i++}`);
       values.push(user_id);
     }
-  
+
     if (order_number) {
       whereConditions.push(`o.id = $${i++}`);
       values.push(order_number);
@@ -126,57 +68,34 @@ class OrderService {
       whereConditions.push(`u.contact_name ILIKE $${i++}`);
       values.push(`%${customer_name}%`);
     }
-  
+
     if (order_name) {
       whereConditions.push(`o.order_name ILIKE $${i++}`);
       values.push(`%${order_name}%`);
     }
-  
+
     if (date_from && date_to) {
       whereConditions.push(`o.created_at >= $${i++}::date`);
       whereConditions.push(`o.created_at < ($${i++}::date + interval '1 day')`);
       values.push(date_from, date_to);
     }
-  
-    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
-  
-    // Count query
-    const countQuery = `SELECT COUNT(*) FROM orders o ${whereClause}`;
-    const countRows = await this.db.query(countQuery, values);
-    const totalRecords = Number(countRows[0].count) || 0;
-    const totalPage = Math.max(1, Math.ceil(totalRecords / limit));
-  
-    // Data query - Include JOIN with users table when admin is true
-    const selectFields = isAdmin 
-      ? `o.id,
-         o.order_name,
-         o.price,
-         o.status,
-         o.payment_status,
-         o.created_at,
-         u.contact_name as customer_name`
-      : `o.id,
-         o.order_name,
-         o.price,
-         o.status,
-         o.payment_status,
-         o.created_at`;
-    
-    const joinClause = isAdmin ? 'LEFT JOIN users u ON o.user_id = u.id' : '';
-    
-    const dataQuery = [
-      `SELECT ${selectFields}`,
-      `FROM orders o`,
-      joinClause,
-      whereClause,
-      `ORDER BY o.created_at DESC`,
-      `LIMIT $${i++}`,
-      `OFFSET $${i++}`,
-    ].filter(Boolean).join(' ');
-  
-    const dataValues = [...values, limit, (page - 1) * limit];
-    const orders = await this.db.query(dataQuery, dataValues);
-  
+
+    // Get total page count and quotes data from repository
+    const [totalPage, orders] = await Promise.all([
+      OrderRepository.getTotalPageCount(
+        whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '',
+        values,
+        limit
+      ),
+      OrderRepository.getOrdersWithFilters(
+        whereConditions,
+        values,
+        isAdmin,
+        limit,
+        (page - 1) * limit
+      )
+    ]);
+
     return {
       orders,
       pagination: {
@@ -185,7 +104,7 @@ class OrderService {
       },
     };
   }
-  
+
 
   async getOrderDetails(isAdmin: boolean, orderId: number, userId: number) {
     const order = await this.db`
@@ -251,13 +170,12 @@ class OrderService {
     files: OrderFilesRequest,
     existingAttachments: string[]
   ) {
-    console.log("Updating order:", { orderId, userId, existingAttachments });
-    
+
     // Check if user owns this order or is admin
     const order = await this.db`
       SELECT user_id FROM orders WHERE id = ${orderId}
     `;
-    
+
     if (!order[0] || order[0].user_id !== parseInt(userId)) {
       throw new Error("Order not found or access denied");
     }
@@ -355,11 +273,11 @@ class OrderService {
 
   async deliverOrder(fields: any, files: any) {
     const { orderId, estimateAmount, notes } = fields;
-  
+
     const attachmentsInput = (files || []).filter(
       (f: any) => f.fieldName === "attachments" || f.fieldName == null
     );
-  
+
     let uploaded: UploadedAsset[] = [];
     if (attachmentsInput.length) {
       uploaded = await uploadService.uploadBuffers(attachmentsInput, {
@@ -367,7 +285,7 @@ class OrderService {
         tags: ["delivery"],
       });
     }
-  
+
     const rows = await this.db`
       WITH order_update AS (
         UPDATE orders 
@@ -398,13 +316,13 @@ class OrderService {
       SELECT 
         (SELECT id FROM order_update) AS order_id;
     `;
-  
+
     const result = rows[0];
-    return { 
-      orderId: result?.order_id 
+    return {
+      orderId: result?.order_id
     };
   }
-  
+
 }
 
 export default new OrderService();

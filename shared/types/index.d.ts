@@ -1,4 +1,4 @@
-import type { OrderSchema, RegisterSchema } from "../validationSchema";
+import type { OrderSchema, RegisterSchema, VectorSchema } from "../validationSchema";
 import { OrderStatus, PaymentStatus } from "./enums";
 
 export type IUser = z.infer<typeof RegisterSchema>
@@ -10,6 +10,11 @@ export type OrderFilesRequest = OrderRequest['attachments'];
 export type VectorRequest = z.infer<typeof VectorSchema>;
 export type VectorFieldsRequest = Omit<VectorRequest, 'attachments'>;
 export type VectorFilesRequest = VectorRequest['attachments'];
+
+export type QuoteRequest = z.infer<typeof OrderSchema>;
+export type QuoteFieldsRequest = Omit<QuoteRequest, 'attachments'>;
+export type QuoteFilesRequest = QuoteRequest['attachments']; 
+
 
 export interface QueryParams {
     user_id: string;
@@ -30,6 +35,7 @@ export interface TableOrders {
     payment_status: PaymentStatus,
     created_at: string 
     customer_name?: string
+    metadata?: any
 }
 
 export interface IOrder {

@@ -53,6 +53,9 @@
           </span>
         </template>
 
+        <template #column-convert_from_quote="{ row }">
+          <span class="text-primary font-semibold">{{ row.convert_from_quote }}</span>
+        </template>
       </UiTable>
       </div>
     </div>
@@ -106,6 +109,7 @@ const formateData = computed(() => {
     price: item.price > 0 ? `$${item.price}` : "N/A",
     ...(isAdmin.value ? {
       customer_name: item.customer_name,
+      convert_from_quote: item.metadata?.convertFromQuote ? "Yes" : "No",
     } : {}),
   }));
 });
@@ -116,7 +120,7 @@ const columns = ref([
   { label: "Serial Number", key: "serial_number" },
   { label: "Order Number", key: "id" },
   { label: "Order Name", key: "order_name" },
-  ...(isAdmin.value ? [{ label: "Customer Name", key: "customer_name" }] : []),
+  ...(isAdmin.value ? [{ label: "Customer Name", key: "customer_name" }, { label: "Converted From Quote", key: "convert_from_quote" }] : []),
   { label: "Price", key: "price" },
   { label: "Order Status", key: "status" },
   { label: "Payment Status", key: "payment_status" },

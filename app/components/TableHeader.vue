@@ -53,7 +53,7 @@
           rounded
           @click="$emit('create-order')"
         >
-          Create Order
+         {{ createButtonLabel || 'Create Order' }}
         </UiButton>
       </div>
     </div>
@@ -72,6 +72,10 @@ interface DateRange {
 }
 
 defineProps({
+  createButtonLabel: {
+    type: String,
+    default: 'Create Order'
+  },
   searchOrderNumber: {
     type: String,
     default: ''

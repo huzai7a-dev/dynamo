@@ -2,7 +2,7 @@
 import { OrderKeyValue as KeyValue } from '#components';
 
 
-const props = defineProps<{
+defineProps<{
   order: {
     order_name: string
     po_number: string

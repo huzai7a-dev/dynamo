@@ -163,7 +163,7 @@
       size="lg" 
       :disabled="disabledSubmit"
     >
-       {{ isLoading ? (isEditMode ? 'Updating Order...' : 'Creating Order...') : (isEditMode ? 'Update Order' : 'Create Order') }} 
+       {{ isLoading ? (isEditMode ? `Updating ${routeName}...` : `Creating ${routeName}...`) : (isEditMode ? `Update ${routeName}` : `Create ${routeName}`) }} 
     </UiButton>
   </form>
 </template>
@@ -177,15 +177,19 @@ import { OrderSchema } from "~~/shared/validationSchema";
 interface Props {
   orderData?: IOrder;
   isEditMode?: boolean;
+  endpoint?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   isEditMode: false,
-  orderData: undefined
+  orderData: undefined,
+  endpoint: "orders"
 });
 
 const emit = defineEmits(['success', 'error']);
 
+const route = useRoute();
+const routeName = route.name?.toString().split(' ')[1]?.toLowerCase() || 'order';
 
 const { handleSubmit, errors, defineField, setValues } = useForm({
   validationSchema: toTypedSchema(OrderSchema),
@@ -264,8 +268,8 @@ const onSubmit = handleSubmit(async (formValues) => {
     });
 
     const url = props.isEditMode 
-      ? `/api/orders/${props.orderData?.id}` 
-      : "/api/orders";
+      ? `/api/${props.endpoint}/${props.orderData?.id}` 
+      : `/api/${props.endpoint}`;
     
     const method = props.isEditMode ? "PUT" : "POST";
 

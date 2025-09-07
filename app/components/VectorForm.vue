@@ -36,6 +36,7 @@
         :error="errors.numColors"
       />
     </div>
+
     <div class="space-y-4 flex justify-between items-center">
       <div>
         <label class="block text-md font-semibold text-gray-700"
@@ -124,18 +125,18 @@
 <script setup lang="ts">
 import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
-import { fabricOptions, formatOptions, placementOptions } from "~/constants";
-import { OrderSchema, VectorSchema } from "~~/shared/validationSchema";
+import { formatOptions } from "~/constants";
+import { VectorSchema } from "~~/shared/validationSchema";
 import type { IVector } from "~~/shared/types";
 
 interface Props {
-  orderData?: IVector;
+  vectorData?: IVector;
   isEditMode?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   isEditMode: false,
-  orderData: undefined,
+  vectorData: undefined,
 });
 
 const emit = defineEmits(["success", "error"]);
@@ -168,7 +169,7 @@ const isLoading = ref(false);
 
 // Track existing attachments for edit mode
 const existingAttachments = ref<Attachment[]>(
-  props.orderData?.vector_attachments || []
+  props.vectorData?.vector_attachments || []
 );
 
 const disabledSubmit = computed(
@@ -206,7 +207,7 @@ const onSubmit = handleSubmit(async (formValues) => {
     });
 
     const url = props.isEditMode
-      ? `/api/vectors/${props.orderData?.id}`
+      ? `/api/vectors/${props.vectorData?.id}`
       : "/api/vectors";
 
     const method = props.isEditMode ? "PUT" : "POST";
@@ -227,7 +228,7 @@ const onSubmit = handleSubmit(async (formValues) => {
 
 // Watch for orderData changes and update form
 watch(
-  () => props.orderData,
+  () => props.vectorData,
   (newOrderData) => {
     if (newOrderData && props.isEditMode) {
       const initialValues = {

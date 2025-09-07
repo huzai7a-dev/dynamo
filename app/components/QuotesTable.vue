@@ -6,7 +6,7 @@
         class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
       >
         <TableHeader
-          createButtonLabel="Create Vector"
+          createButtonLabel="Create Quote"
           :searchOrderNumber="searchOrderNumber"
           :searchOrderName="searchOrderName"
           :selectedDateRange="selectedDateRange"
@@ -62,7 +62,7 @@
   
   <script lang="ts" setup>
   import { ref } from "vue";
-  import type { TableOrders, Pagination, IVector, TableVector } from "#shared/types";
+  import type { TableOrders, Pagination } from "#shared/types";
   import TableHeader from "./TableHeader.vue";
   import { ROLE } from "~~/shared/constants";
   import { 
@@ -74,7 +74,7 @@
   
   interface Props {
     title?: string;
-    data?: IVector[];
+    data?: TableOrders[];
     pagination?: Pagination;
     loading: boolean;
     error: boolean;
@@ -89,7 +89,7 @@
     'create-order': [];
     'paginate': [page: number];
     'sort': [sortBy: string, sortOrder: string];
-    'rowClick': [{row: TableVector, index: number}];
+    'rowClick': [{row: TableOrders, index: number}];
     'update:searchOrderNumber': [value: string];
     'update:searchOrderName': [value: string];
     'update:searchCustomerName': [value: string];
@@ -104,9 +104,9 @@
     return props.data?.map((item) => ({
       ...item,
       created_at: formateDate(item.created_at),
-      price: Number(item.price) > 0 ? `$${item.price}` : "N/A",
+      price: item.price > 0 ? `$${item.price}` : "N/A",
       ...(isAdmin.value ? {
-        customer_name: item?.contact_name,
+        customer_name: item.customer_name,
       } : {}),
     }));
   });
@@ -115,11 +115,11 @@
   
   const columns = ref([
     { label: "Serial Number", key: "serial_number" },
-    { label: "Vector Number", key: "id" },
-    { label: "Vector Name", key: "vector_name" },
+    { label: "Quote Number", key: "id" },
+    { label: "Quote Name", key: "order_name" },
     ...(isAdmin.value ? [{ label: "Customer Name", key: "customer_name" }] : []),
     { label: "Price", key: "price" },
-    { label: "Vector Status", key: "status" },
+    { label: "Quote Status", key: "status" },
     { label: "Payment Status", key: "payment_status" },
     { label: "Date", key: "created_at" },
   ]);

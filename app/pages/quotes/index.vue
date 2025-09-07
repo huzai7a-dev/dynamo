@@ -1,8 +1,8 @@
 <template>
     <div>
-      <VectorsTable
-        @create-order="$router.push('/vectors/create')"
-        :data="data?.data?.vectors ?? []"
+      <QuotesTable
+        @create-order="$router.push('/quotes/create')"
+        :data="data?.data?.quotes ?? []"
         :pagination="{
           currentPage: data?.data?.pagination.currentPage || 1,
           totalPage: data?.data?.pagination.totalPage || 10,
@@ -18,25 +18,24 @@
         @update:selectedDateRange="dateRange = $event"
         @update:searchCustomerName="customerName = $event"
         @paginate="(nextPage) => (currentPage = nextPage)"
-        @row-click="$router.push(`/vectors/${$event.row.id}`)"
+        @row-click="$router.push(`/quotes/${$event.row.id}`)"
       />
     </div>
   </template>
   
   <script setup lang="ts">
   import { ref } from "vue";
-  import type { IVector, Pagination, QueryParams, } from "~~/shared/types";
+  import type { Pagination, TableOrders } from "~~/shared/types";
   
   definePageMeta({
     layout: "portal",
     middleware: ["auth"],
-    name:"Vectors"
   });
   
   interface OrderResponse {
     message: string;
     data: {
-      vectors: IVector[];
+      quotes: TableOrders[];
       pagination: Pagination;
     };
   }
@@ -58,7 +57,7 @@
   
   const debounceParams: Ref<QueryParams> = ref(useDebounce(params, 500));
   
-  const { data, pending, error, refresh } = useFetch<OrderResponse>("/api/vectors", {
+  const { data, pending, error, refresh } = useFetch<OrderResponse>("/api/quotes", {
     params: debounceParams,
     keepalive: true,
     lazy: true,

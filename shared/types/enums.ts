@@ -6,8 +6,20 @@ export enum OrderStatus {
     CANCELLED = 'cancelled',
   }
   
-  export enum PaymentStatus {
+export enum PaymentStatus {
     PAID = 'paid',
     UNPAID = 'unpaid'
-  }
+}
   
+export enum DataSource {
+    QUOTE = 'quote',
+    ORDER = 'order',
+    VECTOR = 'vector',
+}
+
+export enum QuoteStatus {
+    PENDING = 'pending',
+    ACCEPTED = 'accepted',
+    REJECTED = 'rejected',
+    PROCEED = 'proceeded',
+}

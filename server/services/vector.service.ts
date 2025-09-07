@@ -1,12 +1,9 @@
 import type { QueryParams, VectorFieldsRequest, VectorFilesRequest } from "~~/shared/types";
 import uploadService, { type UploadedAsset } from "./upload.service";
 import VectorRepository from "../repositories/vector.repository";
+import AttachmentsRepository from "../repositories/attachments.repository";
 
 class VectorService {
-  db: any;
-  constructor() {
-    this.db = useDb();
-  }
 
   async createVector(userId: string, fields: VectorFieldsRequest, files: VectorFilesRequest) {
     const attachmentsInput = (files || []).filter(
@@ -72,43 +69,21 @@ class VectorService {
       values.push(date_from, date_to);
     }
 
-    const totalPage = await VectorRepository.getTotalPageCount(
-      whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '',
-      values,
-      limit
-    );
-
-    // Data query - Include JOIN with users table when admin is true
-    const selectFields = isAdmin
-      ? `v.id,
-       v.vector_name,
-       v.price,
-       v.status,
-       v.payment_status,
-       v.created_at,
-       u.contact_name as customer_name`
-      : `v.id,
-       v.vector_name,
-       v.price,
-       v.status,
-       v.payment_status,
-       v.created_at`;
-
-    const joinClause = isAdmin ? 'LEFT JOIN users u ON v.user_id = u.id' : '';
-    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
-
-    const dataQuery = [
-      `SELECT ${selectFields}`,
-      `FROM vectors v`,
-      joinClause,
-      whereClause,
-      `ORDER BY v.created_at DESC`,
-      `LIMIT $${i++}`,
-      `OFFSET $${i++}`,
-    ].filter(Boolean).join(' ');
-
-    const dataValues = [...values, limit, (page - 1) * limit];
-    const vectors = await this.db.query(dataQuery, dataValues);
+    // Get total page count and vectors data from repository
+    const [totalPage, vectors] = await Promise.all([
+      VectorRepository.getTotalPageCount(
+        whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '',
+        values,
+        limit
+      ),
+      VectorRepository.getVectorsWithFilters(
+        whereConditions,
+        values,
+        isAdmin,
+        limit,
+        (page - 1) * limit
+      )
+    ]);
 
     return {
       vectors,
@@ -117,6 +92,41 @@ class VectorService {
         currentPage: page,
       },
     };
+  }
+
+  async getVectorDetails(id: number, isAdmin: boolean, userId: number) {
+    const vector = await VectorRepository.getVectorDetails(id, isAdmin, userId);
+    return vector;
+  }
+
+  async updateVectorStatus(isAdmin: boolean, vectorId: number, status: OrderStatus) {
+    const AdminActions = [OrderStatus.IN_PROGRESS, OrderStatus.DELIVERED, OrderStatus.REJECTED]
+    const UserActions = [OrderStatus.CANCELLED]
+
+    if (isAdmin && !AdminActions.includes(status)) {
+      throw new Error("Admin can only update the status to IN_PROGRESS, DELIVERED, or REJECTED")
+    }
+
+    if (!isAdmin && !UserActions.includes(status)) {
+      throw new Error("User can only update the status to CANCELLED")
+    }
+
+    const vector = await VectorRepository.updateVectorStatus(vectorId, status)
+    return vector
+  }
+
+  async updateVector(userId: string, vectorId: number, fields: VectorFieldsRequest, files: VectorFilesRequest, existingAttachments: string[]) {
+    const vector = await VectorRepository.findById(vectorId);
+    const isUserVector = vector.user_id !== userId
+    
+    if (!vector || isUserVector) {
+      throw new Error("Vector not found or access denied");
+    }
+  
+    const updatedVector = await VectorRepository.updateVectorFields(vectorId, fields, files, existingAttachments);
+    await AttachmentsRepository.updateExistingAttachments(vectorId, existingAttachments, 'vector_attachments');
+    await AttachmentsRepository.addNewAttachments(vectorId, files, 'vector_attachments');
+    return updatedVector;
   }
 }
 
