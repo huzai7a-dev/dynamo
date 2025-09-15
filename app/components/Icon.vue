@@ -2,17 +2,17 @@
   <component :is="iconComponent" v-bind="iconProps" />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, defineAsyncComponent } from 'vue'
 
 const props = defineProps({
-  name: { type: String, required: true },
+  name: { type: String as PropType<keyof typeof iconMap>, required: true },
   size: { type: [Number, String], default: 24 },
   color: { type: String, default: undefined },
 })
 
 // Lazy icon mapping - each icon is imported only when accessed
-const iconMap = {
+ const iconMap = {
   Mail: () => import('lucide-vue-next').then(m => m.Mail),
   Phone: () => import('lucide-vue-next').then(m => m.Phone),
   Instagram: () => import('lucide-vue-next').then(m => m.Instagram),
@@ -89,14 +89,14 @@ const iconMap = {
   ChevronUp: ()=> import('lucide-vue-next').then(m => m.ChevronUp),
   Settings: ()=> import('lucide-vue-next').then(m => m.Settings),
   Rows3: ()=> import('lucide-vue-next').then(m => m.Rows3),
-  Quote: ()=> import('lucide-vue-next').then(m => m.Quote),
-  DollarSign: ()=> import('lucide-vue-next').then(m => m.DollarSign),
   Plus: ()=> import('lucide-vue-next').then(m => m.Plus),
   Trash: ()=> import('lucide-vue-next').then(m => m.Trash),
   File: ()=> import('lucide-vue-next').then(m => m.File),
   Eye: ()=> import('lucide-vue-next').then(m => m.Eye),
   Package: ()=> import('lucide-vue-next').then(m => m.Package),
 }
+
+export type IconName = keyof typeof iconMap
 
 const iconComponent = computed(() => {
   const iconLoader = iconMap[props.name]

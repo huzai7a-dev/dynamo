@@ -55,6 +55,7 @@ class OrderRepository {
         ].filter(Boolean).join(' ');
 
         const dataValues = [...values, limit, offset];
+        console.log(dataQuery, dataValues, 'dataQuery');
         const orders = await this.db.query(dataQuery, dataValues);
         return orders;
     }

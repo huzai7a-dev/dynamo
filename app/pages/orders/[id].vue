@@ -33,27 +33,20 @@
               Order Details
             </h2>
             <OrderMetaGrid :order="order" />
-          </div>
-
-          <div
-            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-          >
             <AttachmentsGallery
-              title="Order Attachments"
+              class="mt-6"
+              title="Attachments"
               noAttachmentsMessage="No order attachments uploaded."
               :attachments="order.order_attachments || []"
             />
           </div>
 
-          <div
-            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-          >
-            <AttachmentsGallery
-              title="Delivery Attachments"
-              noAttachmentsMessage="No delivery attachments uploaded yet."
-              :attachments="order.delivery_attachments || []"
-            />
-          </div>
+          <!-- Delivery Details -->
+          <DeliveryDetails 
+            v-if="deliveryData" 
+            :deliveryData="deliveryData" 
+          />
+          
         </div>
 
         <aside class="space-y-6">
@@ -121,13 +114,15 @@
   <!-- Delivery Modal -->
   <DeliveryModal
     v-model="showDeliveryModal"
-    :order-id="route.params.id as string"
+    :orderId="String(route.params.id)"
     @on:deliver="handleDeliveryComplete"
   />
 </template>
 
 <script setup  lang="ts">
+import type { DeliveryFormData } from "~/components/DeliveryModal.vue";
 import { ROLE } from "~~/shared/constants";
+import type { OrderDelivery } from "~~/shared/types";
 import { OrderStatus } from "~~/shared/types/enums";
 
 interface OrderResponse {
@@ -147,6 +142,10 @@ const showDeliveryModal = ref(false);
 const { data, pending, error, refresh } = useFetch<OrderResponse>(
   `/api/orders/${route.params.id}`
   );
+
+const { data: deliveryData, pending: deliveryPending, error: deliveryError, refresh: deliveryRefresh } = useFetch<OrderDelivery>(
+  `/api/orders/deliver/${route.params.id}`,
+);
   
 const order = computed(() => data.value?.data);
 
@@ -164,27 +163,44 @@ const updateOrderStatus = async (status: OrderStatus) => {
   }
 }
 
-const handleDeliveryComplete = async (deliveryData: { 
-  orderId: string; 
-  estimateAmount: string; 
-  files: File[]; 
-  notes: string 
-}) => {
-
+const handleDeliveryComplete = async (deliveryData: DeliveryFormData) => {
   try {
+    const fd = new FormData();
     
-   const fd = new FormData();
-   fd.append("orderId", deliveryData.orderId);
-   fd.append("estimateAmount", deliveryData.estimateAmount);
-   fd.append("notes", deliveryData.notes);
-   deliveryData.files.forEach(file => {
-    fd.append("attachments", file);
-   });
+    // Required fields
+    fd.append("orderId", String(route.params.id));
+    fd.append("stitches", deliveryData.stitches);
+    fd.append("price", deliveryData.price);
+    
+    // Optional fields - only append if they have values
+    if (deliveryData.discount) fd.append("discount", deliveryData.discount);
+    if (deliveryData.total_price) fd.append("total_price", deliveryData.total_price);
+    if (deliveryData.order_category) fd.append("order_category", deliveryData.order_category);
+    if (deliveryData.height) fd.append("height", deliveryData.height);
+    if (deliveryData.width) fd.append("width", deliveryData.width);
+    if (deliveryData.comments) fd.append("comments", deliveryData.comments);
+    if (deliveryData.designer_level) fd.append("designer_level", deliveryData.designer_level);
+    if (deliveryData.assign_percentage) fd.append("assign_percentage", deliveryData.assign_percentage);
+    if (deliveryData.minimum_price) fd.append("minimum_price", deliveryData.minimum_price);
+    if (deliveryData.maximum_price) fd.append("maximum_price", deliveryData.maximum_price);
+    if (deliveryData.thousand_stitches) fd.append("thousand_stitches", deliveryData.thousand_stitches);
+    if (deliveryData.normal_delivery) fd.append("normal_delivery", deliveryData.normal_delivery);
+    if (deliveryData.edit_or_change) fd.append("edit_or_change", deliveryData.edit_or_change);
+    if (deliveryData.edit_in_stitch_file) fd.append("edit_in_stitch_file", deliveryData.edit_in_stitch_file);
+    if (deliveryData.comment_box_1) fd.append("comment_box_1", deliveryData.comment_box_1);
+    if (deliveryData.comment_box_2) fd.append("comment_box_2", deliveryData.comment_box_2);
+    if (deliveryData.comment_box_3) fd.append("comment_box_3", deliveryData.comment_box_3);
+    if (deliveryData.comment_box_4) fd.append("comment_box_4", deliveryData.comment_box_4);
+    
+    // Append attachments
+    deliveryData.attachments.forEach(file => {
+      fd.append("attachments", file);
+    });
 
-   await $fetch(`/api/orders/deliver`, {
-    method: "POST",
-    body: fd
-   });
+    await $fetch(`/api/orders/deliver`, {
+      method: "POST",
+      body: fd
+    });
     
     await refresh();
     toast.success("Order delivered successfully");

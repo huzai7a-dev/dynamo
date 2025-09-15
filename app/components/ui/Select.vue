@@ -4,7 +4,7 @@
       <label
         v-if="label"
         :for="selectId"
-        class="block mb-1 text-sm font-medium text-foreground"
+        class="block mb-2 text-sm font-medium text-gray-900"
       >
         {{ label }}
         <span v-if="required" class="text-red-500 text-lg ml-0.5">*</span>
@@ -14,15 +14,15 @@
       <!-- Select Wrapper -->
       <div
         :class="[
-          'relative rounded-xl transition-all shadow-md',
-          'bg-muted/20 hover:bg-muted/30',
+          'relative rounded-xl transition-all duration-200 border',
+          'focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500/20',
+          'bg-white hover:border-gray-400',
           'flex items-center',
           sizeClass,
           variantClass,
           {
             'cursor-not-allowed opacity-60': disabled,
-            'bg-muted/30': readonly,
-            'ring-1 ring-red-500': error
+            'bg-gray-50': readonly
           }
         ]"
       >
@@ -31,7 +31,7 @@
           v-model="model"
           :disabled="disabled"
           :class="[
-            'w-full appearance-none bg-transparent outline-none text-foreground placeholder:text-muted-foreground/50',
+            'w-full appearance-none bg-transparent outline-none text-gray-900 placeholder:text-gray-400',
             'px-4 pr-10', // right icon spacing
             sizeInputClass
           ]"
@@ -51,7 +51,7 @@
   
         <!-- Chevron Icon -->
         <svg
-          class="pointer-events-none absolute right-3 h-4 w-4 text-muted-foreground"
+          class="pointer-events-none absolute right-3 h-4 w-4 text-gray-600"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -121,14 +121,14 @@
     }[props.size || 'md']
   })
   
-  const variantClass = computed(() => {
-    return {
-      default: 'focus-within:ring-1 focus-within:ring-ring border border-transparent',
-      error: 'ring-1 ring-red-500 border border-red-500',
-      success: 'ring-1 ring-green-500 border border-green-500',
-      disabled: 'border-muted'
-    }[props.variant || 'default']
-  })
+const variantClass = computed(() => {
+  return {
+    default: 'border-gray-300',
+    error: 'border-red-500 focus-within:border-red-500 focus-within:ring-red-500/20',
+    success: 'border-green-500 focus-within:border-green-500 focus-within:ring-green-500/20',
+    disabled: 'border-gray-200'
+  }[props.variant || 'default']
+})
   
   function onChange(event: Event) {
     emit('update:modelValue', (event.target as HTMLSelectElement).value)

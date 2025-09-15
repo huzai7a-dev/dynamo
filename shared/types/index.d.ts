@@ -103,3 +103,38 @@ export interface Attachment {
     format?: string | null
     bytes?: number | null
 }
+
+export interface OrderDelivery {
+    id: string
+    order_id: string
+    stitches: number
+    price: string
+    discount?: string
+    total_price?: string
+    is_free?: boolean
+    height?: string
+    width?: string
+    comments?: string
+    designer_level?: string
+    assign_percentage?: string
+    price_criteria?: {
+      maximum_price?: number
+      minimum_price?: number
+      thousand_stitches?: number
+    }
+    customer_requirement?: {
+      comment_box_1?: string
+      comment_box_2?: string
+      comment_box_3?: string
+      comment_box_4?: string
+      edit_or_change?: string
+      normal_delivery?: string
+      edit_in_stitch_file?: string
+    }
+    created_at: string
+    delivery_attachments?: Attachment[]
+  }
+
+  export type VectorDelivery = Omit<OrderDelivery, 'order_id'> & {
+    vector_id: number
+  };

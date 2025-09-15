@@ -38,7 +38,10 @@
         >
           <!-- User info section -->
           <div class="px-4 py-3 border-b border-gray-100">
-            <p class="text-sm font-medium text-gray-900">{{ (user as IUser).fullName }}</p>
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-medium text-gray-900">{{ (user as IUser).fullName }}</p>
+              <p v-if="isAdmin" class="text-xs text-primary bg-primary-light rounded-full px-2 py-1">Admin</p>
+            </div>
             <p class="text-xs text-gray-500">{{ (user as IUser).email }}</p>
           </div>
           
@@ -83,9 +86,13 @@
 </template>
 
 <script setup lang="ts">
+import { ROLE } from "~~/shared/constants";
 import type { IUser } from "~~/shared/types";
 
 const { user, clear: logout } = useUserSession();
+const isAdmin = computed(() => {
+  return (user.value as IUser).role === ROLE.Admin;
+});
 const route = useRoute();
 const router = useRouter();
 

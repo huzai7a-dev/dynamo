@@ -31,8 +31,8 @@ class VectorRepository{
         SELECT jsonb_array_elements(${JSON.stringify(attachments)}::jsonb) AS j
       )
       , ins AS (
-        INSERT INTO attachments (
-          order_id, url, public_id, resource_type, format, bytes, original_filename, field_name
+        INSERT INTO vector_attachments (
+          vector_id, url, public_id, resource_type, format, bytes, original_filename, field_name
         )
         SELECT
           (SELECT id FROM new_vector),
@@ -127,22 +127,9 @@ class VectorRepository{
         )
         ORDER BY a.created_at
       ) AS attachments
-    FROM attachments AS a
-    WHERE a.order_id = v.id AND a.field_name = 'vector_attachments'
+    FROM vector_attachments AS a
+    WHERE a.vector_id = v.id AND a.field_name = 'vector_attachments'
   ) AS att ON TRUE
-   LEFT JOIN LATERAL (
-    SELECT jsonb_agg(
-      jsonb_build_object(
-        'url', a.url,
-        'resource_type', a.resource_type,
-        'format', a.format,
-        'bytes', a.bytes
-      )
-      ORDER BY a.created_at
-    ) AS delivery_attachments
-     FROM attachments AS a
-     WHERE a.order_id = v.id AND a.field_name = 'delivery_attachments'
-   ) AS del_att ON TRUE
    WHERE v.id = ${id}
    ${!isAdmin ? this.db`AND v.user_id = ${userId}` : this.db``}
   `;

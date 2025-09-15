@@ -5,10 +5,10 @@
 
     <!-- Top Stat Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-    <StatCard icon="Rows3" label="Orders" value="12" />
-    <StatCard icon="Quote" label="Quotes" value="5" />
-    <StatCard icon="PenTool" label="Vectors" value="3" />
-    <StatCard icon="DollarSign" label="Amount" value="$120" />
+    <StatCard icon="Rows3" label="Orders" :value="data?.orders ?? 0" />
+    <StatCard icon="Quote" label="Quotes" :value="data?.quotes ?? 0" />
+    <StatCard icon="PenTool" label="Vectors" :value="data?.vectors ?? 0" />
+    <StatCard icon="DollarSign" label="Amount" :value="data?.amount ?? 0" />
   </div>
 
     <!-- Statistics Title -->
@@ -20,7 +20,7 @@
       <MonthlyLineChart />
     </div>
     <div class="bg-white p-4 rounded-xl shadow">
-      <SubDonutChart />
+      <SubDonutChart v-if="!pending && !error && donutData" :data="donutData" />
     </div>
   </div>
 
@@ -30,7 +30,25 @@
 <script setup lang="ts">
 import type { IUser } from "~~/shared/types";
 
+interface DashboardResponse {
+    orders: number;
+    quotes: number;
+    vectors: number;
+    amount: number;
+}
+
 const { user } = useUserSession();
+
+const { data, pending, error } = useFetch<DashboardResponse>("/api/dashboard/stats", {
+  method: "GET",
+  lazy: true,
+  server: true,
+  keepalive: true,
+})
+
+const donutData = computed(() => {
+  return [data.value?.orders ?? 0, data.value?.vectors ?? 0, data.value?.quotes ?? 0]
+})
 
 definePageMeta({
   layout: "portal",

@@ -7,6 +7,12 @@
   </template>
   
   <script lang="ts" setup>
+
+  interface Props {
+    data: number[]
+  }
+
+  const props = defineProps<Props>();
   import { Doughnut as DoughnutChart } from 'vue-chartjs';
   import type { ChartData, ChartOptions } from 'chart.js';
   import BaseChart from './ui/BaseChart.vue';
@@ -16,7 +22,7 @@
     datasets: [
       {
         label: 'Total',
-        data: [25, 10, 5],
+        data: props.data || [1, 1, 1],
         backgroundColor: [
           'oklch(70.7% 0.165 254.624)',
           'rgba(34, 197, 94, 0.6)',

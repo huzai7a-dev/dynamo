@@ -5,6 +5,7 @@ import {
 } from "#shared/types";
 import { OrderStatus } from "#shared/types/enums";
 import OrderRepository from "../repositories/order.respository";
+import OrderDeliveryRepository, { type OrderDeliveryData } from "../repositories/order-delivery.repository";
 
 import uploadService, { type UploadedAsset } from "./upload.service";
 
@@ -110,8 +111,7 @@ class OrderService {
     const order = await this.db`
       SELECT
         o.*,
-        COALESCE(att.attachments, '[]'::jsonb) AS order_attachments,
-        COALESCE(del_att.delivery_attachments, '[]'::jsonb) AS delivery_attachments
+        COALESCE(att.attachments, '[]'::jsonb) AS order_attachments
       FROM orders AS o
       LEFT JOIN LATERAL (
         SELECT jsonb_agg(
@@ -126,19 +126,6 @@ class OrderService {
         FROM attachments AS a
         WHERE a.order_id = o.id AND a.field_name = 'order_attachments'
       ) AS att ON TRUE
-      LEFT JOIN LATERAL (
-        SELECT jsonb_agg(
-                 jsonb_build_object(
-                   'url', a.url,
-                   'resource_type', a.resource_type,
-                   'format', a.format,
-                   'bytes', a.bytes
-                 )
-                 ORDER BY a.created_at
-               ) AS delivery_attachments
-        FROM attachments AS a
-        WHERE a.order_id = o.id AND a.field_name = 'delivery_attachments'
-      ) AS del_att ON TRUE
       WHERE o.id = ${orderId}
       ${!isAdmin ? this.db`AND o.user_id = ${userId}` : this.db``}
     `;
@@ -272,7 +259,29 @@ class OrderService {
   }
 
   async deliverOrder(fields: any, files: any) {
-    const { orderId, estimateAmount, notes } = fields;
+    const { 
+      orderId, 
+      stitches, 
+      price, 
+      discount, 
+      total_price, 
+      order_category, 
+      height, 
+      width, 
+      comments, 
+      designer_level, 
+      assign_percentage, 
+      minimum_price, 
+      maximum_price, 
+      thousand_stitches, 
+      normal_delivery, 
+      edit_or_change, 
+      edit_in_stitch_file, 
+      comment_box_1, 
+      comment_box_2, 
+      comment_box_3, 
+      comment_box_4 
+    } = fields;
 
     const attachmentsInput = (files || []).filter(
       (f: any) => f.fieldName === "attachments" || f.fieldName == null
@@ -286,41 +295,50 @@ class OrderService {
       });
     }
 
-    const rows = await this.db`
-      WITH order_update AS (
-        UPDATE orders 
-        SET status = ${OrderStatus.DELIVERED},
-            price = ${estimateAmount}
-        WHERE id = ${orderId}
-        RETURNING id
-      ),
-      data AS (
-        SELECT jsonb_array_elements(${JSON.stringify(uploaded)}::jsonb) AS j
-      ),
-      attachments_insert AS (
-        INSERT INTO attachments (
-          order_id, url, public_id, resource_type, format, bytes, original_filename, field_name
-        )
-        SELECT
-          ${orderId},
-          j->>'url',
-          j->>'publicId',
-          j->>'resourceType',
-          NULLIF(j->>'format','')::text,
-          NULLIF(j->>'bytes','')::bigint,
-          NULLIF(j->>'originalFilename','')::text,
-          'delivery_attachments'
-        FROM data
-        RETURNING 1
-      )
-      SELECT 
-        (SELECT id FROM order_update) AS order_id;
-    `;
-
-    const result = rows[0];
-    return {
-      orderId: result?.order_id
+    // Prepare delivery data
+    const deliveryData: OrderDeliveryData = {
+      order_id: parseInt(orderId),
+      stitches: stitches ? parseInt(stitches) : undefined,
+      price: price ? parseFloat(price) : undefined,
+      discount: discount ? parseFloat(discount) : undefined,
+      total_price: total_price ? parseFloat(total_price) : undefined,
+      is_free: order_category === 'free',
+      height: height ? parseFloat(height) : undefined,
+      width: width ? parseFloat(width) : undefined,
+      comments: comments || undefined,
+      designer_level: designer_level || undefined,
+      assign_percentage: assign_percentage ? parseFloat(assign_percentage) : undefined,
+      price_criteria: {
+        minimum_price: minimum_price ? parseFloat(minimum_price) : undefined,
+        maximum_price: maximum_price ? parseFloat(maximum_price) : undefined,
+        thousand_stitches: thousand_stitches ? parseFloat(thousand_stitches) : undefined,
+      },
+      customer_requirement: {
+        normal_delivery: normal_delivery || undefined,
+        edit_or_change: edit_or_change || undefined,
+        edit_in_stitch_file: edit_in_stitch_file || undefined,
+        comment_box_1: comment_box_1 || undefined,
+        comment_box_2: comment_box_2 || undefined,
+        comment_box_3: comment_box_3 || undefined,
+        comment_box_4: comment_box_4 || undefined,
+      }
     };
+
+    // Create delivery record
+    const { deliveryId } = await OrderDeliveryRepository.createDelivery(deliveryData, uploaded);
+
+    // Update order status to delivered
+    await OrderRepository.updateOrderStatus(parseInt(orderId), OrderStatus.DELIVERED);
+
+    return {
+      deliveryId,
+      orderId: parseInt(orderId)
+    };
+  }
+
+  async getDeliveryDetails(orderId: number) {
+    const delivery = await OrderDeliveryRepository.getDeliveryByOrderId(orderId);
+    return delivery;
   }
 
 }

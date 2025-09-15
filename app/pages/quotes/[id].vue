@@ -126,7 +126,6 @@ import { ROLE } from "~~/shared/constants";
   const isAdmin = computed(() => (user.value as any)?.role === ROLE.Admin);
   
   const toast = useToast();
-  const showDeliveryModal = ref(false);
   
   const { data, pending, error, refresh } = useFetch<OrderResponse>(
     `/api/orders/${route.params.id}`
@@ -145,38 +144,6 @@ import { ROLE } from "~~/shared/constants";
     } catch (error) {
       console.error("Error updating quote status:", error);
       toast.error("Failed to update quote status");
-    }
-  }
-  
-  const handleDeliveryComplete = async (deliveryData: { 
-    orderId: string; 
-    estimateAmount: string; 
-    files: File[]; 
-    notes: string 
-  }) => {
-  
-    try {
-      
-     const fd = new FormData();
-     fd.append("orderId", deliveryData.orderId);
-     fd.append("estimateAmount", deliveryData.estimateAmount);
-     fd.append("notes", deliveryData.notes);
-     deliveryData.files.forEach(file => {
-      fd.append("attachments", file);
-     });
-  
-     await $fetch(`/api/orders/deliver`, {
-      method: "POST",
-      body: fd
-     });
-      
-      await refresh();
-      toast.success("Order delivered successfully");
-      
-      showDeliveryModal.value = false;
-    } catch (error) {
-      console.error("Error completing delivery:", error);
-      toast.error("Failed to complete delivery");
     }
   }
   

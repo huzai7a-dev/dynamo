@@ -2,6 +2,7 @@ import type { QueryParams, VectorFieldsRequest, VectorFilesRequest } from "~~/sh
 import uploadService, { type UploadedAsset } from "./upload.service";
 import VectorRepository from "../repositories/vector.repository";
 import AttachmentsRepository from "../repositories/attachments.repository";
+import VectorDeliveryRepository, { type VectorDeliveryData } from "../repositories/vector-delivery.repository";
 
 class VectorService {
 
@@ -127,6 +128,88 @@ class VectorService {
     await AttachmentsRepository.updateExistingAttachments(vectorId, existingAttachments, 'vector_attachments');
     await AttachmentsRepository.addNewAttachments(vectorId, files, 'vector_attachments');
     return updatedVector;
+  }
+
+  async deliverVector(fields: any, files: any) {
+    const { 
+      vectorId, 
+      stitches, 
+      price, 
+      discount, 
+      total_price, 
+      order_category, 
+      height, 
+      width, 
+      comments, 
+      designer_level, 
+      assign_percentage, 
+      minimum_price, 
+      maximum_price, 
+      thousand_stitches, 
+      normal_delivery, 
+      edit_or_change, 
+      edit_in_stitch_file, 
+      comment_box_1, 
+      comment_box_2, 
+      comment_box_3, 
+      comment_box_4 
+    } = fields;
+
+    const attachmentsInput = (files || []).filter(
+      (f: any) => f.fieldName === "attachments" || f.fieldName == null
+    );
+
+    let uploaded: UploadedAsset[] = [];
+    if (attachmentsInput.length) {
+      uploaded = await uploadService.uploadBuffers(attachmentsInput, {
+        folder: "deliveries",
+        tags: ["delivery"],
+      });
+    }
+
+    // Prepare delivery data
+    const deliveryData: VectorDeliveryData = {
+      vector_id: parseInt(vectorId),
+      stitches: stitches ? parseInt(stitches) : undefined,
+      price: price ? parseFloat(price) : undefined,
+      discount: discount ? parseFloat(discount) : undefined,
+      total_price: total_price ? parseFloat(total_price) : undefined,
+      is_free: order_category === 'free',
+      height: height ? parseFloat(height) : undefined,
+      width: width ? parseFloat(width) : undefined,
+      comments: comments || undefined,
+      designer_level: designer_level || undefined,
+      assign_percentage: assign_percentage ? parseFloat(assign_percentage) : undefined,
+      price_criteria: {
+        minimum_price: minimum_price ? parseFloat(minimum_price) : undefined,
+        maximum_price: maximum_price ? parseFloat(maximum_price) : undefined,
+        thousand_stitches: thousand_stitches ? parseFloat(thousand_stitches) : undefined,
+      },
+      customer_requirement: {
+        normal_delivery: normal_delivery || undefined,
+        edit_or_change: edit_or_change || undefined,
+        edit_in_stitch_file: edit_in_stitch_file || undefined,
+        comment_box_1: comment_box_1 || undefined,
+        comment_box_2: comment_box_2 || undefined,
+        comment_box_3: comment_box_3 || undefined,
+        comment_box_4: comment_box_4 || undefined,
+      }
+    };
+
+    // Create delivery record
+    const { deliveryId } = await VectorDeliveryRepository.createDelivery(deliveryData, uploaded);
+    await VectorRepository.updateVectorStatus(parseInt(vectorId), OrderStatus.DELIVERED);
+    // Update order status to delivered
+
+    return {
+      deliveryId,
+      vectorId: parseInt(vectorId)
+    };
+  }
+
+  async getDeliveryDetails(vectorId: number) {
+    const delivery = await VectorDeliveryRepository.getDeliveryByVectorId(vectorId);
+    return delivery;
   }
 }
 
