@@ -74,7 +74,6 @@ const props = defineProps({
   Shirt: ()=> import('lucide-vue-next').then(m => m.Shirt),
   Pen: ()=> import('lucide-vue-next').then(m => m.Pen),
   Building: ()=> import('lucide-vue-next').then(m => m.Building),
-  Type: ()=> import('lucide-vue-next').then(m => m.Type),
   Zap: ()=> import('lucide-vue-next').then(m => m.Zap),
   Slash: ()=> import('lucide-vue-next').then(m => m.Slash),
   Box: ()=> import('lucide-vue-next').then(m => m.Box),
