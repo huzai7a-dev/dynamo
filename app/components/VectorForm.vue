@@ -6,9 +6,9 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <UiInput
         v-model="vectorName"
-        label="Order Name"
+        label="Vector Name"
         required
-        placeholder="Enter Order Name"
+        placeholder="Enter Vector Name"
         :error="errors.vectorName"
       />
       <UiInput
@@ -22,7 +22,7 @@
         label="Required Format"
         required
         placeholder="Select"
-        :options="formatOptions"
+        :options="vectorFormatOptions"
         :error="errors.requiredFormat"
       />
     </div>
@@ -34,6 +34,14 @@
         placeholder="Enter Color Number"
         type="number"
         :error="errors.numColors"
+      />
+
+      <UiSelect
+        v-model="vectorType"
+        label="Vector Type"
+        placeholder="Select"
+        :options="vectorTypeOptions"
+        :error="errors.vectorType"
       />
     </div>
 
@@ -112,11 +120,11 @@
       {{
         isLoading
           ? isEditMode
-            ? "Updating Order..."
-            : "Creating Order..."
+            ? "Updating Vector..."
+            : "Creating Vector..."
           : isEditMode
-          ? "Update Order"
-          : "Create Order"
+          ? "Update Vector"
+          : "Create Vector"
       }}
     </UiButton>
   </form>
@@ -125,7 +133,7 @@
 <script setup lang="ts">
 import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
-import { formatOptions } from "~/constants";
+import {  vectorFormatOptions, vectorTypeOptions } from "~/constants";
 import { VectorSchema } from "~~/shared/validationSchema";
 import type { IVector } from "~~/shared/types";
 
@@ -151,6 +159,7 @@ const { handleSubmit, errors, defineField, setValues } = useForm({
     blending: "No" as const,
     rush: "No" as const,
     instructions: "",
+    vectorType: "",
     attachments: [],
   },
 });
@@ -164,6 +173,8 @@ const [blending] = defineField("blending");
 const [rush] = defineField("rush");
 const [instructions] = defineField("instructions");
 const [attachments] = defineField("attachments");
+const [vectorType] = defineField("vectorType");
+
 
 const isLoading = ref(false);
 
@@ -195,6 +206,7 @@ const onSubmit = handleSubmit(async (formValues) => {
     fd.append("blending", formValues.blending);
     fd.append("rush", formValues.rush);
     fd.append("instructions", formValues.instructions ?? "");
+    fd.append("vectorType", formValues.vectorType ?? "");
 
     // Add new attachments
     formValues.attachments.forEach((file, i) => {

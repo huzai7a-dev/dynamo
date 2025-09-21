@@ -7,6 +7,7 @@
       >
         <TableHeader
           createButtonLabel="Create Vector"
+          title="Vector"
           :searchOrderNumber="searchOrderNumber"
           :searchOrderName="searchOrderName"
           :selectedDateRange="selectedDateRange"

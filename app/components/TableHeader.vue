@@ -8,8 +8,8 @@
           <UiInput
             :model-value="searchOrderNumber"
             @update:modelValue="$emit('update:searchOrderNumber', $event)"
-            label="Order Number"
-            placeholder="Search by order number..."
+            :label="`${title} Number`"
+            :placeholder="`Search by ${title} number...`"
             size="md"
           />
         </div>
@@ -18,8 +18,8 @@
           <UiInput
             :model-value="searchOrderName"
             @update:modelValue="$emit('update:searchOrderName', $event)"
-            label="Order Name"
-            placeholder="Search by order name..."
+            :label="`${title} Name`"
+            :placeholder="`Search by ${title} name...`"
             size="md"
           />
         </div>
@@ -72,6 +72,10 @@ interface DateRange {
 }
 
 defineProps({
+  title: {
+    type: String,
+    default: 'Order'
+  },
   createButtonLabel: {
     type: String,
     default: 'Create Order'

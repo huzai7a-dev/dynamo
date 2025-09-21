@@ -12,7 +12,7 @@ class VectorRepository{
       WITH new_vector AS (
         INSERT INTO vectors (
           vector_name, po_number, required_format,
-          blending, rush, instructions,
+          blending, rush, instructions, vector_type,
           user_id
         )
         VALUES (
@@ -22,6 +22,7 @@ class VectorRepository{
           ${vectorData.blending},
           ${vectorData.rush},
           ${vectorData.instructions},
+          ${vectorData.vectorType},
           ${userId}
         )
         RETURNING id

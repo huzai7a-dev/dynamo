@@ -109,7 +109,7 @@ const OrderSchema = z.object({
   height: z.string().optional(),
   fabric: z.string().min(1, 'Fabric is required'),
   placement: z.string().min(1, 'Placement is required'),
-  numColors: z.string().regex(/^\d+$/, 'Must be a number').optional(),
+  numColors: z.string().optional(),
   blending: z.enum(['No', 'Yes', 'Not Sure']),
   rush: z.enum(['No', 'Yes']),
   instructions: z.string().optional(),
@@ -123,8 +123,9 @@ const VectorSchema = z.object({
   requiredFormat: z.string().min(1, 'Required format is required'),
   blending: z.enum(['No', 'Yes', 'Not Sure']),
   rush: z.enum(['No', 'Yes']),
-  numColors: z.string().regex(/^\d+$/, 'Must be a number').optional(),
+  numColors: z.string().optional(),
   instructions: z.string().optional(),
+  vectorType: z.string().optional(),
   attachments: z.array(z.instanceof(File)),
 })
 

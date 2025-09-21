@@ -1,5 +1,4 @@
-import type { UploadApiOptions, UploadApiResponse } from 'cloudinary'
-import { Readable } from 'node:stream'
+import { ofetch } from 'ofetch'
 import { getCloudinary } from '../utils/cloudinary'
 
 export type BufferItem = {
@@ -23,7 +22,7 @@ export type UploadManyOptions = {
   tags?: string[]
   overwrite?: boolean
   resourceType?: 'image' | 'raw'
-  cloudinary?: Omit<UploadApiOptions, 'resource_type' | 'public_id'>
+  cloudinary?: Record<string, any> // Use a more general type
 }
 
 class UploadService {
@@ -48,38 +47,62 @@ class UploadService {
     return 'raw'
   }
 
-  /** Upload a single Buffer via upload_stream */
+  /** Upload a single Buffer via the Cloudinary REST API */
   private async uploadOneBuffer(
     item: BufferItem,
     opts: UploadManyOptions
   ): Promise<UploadedAsset> {
-    const cloudinary = getCloudinary()
+    const cloudinaryConfig = getCloudinary()
     const resourceType = opts.resourceType ?? this.detectResourceType(item.mimetype ?? null)
-
-    const uploadOptions: UploadApiOptions = {
-      folder: opts.folder,
-      tags: opts.tags,
-      overwrite: opts.overwrite ?? false,
-      resource_type: resourceType,
-      ...opts.cloudinary,
+    
+    const formData = new FormData()
+    formData.append('file', new Blob([new Uint8Array(item.buffer)]), item.filename || 'upload')
+    formData.append('api_key', cloudinaryConfig.config().api_key || '')
+    formData.append('api_secret', cloudinaryConfig.config().api_secret || '')
+    formData.append('upload_preset', 'uploads')
+    
+    // Only append non-empty values
+    if (opts.folder) {
+      formData.append('folder', opts.folder)
+    }
+    if (opts.tags && opts.tags.length > 0) {
+      formData.append('tags', opts.tags.join(','))
+    }
+    if (opts.overwrite !== undefined) {
+      formData.append('overwrite', opts.overwrite ? 'true' : 'false')
     }
 
-    const stream = Readable.from(item.buffer)
-
-    const result: UploadApiResponse = await new Promise((resolve, reject) => {
-      const cld = cloudinary.uploader.upload_stream(uploadOptions, (err, res) =>
-        err ? reject(err) : resolve(res as UploadApiResponse)
+    try {
+      const response = await ofetch(
+        `https://api.cloudinary.com/v1_1/${cloudinaryConfig.config().cloud_name}/${resourceType}/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        }
       )
-      stream.pipe(cld)
-    })
 
-    return {
-      url: result.secure_url,
-      publicId: result.public_id,
-      resourceType: (result.resource_type as 'image' | 'video' | 'raw') ?? 'raw',
-      format: result.format ?? null,
-      bytes: result.bytes ?? null,
-      originalFilename: result.original_filename ?? null,
+      return {
+        url: response.secure_url,
+        publicId: response.public_id,
+        resourceType: (response.resource_type as 'image' | 'video' | 'raw') ?? 'raw',
+        format: response.format ?? null,
+        bytes: response.bytes ?? null,
+        originalFilename: response.original_filename ?? null,
+      }
+    } catch (error: any) {
+      console.error('Cloudinary upload failed:', {
+        error: error.message,
+        status: error.status,
+        data: error.data,
+        config: {
+          cloud_name: cloudinaryConfig.config().cloud_name,
+          api_key: cloudinaryConfig.config().api_key ? '***' : 'missing',
+          resourceType,
+          filename: item.filename,
+          mimetype: item.mimetype
+        }
+      })
+      throw error
     }
   }
 }

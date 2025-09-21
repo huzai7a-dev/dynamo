@@ -1,8 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-05-15',
-  nitro: {
-    preset: 'node-server' // ensures Node runtime
+  compatibilityDate: '2025-09-20',
+  hub: {
+    bindings: {
+      observability: {
+        logs: true,
+      },
+    },
   },
   devtools: { enabled: true },
   runtimeConfig: {

@@ -77,6 +77,7 @@ export interface IVector {
     user_id: number;
     payment_status: PaymentStatus;
     price: string;
+    vector_type: string;
     vector_attachments: Attachment[]
     delivery_attachments: Attachment[]
     contact_name: string

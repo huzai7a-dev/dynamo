@@ -27,8 +27,6 @@ export const fabricOptions = [
     { label: 'Fleece', value: 'fleece' },
     { label: 'Towel', value: 'towel' },
     { label: 'Leather', value: 'leather' },
-    { label: 'Bag', value: 'bag' },
-    { label: 'Socks', value: 'socks' },
     { label: 'Other', value: 'other' }
   ]
 export const placementOptions = [
@@ -41,7 +39,30 @@ export const placementOptions = [
     { label: 'Cap Back', value: 'Cap Back' },
     { label: 'Towel', value: 'Towel' },
     { label: 'JacketBack', value: 'JacketBack' },
+    { label: 'Bag', value: 'bag' },
+    { label: 'Socks', value: 'socks' },
     { label: 'sleeve', value: 'sleeve' },
     { label: 'other', value: 'other' }
   ]
+  
+
+  export const vectorFormatOptions = [
+    { label: "JPG", value: "JPG" },
+    { label: "PDF", value: "PDF" },
+    { label: "PNG", value: "PNG" },
+    { label: "Ai", value: "Ai" },
+    { label: "PSD", value: "PSD" },
+    { label: "SVG", value: "SVG" },
+    { label: "EPS", value: "EPS" },
+    { label: "CDR", value: "CDR" },
+    { label: "EXP", value: "EXP" },
+    { label: "TIF", value: "TIF" },
+  ];
+
+ export const vectorTypeOptions = [
+    { label: "Vector-art", value: "Vector-art" },
+    { label: "Color Separation", value: "Color Separation" },
+    { label: "Half-Tones", value: "Half-Tones" },
+    { label: "CMYK", value: "CMYK" },
+  ];
   
