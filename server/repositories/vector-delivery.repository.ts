@@ -53,7 +53,7 @@ class VectorDeliveryRepository {
       ),
       ins AS (
         INSERT INTO vector_attachments (
-          order_id, url, public_id, resource_type, format, bytes, original_filename, field_name
+          vector_id, url, public_id, resource_type, format, bytes, original_filename, field_name
         )
         SELECT
           ${deliveryData.vector_id},

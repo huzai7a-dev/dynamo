@@ -140,11 +140,13 @@ import type { IVector } from "~~/shared/types";
 interface Props {
   vectorData?: IVector;
   isEditMode?: boolean;
+  endpoint?: 'quotes' | 'vectors';
 }
 
 const props = withDefaults(defineProps<Props>(), {
   isEditMode: false,
   vectorData: undefined,
+  endpoint: "vectors",
 });
 
 const emit = defineEmits(["success", "error"]);
@@ -207,6 +209,7 @@ const onSubmit = handleSubmit(async (formValues) => {
     fd.append("rush", formValues.rush);
     fd.append("instructions", formValues.instructions ?? "");
     fd.append("vectorType", formValues.vectorType ?? "");
+    fd.append("dataSourceType", DataSource.VECTOR);
 
     // Add new attachments
     formValues.attachments.forEach((file, i) => {
@@ -219,8 +222,8 @@ const onSubmit = handleSubmit(async (formValues) => {
     });
 
     const url = props.isEditMode
-      ? `/api/vectors/${props.vectorData?.id}`
-      : "/api/vectors";
+      ? `/api/${props.endpoint}/${props.vectorData?.id}`
+      : `/api/${props.endpoint}`;
 
     const method = props.isEditMode ? "PUT" : "POST";
 

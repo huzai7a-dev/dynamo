@@ -41,7 +41,7 @@ const emit = defineEmits<{
         Reject
       </button>
       <button
-        v-if="status === QuoteStatus.PROCEED"
+        v-if="status === QuoteStatus.ACCEPTED"
         class="rounded-2xl border border-purple-300 bg-purple-50 px-4 py-2 font-medium text-purple-700 hover:bg-purple-100 transition"
         @click="emit('moveToOrder')"
       >

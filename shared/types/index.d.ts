@@ -25,6 +25,7 @@ export interface QueryParams {
     customer_name?: string;
     date_from?: string;
     date_to?: string;
+    data_source_type?: string;
 }
 
 export interface TableOrders {
@@ -81,6 +82,7 @@ export interface IVector {
     vector_attachments: Attachment[]
     delivery_attachments: Attachment[]
     contact_name: string
+    metadata?: any
 }
 
 export interface TableVector {

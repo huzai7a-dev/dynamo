@@ -17,7 +17,21 @@
           @update:searchOrderName="(val: string) => emit('update:searchOrderName', val)"
           @update:searchCustomerName="(val: string) => emit('update:searchCustomerName', val)"
           @update:selectedDateRange="(val) => emit('update:selectedDateRange', val)"
-        />
+        >
+          <template #extra>
+        <div class="flex-1 min-w-0">
+
+            <UiSelect
+              v-model="dataSourceType"
+              @update:modelValue="(val: string) => emit('update:dataSourceType', val as DataSource)"
+              label="Data Source Type"
+              placeholder="Select"
+              :options="dataSourceTypeOptions"
+            />
+            </div>
+          </template>
+        </TableHeader>
+      
   
         <div class="p-6">
           <UiTable
@@ -90,6 +104,7 @@
     'paginate': [page: number];
     'sort': [sortBy: string, sortOrder: string];
     'rowClick': [{row: TableOrders, index: number}];
+    'update:dataSourceType': [value: DataSource];
     'update:searchOrderNumber': [value: string];
     'update:searchOrderName': [value: string];
     'update:searchCustomerName': [value: string];
@@ -99,6 +114,11 @@
   const props = defineProps<Props>();
   const { user } = useUserSession();
   const isAdmin = computed(() => (user.value as any)?.role === ROLE.Admin);
+  const dataSourceType = ref(DataSource.ORDER);
+  const dataSourceTypeOptions = [
+    { label: "Order", value: DataSource.ORDER },
+    { label: "Vector", value: DataSource.VECTOR },
+  ];
   
   const formateData = computed(() => {
     return props.data?.map((item) => ({
@@ -113,10 +133,10 @@
   
   const selectedDateRange = ref<{ from: Date | null; to: Date | null }>({ from: null, to: null });
   
-  const columns = ref([
+  const columns = computed(() => [
     { label: "Serial Number", key: "serial_number" },
     { label: "Quote Number", key: "id" },
-    { label: "Quote Name", key: "order_name" },
+    { label: "Quote Name", key: dataSourceType.value === DataSource.ORDER ? "order_name" : "vector_name" },
     ...(isAdmin.value ? [{ label: "Customer Name", key: "customer_name" }] : []),
     { label: "Price", key: "price" },
     { label: "Quote Status", key: "status" },

@@ -7,13 +7,13 @@ class VectorRepository{
     this.db = useDb();
   }
 
-  async createVector(userId: string, vectorData: VectorFieldsRequest, attachments: VectorFilesRequest[]) {
+  async createVector(userId: string, vectorData: VectorFieldsRequest, attachments: VectorFilesRequest[], metadata?: Object) {
     const rows = await this.db`
       WITH new_vector AS (
         INSERT INTO vectors (
           vector_name, po_number, required_format,
           blending, rush, instructions, vector_type,
-          user_id
+          user_id, metadata
         )
         VALUES (
           ${vectorData.vectorName},
@@ -23,7 +23,8 @@ class VectorRepository{
           ${vectorData.rush},
           ${vectorData.instructions},
           ${vectorData.vectorType},
-          ${userId}
+          ${userId},
+          ${metadata}
         )
         RETURNING id
       )
@@ -87,12 +88,14 @@ class VectorRepository{
        v.status,
        v.payment_status,
        v.created_at,
+       v.metadata,
        u.contact_name as customer_name`
       : `v.id,
        v.vector_name,
        v.price,
        v.status,
        v.payment_status,
+       v.metadata,
        v.created_at`;
 
     const joinClause = isAdmin ? 'LEFT JOIN users u ON v.user_id = u.id' : '';
@@ -137,7 +140,7 @@ class VectorRepository{
   return vector[0];
   }
 
-  async updateVectorStatus(vectorId: number, status: OrderStatus) {
+  async updateVectorStatus(vectorId: number, status: OrderStatus | QuoteStatus) {
     const vector = await this.db`UPDATE vectors SET status = ${status} WHERE id = ${Number(vectorId)} RETURNING *`;
     return vector[0];
   }
@@ -155,6 +158,19 @@ class VectorRepository{
     WHERE id = ${vectorId} RETURNING *`;    
 
   return vector[0];
+  }
+
+  async moveToOrder(vectorId: number, fields: { price: number, additionalNotes: string }) {
+    const vector = await this.db`UPDATE vectors SET status = ${OrderStatus.IN_PROGRESS} WHERE id = ${vectorId} RETURNING *`;
+    if (fields?.price) {
+      await this.db`UPDATE vectors set price = ${fields.price} WHERE id = ${vectorId}`;
+    }
+    await this.db`UPDATE vectors SET metadata = COALESCE(metadata, '{}'::jsonb) || ${JSON.stringify({
+      type: DataSource.VECTOR,
+      convertFromQuote: true,
+      ...(fields?.additionalNotes && { additionalNotes: fields.additionalNotes })
+    })}::jsonb WHERE id = ${vectorId}`;
+    return vector[0];
   }
 }
 

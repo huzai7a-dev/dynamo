@@ -5,11 +5,11 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const { role } = event.context.user;
 
-  const { quoteId, status } = body;
+  const { quoteId, status, dataSourceType } = body;
   const isAdmin = role === ROLE.Admin;
 
   try {
-    await quoteService.updateQuoteStatus(isAdmin, quoteId, status);
+    await quoteService.updateQuoteStatus(isAdmin, quoteId, status, dataSourceType);
 
     return {
       message: "Quote status updated successfully",

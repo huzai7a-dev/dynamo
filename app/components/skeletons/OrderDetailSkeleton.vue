@@ -26,10 +26,17 @@
           <ActionsSkeleton />
         </aside>
       </div>
-    </div>
+    </div>ß
   </div>
 </template>
 
 <script setup lang="ts">
+import ActionsSkeleton from './ActionsSkeleton.vue';
+import AttachmentsSkeleton from './AttachmentsSkeleton.vue';
+import NotesSkeleton from './NotesSkeleton.vue';
+import OrderDetailsSkeleton from './OrderDetailsSkeleton.vue';
+import OrderHeaderSkeleton from './OrderHeaderSkeleton.vue';
+import SummarySkeleton from './SummarySkeleton.vue';
+
 // This component serves as the main skeleton wrapper for order detail page
 </script>

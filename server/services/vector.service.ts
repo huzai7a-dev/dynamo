@@ -19,13 +19,13 @@ class VectorService {
       });
     }
 
-    const row = await VectorRepository.createVector(userId, fields, uploaded);
+    const row = await VectorRepository.createVector(userId, fields, uploaded, {type: DataSource.VECTOR});
 
     const vectorId = row.vectorId as number;
     return { vectorId };
   }
 
-  async getVectors(isAdmin: boolean, queryParams: QueryParams) {
+  async getVectors(isAdmin: boolean, queryParams: QueryParams, dataSourceType?: DataSource) {
     const {
       user_id,
       limit = 10,
@@ -42,6 +42,9 @@ class VectorService {
 
     // Build WHERE conditions
     const whereConditions: string[] = [];
+
+    whereConditions.push(`v.metadata->>'type' = $${i++}`);
+    values.push(dataSourceType || DataSource.VECTOR);
 
     // Only non-admins are restricted to their own orders
     if (!isAdmin) {
@@ -123,10 +126,23 @@ class VectorService {
     if (!vector || isUserVector) {
       throw new Error("Vector not found or access denied");
     }
+
+    // Handle new file uploads
+    const attachmentsInput = (files || []).filter(
+      (f: any) => f.fieldName === "attachments" || f.fieldName == null
+    );
+
+    let uploaded: UploadedAsset[] = [];
+    if (attachmentsInput.length) {
+      uploaded = await uploadService.uploadBuffers(attachmentsInput, {
+        folder: "vectors",
+        tags: ["vector"],
+      });
+    }
   
     const updatedVector = await VectorRepository.updateVectorFields(vectorId, fields, files, existingAttachments);
-    await AttachmentsRepository.updateExistingAttachments(vectorId, existingAttachments, 'vector_attachments');
-    await AttachmentsRepository.addNewAttachments(vectorId, files, 'vector_attachments');
+    await AttachmentsRepository.updateExistingVectorAttachments(vectorId, existingAttachments);
+    await AttachmentsRepository.addNewVectorAttachments(vectorId, uploaded);
     return updatedVector;
   }
 

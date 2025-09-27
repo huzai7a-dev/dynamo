@@ -108,6 +108,7 @@
       price: Number(item.price) > 0 ? `$${item.price}` : "N/A",
       ...(isAdmin.value ? {
         customer_name: item?.contact_name,
+        convert_from_quote: item.metadata?.convertFromQuote ? "Yes" : "No",
       } : {}),
     }));
   });
@@ -118,7 +119,7 @@
     { label: "Serial Number", key: "serial_number" },
     { label: "Vector Number", key: "id" },
     { label: "Vector Name", key: "vector_name" },
-    ...(isAdmin.value ? [{ label: "Customer Name", key: "customer_name" }] : []),
+    ...(isAdmin.value ? [{ label: "Customer Name", key: "customer_name" }, { label: "Converted From Quote", key: "convert_from_quote" }] : []),
     { label: "Price", key: "price" },
     { label: "Vector Status", key: "status" },
     { label: "Payment Status", key: "payment_status" },

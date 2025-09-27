@@ -256,6 +256,7 @@ const onSubmit = handleSubmit(async (formValues) => {
     fd.append("rush", formValues.rush);
     fd.append("instructions", formValues.instructions ?? "");
     fd.append("faceless", formValues.faceless ?? "");
+    fd.append("dataSourceType", DataSource.ORDER);
 
     // Add new attachments
     formValues.attachments.forEach((file, i) => {

@@ -43,6 +43,7 @@
             size="md"
           />
         </div>
+          <slot name="extra" />
       </div>
       <!-- Create Order Button -->
       <div class="flex-shrink-0">

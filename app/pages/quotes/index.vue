@@ -13,12 +13,13 @@
         :loading="pending"
         :error="!!error"
         @refresh="refresh"
+        @update:dataSourceType="dataSourceType = $event"
         @update:searchOrderNumber="orderNumber = $event"
         @update:searchOrderName="orderName = $event"
         @update:selectedDateRange="dateRange = $event"
         @update:searchCustomerName="customerName = $event"
         @paginate="(nextPage) => (currentPage = nextPage)"
-        @row-click="$router.push(`/quotes/${$event.row.id}`)"
+        @row-click="$router.push(`/quotes/${$event.row.id}?type=${dataSourceType}`)"
       />
     </div>
   </template>
@@ -45,12 +46,14 @@
   const orderName = ref("");
   const customerName = ref("");
   const dateRange = ref<{ from: Date | null; to: Date | null }>({ from: null, to: null });
+  const dataSourceType = ref(DataSource.ORDER);
   
   const params = computed(() => ({
     page: currentPage.value,
     order_number: orderNumber.value,
     order_name: orderName.value,
     customer_name: customerName.value,
+    data_source_type: dataSourceType.value,
     ...(dateRange.value.from && { date_from: dateRange.value.from.toISOString().split('T')[0] }),
     ...(dateRange.value.to && { date_to: dateRange.value.to.toISOString().split('T')[0] }),
   }));

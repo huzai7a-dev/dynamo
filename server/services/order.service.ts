@@ -35,7 +35,7 @@ class OrderService {
     return await OrderRepository.createOrder(userId, fields, uploaded, {type: DataSource.ORDER});
   }
 
-  async getOrders(orderParams: QueryParams, isAdmin = false) {
+  async getOrders(orderParams: QueryParams, isAdmin = false, dataSourceType?: DataSource) {
     const {
       user_id,
       limit = 10,
@@ -53,7 +53,7 @@ class OrderService {
     // Build WHERE conditions
     const whereConditions: string[] = [];
     whereConditions.push(`o.metadata->>'type' = $${i++}`);
-    values.push(DataSource.ORDER);
+    values.push(dataSourceType || DataSource.ORDER);
 
     if (!isAdmin) {
       whereConditions.push(`o.user_id = $${i++}`);

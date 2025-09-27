@@ -5,118 +5,75 @@
     <!-- Error State -->
     <UiErrorState 
       v-else-if="error"
-      title="Unable to Load Order"
-      message="We couldn't load the order details. This might be due to a network issue or the order might not exist."
+      title="Unable to Load Quote"
+      message="We couldn't load the quote details. This might be due to a network issue or the quote might not exist."
       :loading="pending"
-      back-route="/orders"
-      back-text="Back to Orders"
+      back-route="/quotes"
+      back-text="Back to Quotes"
       @retry="() => refresh()"
     />
   
     <!-- Success State -->
-    <div v-else-if="order" class="min-h-screen bg-light-gray">
-      <div class="container py-8">
-        <!-- Header -->
-        <OrderHeader
-          :order_name="order?.order_name"
-          :po_number="order?.po_number"
-          :status="order?.status"
-        />
-  
-        <!-- Main -->
-        <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div class="lg:col-span-2 space-y-6">
-            <div
-              class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-            >
-              <h2 class="mb-4 text-lg font-semibold text-secondary">
-                Quote Details
-              </h2>
-              <OrderMetaGrid :order="order" />
-            </div>
-  
-            <div
-              class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-            >
-              <AttachmentsGallery
-                title="Quote Attachments"
-                noAttachmentsMessage="No order attachments uploaded."
-                :attachments="order.order_attachments || []"
-              />
-            </div>
+    <div v-else-if="quote">
+      <!-- Order Detail Component -->
+      <OrderDetailComponent
+        v-if="dataSourceType === DataSource.ORDER"
+        :order="quote"
+        :deliveryData="deliveryData"
+        :isAdmin="isAdmin"
+        :orderId="String(route.params.id)"
+        @update:orderStatus="handleOrderStatusUpdate"
+        @edit:order="handleEditOrder"
+        @delivery:complete="handleDeliveryComplete"
+      >
+        <template #actions>
+          <QuoteActions
+            :isAdmin="isAdmin"
+            :status="quote?.status"
+            @accept="updateOrderStatus(QuoteStatus.ACCEPTED, dataSourceType)"
+            @reject="updateOrderStatus(QuoteStatus.REJECTED, dataSourceType)"
+            @proceed="updateOrderStatus(QuoteStatus.PROCEED, dataSourceType)"
+            @moveToOrder="handleMoveToOrder(dataSourceType)"
+            @edit="handleEditOrder"
+          />
+        </template>
+      </OrderDetailComponent>
 
-          </div>
-  
-          <aside class="space-y-6">
-            <div
-              class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-            >
-              <h3 class="mb-3 text-base font-semibold text-secondary">Summary</h3>
-              <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                  <span class="text-sm text-charcoal/70">Status</span>
-                  <UiStatusBadge :status="order?.status" />
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-sm text-charcoal/70">Payment</span>
-                  <span
-                    class="text-sm font-medium"
-                    :class="
-                      order?.payment_status === 'paid'
-                        ? 'text-emerald-700'
-                        : 'text-amber-700'
-                    "
-                  >
-                    {{ order?.payment_status === "paid" ? "Paid" : "Pending" }}
-                  </span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-sm text-charcoal/70">Estimate</span>
-                  <span class="text-sm font-medium text-secondary">
-                    {{
-                      order?.price === "0.00"
-                        ? "To be quoted"
-                        : `$${order?.price}`
-                    }}
-                  </span>
-                </div>
-              </div>
-            </div>
-  
-            <div
-              class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-            >
-              <h2 class="mb-4 text-lg font-semibold text-secondary">Notes</h2>
-              <InstructionBox :instructions="order?.instructions" />
-            </div>
-          
-            <div
-              class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-            >
-              <h3 class="mb-3 text-base font-semibold text-secondary">Actions</h3>
-              <QuoteActions
-                :isAdmin="isAdmin"
-                :status="order?.status"
-                @accept="updateOrderStatus(QuoteStatus.ACCEPTED)"
-                @reject="updateOrderStatus(QuoteStatus.REJECTED)"
-                @proceed="updateOrderStatus(QuoteStatus.PROCEED)"
-                @moveToOrder="handleMoveToOrder"
-                @edit="handleEditOrder"
-              />
-            </div>
-          </aside>
-        </div>
-      </div>
+      <!-- Vector Detail Component -->
+      <VectorDetailComponent
+        v-else-if="dataSourceType === DataSource.VECTOR"
+        :vector="quote"
+        :deliveryData="deliveryData"
+        :isAdmin="isAdmin"
+        :vectorId="String(route.params.id)"
+        @update:vectorStatus="handleVectorStatusUpdate"
+        @edit:vector="handleEditVector"
+        @delivery:complete="handleDeliveryComplete"
+      >
+        <template #actions>
+          <QuoteActions
+            :isAdmin="isAdmin"
+            :status="quote?.status"
+            @accept="updateOrderStatus(QuoteStatus.ACCEPTED, dataSourceType)"
+            @reject="updateOrderStatus(QuoteStatus.REJECTED, dataSourceType)"
+            @proceed="updateOrderStatus(QuoteStatus.PROCEED, dataSourceType)"
+            @moveToOrder="handleMoveToOrder(dataSourceType)"
+            @edit="handleEditVector"
+          />
+        </template>
+      </VectorDetailComponent>
     </div>
   </template>
   
   <script setup  lang="ts">
   import OrderDetailSkeleton from "~/components/skeletons/OrderDetailSkeleton.vue";
-import { ROLE } from "~~/shared/constants";
+  import { ROLE } from "~~/shared/constants";
+  import { DataSource, QuoteStatus } from "~~/shared/types/enums";
+  import type { DeliveryFormData } from "~/components/DeliveryModal.vue";
   
-  interface OrderResponse {
+  interface QuoteResponse {
     message: string;
-    data: IOrder;
+    data: IOrder | IVector;
   }
   
   const route = useRoute();
@@ -124,20 +81,34 @@ import { ROLE } from "~~/shared/constants";
   const { user } = useUserSession();
   
   const isAdmin = computed(() => (user.value as any)?.role === ROLE.Admin);
+
+  const dataSourceType = computed(() => route.query.type as DataSource);
   
   const toast = useToast();
   
-  const { data, pending, error, refresh } = useFetch<OrderResponse>(
-    `/api/orders/${route.params.id}`
+  const { data, pending, error, refresh } = useFetch<QuoteResponse>(
+    `/api/quotes/${route.params.id}?type=${dataSourceType.value}`
     );
     
-  const order = computed(() => data.value?.data);
+  const quote = computed(() => data.value?.data);
+
+  // Fetch delivery data based on dataSourceType
+  const { data: deliveryData } = useFetch(() => {
+    if (dataSourceType.value === DataSource.ORDER) {
+      return `/api/orders/deliver/${route.params.id}`;
+    } else if (dataSourceType.value === DataSource.VECTOR) {
+      return `/api/vectors/deliver/${route.params.id}`;
+    }
+    return `/api/orders/deliver/${route.params.id}`; // fallback
+  }, {
+    server: false
+  });
   
-  const updateOrderStatus = async (status: QuoteStatus) => {
+  const updateOrderStatus = async (status: QuoteStatus, dataSourceType: DataSource) => {
     try {
       await $fetch(`/api/quotes/status`, {
         method: "POST",
-        body: { quoteId: route.params.id, status }
+        body: { quoteId: route.params.id, status, dataSourceType }
       });
       toast.success("Quote status updated successfully");
       refresh();
@@ -148,22 +119,38 @@ import { ROLE } from "~~/shared/constants";
   }
   
   const handleEditOrder = () => {
-    router.push(`/orders/edit/${route.params.id}`);
+    router.push(`/quotes/edit/${route.params.id}?type=${dataSourceType.value}`);
+  };
+
+  const handleEditVector = () => {
+    router.push(`/quotes/edit/${route.params.id}?type=${dataSourceType.value}`);
   };
   
-  const handleMoveToOrder = async () => {
+  const handleMoveToOrder = async (dataSourceType: DataSource) => {
     try {
       await $fetch(`/api/quotes/move-to-order`, {
         method: "POST",
-        body: { quoteId: route.params.id }
+        body: { quoteId: route.params.id, dataSourceType }
       });
+      toast.success("Quote moved to order successfully");
+      refresh();
     } catch (error) {
       console.error("Error moving quote to order:", error);
       toast.error("Failed to move quote to order");
     }
   };
 
-  
+  const handleOrderStatusUpdate = (status: OrderStatus) => {
+    refresh();
+  };
+
+  const handleVectorStatusUpdate = (status: OrderStatus) => {
+    refresh();
+  };
+
+  const handleDeliveryComplete = (deliveryData: DeliveryFormData) => {
+    refresh();
+  };
   
   definePageMeta({
     name: "Quotes Details",
