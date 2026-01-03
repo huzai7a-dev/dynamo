@@ -129,9 +129,19 @@ const VectorSchema = z.object({
   attachments: z.array(z.instanceof(File)),
 })
 
+export const QuoteSchema = z.object({
+  qType: z.enum(['order', 'vector']),
+  title: z.string().min(1, "Title is required"),
+  poNumber: z.string().optional(),
+  instructions: z.string().optional(),
+  estimatedPrice: z.number().nonnegative(),
+  quoteData: z.record(z.any()),
+  attachments: z.array(z.instanceof(File)),
+});
+
 export {
-    RegisterSchema,
-    LoginSchema,
-    OrderSchema,
-    VectorSchema
+  RegisterSchema,
+  LoginSchema,
+  OrderSchema,
+  VectorSchema
 }

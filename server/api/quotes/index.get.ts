@@ -4,7 +4,7 @@ import { ROLE } from "~~/shared/constants";
 
 export default defineEventHandler(async (event) => {
   const { id: userId, role } = event.context.user;
-  const { page, limit, order_name, order_number, date_from, date_to, data_source_type } = getQuery(event);
+  const { page, limit, order_name, order_number, date_from, date_to, data_source_type, converted, status } = getQuery(event);
   const isAdmin = role === ROLE.Admin;
 
   const orderParams: QueryParams = {
@@ -16,18 +16,11 @@ export default defineEventHandler(async (event) => {
     date_from: date_from ? String(date_from) : undefined,
     date_to: date_to ? String(date_to) : undefined,
     data_source_type: data_source_type ? String(data_source_type) : undefined,
+    converted: Boolean(converted) || false,
+    status: status ? String(status) : undefined,
   };
   try {
-    let quotes: any = null;
-
-    if(data_source_type === DataSource.ORDER) {
-     quotes = await QuoteService.getOrderQuotes(isAdmin,orderParams);
-    }
-
-    if(data_source_type === DataSource.VECTOR) {
-      quotes = await QuoteService.getVectorQuotes(isAdmin,orderParams);
-    }
-
+    const quotes = await QuoteService.getAllQuotes(orderParams, isAdmin);
     return {
       message: "Quotes retrieved successfully",
       data: quotes,

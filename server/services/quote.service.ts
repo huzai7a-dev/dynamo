@@ -6,6 +6,7 @@ import { DataSource } from "~~/shared/types/enums";
 import vectorRepository from "../repositories/vector.repository";
 import vectorService from "./vector.service";
 import orderService from "./order.service";
+import quotesRepository from "../repositories/quotes.repository";
 
 class QuoteService {
 
@@ -22,27 +23,85 @@ class QuoteService {
                 tags: [dataSourceType],
             });
         }
-
-        if (dataSourceType === DataSource.ORDER)
-            return await orderRepository.createOrder(userId, fields, uploaded, { type: DataSource.QUOTE });
-
-        if (dataSourceType === DataSource.VECTOR)
-            return await vectorRepository.createVector(userId, fields, uploaded, { type: DataSource.QUOTE });
+        return quotesRepository.createQuote(userId, fields, uploaded);
     }
 
-    async getOrderQuotes(isAdmin: boolean, queryParams: QueryParams) {
-        const quotes = await orderService.getOrders(queryParams, isAdmin, DataSource.QUOTE);
+    async getAllQuotes(quoteParams: QueryParams, isAdmin = false) {
+        const {
+            user_id,
+            limit = 10,
+            page = 1,
+            order_number,
+            order_name,
+            customer_name,
+            date_from,
+            date_to,
+            status,
+            converted,
+        } = quoteParams;
+
+        const values: any[] = [];
+        let i = 1; // next $ placeholder index
+
+        const whereConditions: string[] = [];
+
+        if (!isAdmin) {
+            whereConditions.push(`q.user_id = $${i++}`);
+            values.push(user_id);
+        }
+
+        if (order_number) {
+            whereConditions.push(`q.id = $${i++}`);
+            values.push(order_number);
+        }
+
+        if (customer_name) {
+            whereConditions.push(`u.contact_name ILIKE $${i++}`);
+            values.push(`%${customer_name}%`);
+        }
+
+        if (order_name) {
+            whereConditions.push(`q.title ILIKE $${i++}`);
+            values.push(`%${order_name}%`);
+        }
+
+        if (date_from && date_to) {
+            whereConditions.push(`q.created_at >= $${i++}::date`);
+            whereConditions.push(`q.created_at < ($${i++}::date + interval '1 day')`);
+            values.push(date_from, date_to);
+        }
+
+        if (status) {
+            whereConditions.push(`q.status = $${i++}`);
+            values.push(status);
+        }
+
+        if (converted) {
+            whereConditions.push(`q.is_converted = $${i++}`);
+            values.push(true);
+        }
+
+        const [totalPage, quotes] = await Promise.all([
+            quotesRepository.getTotalPageCount(
+                whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '',
+                values,
+                limit
+            ),
+            quotesRepository.getQuotesWithFilters(
+                whereConditions,
+                values,
+                isAdmin,
+                limit,
+                (page - 1) * limit
+            )
+        ]);
+
         return {
-            quotes: quotes.orders,
-            pagination: quotes.pagination,
-        };
-    }
-    
-    async getVectorQuotes(isAdmin: boolean, queryParams: QueryParams) {
-        const quotes = await vectorService.getVectors(isAdmin, queryParams, DataSource.QUOTE);
-        return {
-            quotes: quotes.vectors,
-            pagination: quotes.pagination,
+            quotes,
+            pagination: {
+                totalPage,
+                currentPage: page,
+            },
         };
     }
 

@@ -19,7 +19,7 @@ class VectorService {
       });
     }
 
-    const row = await VectorRepository.createVector(userId, fields, uploaded, {type: DataSource.VECTOR});
+    const row = await VectorRepository.createVector(userId, fields, uploaded, { type: DataSource.VECTOR });
 
     const vectorId = row.vectorId as number;
     return { vectorId };
@@ -35,6 +35,9 @@ class VectorService {
       customer_name,
       date_from,
       date_to,
+      is_free,
+      is_paid,
+      status,
     } = queryParams;
 
     const values: any[] = [];
@@ -71,6 +74,21 @@ class VectorService {
       whereConditions.push(`v.created_at >= $${i++}::date`);
       whereConditions.push(`v.created_at < ($${i++}::date + interval '1 day')`);
       values.push(date_from, date_to);
+    }
+
+    if (status) {
+      whereConditions.push(`v.status = $${i++}`);
+      values.push(status);
+    }
+
+    if (is_free) {
+      whereConditions.push(`v.price = $${i++}`);
+      values.push(0);
+    }
+
+    if (is_paid) {
+      whereConditions.push(`v.price > $${i++}`);
+      values.push(0);
     }
 
     // Get total page count and vectors data from repository
@@ -122,7 +140,7 @@ class VectorService {
   async updateVector(userId: string, vectorId: number, fields: VectorFieldsRequest, files: VectorFilesRequest, existingAttachments: string[]) {
     const vector = await VectorRepository.findById(vectorId);
     const isUserVector = vector.user_id !== userId
-    
+
     if (!vector || isUserVector) {
       throw new Error("Vector not found or access denied");
     }
@@ -139,7 +157,7 @@ class VectorService {
         tags: ["vector"],
       });
     }
-  
+
     const updatedVector = await VectorRepository.updateVectorFields(vectorId, fields, files, existingAttachments);
     await AttachmentsRepository.updateExistingVectorAttachments(vectorId, existingAttachments);
     await AttachmentsRepository.addNewVectorAttachments(vectorId, uploaded);
@@ -147,28 +165,28 @@ class VectorService {
   }
 
   async deliverVector(fields: any, files: any) {
-    const { 
-      vectorId, 
-      stitches, 
-      price, 
-      discount, 
-      total_price, 
-      order_category, 
-      height, 
-      width, 
-      comments, 
-      designer_level, 
-      assign_percentage, 
-      minimum_price, 
-      maximum_price, 
-      thousand_stitches, 
-      normal_delivery, 
-      edit_or_change, 
-      edit_in_stitch_file, 
-      comment_box_1, 
-      comment_box_2, 
-      comment_box_3, 
-      comment_box_4 
+    const {
+      vectorId,
+      stitches,
+      price,
+      discount,
+      total_price,
+      order_category,
+      height,
+      width,
+      comments,
+      designer_level,
+      assign_percentage,
+      minimum_price,
+      maximum_price,
+      thousand_stitches,
+      normal_delivery,
+      edit_or_change,
+      edit_in_stitch_file,
+      comment_box_1,
+      comment_box_2,
+      comment_box_3,
+      comment_box_4
     } = fields;
 
     const attachmentsInput = (files || []).filter(

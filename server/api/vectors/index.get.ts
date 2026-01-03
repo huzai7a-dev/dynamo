@@ -4,7 +4,7 @@ import { ROLE } from "~~/shared/constants";
 
 export default defineEventHandler(async (event) => {
   const { id: userId, role } = event.context.user;
-  const { page, limit, order_name, order_number, date_from, date_to } = getQuery(event);
+  const { page, limit, order_name, order_number, date_from, date_to, status, is_free, is_paid } = getQuery(event);
   const isAdmin = role === ROLE.Admin;
 
   const queryParams: QueryParams = {
@@ -15,6 +15,9 @@ export default defineEventHandler(async (event) => {
     order_name: order_name ? String(order_name) : undefined,
     date_from: date_from ? String(date_from) : undefined,
     date_to: date_to ? String(date_to) : undefined,
+    status: status ? String(status) : undefined,
+    is_free: is_free ? Boolean(is_free) : undefined,
+    is_paid: is_paid ? Boolean(is_paid) : undefined,
   };
   try {
     const vectors = await VectorService.getVectors(isAdmin, queryParams);

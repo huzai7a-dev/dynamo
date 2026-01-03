@@ -32,7 +32,7 @@ class OrderService {
       });
     }
 
-    return await OrderRepository.createOrder(userId, fields, uploaded, {type: DataSource.ORDER});
+    return await OrderRepository.createOrder(userId, fields, uploaded, { type: DataSource.ORDER });
   }
 
   async getOrders(orderParams: QueryParams, isAdmin = false, dataSourceType?: DataSource) {
@@ -45,16 +45,23 @@ class OrderService {
       customer_name,
       date_from,
       date_to,
+      status,
+      is_free,
+      is_paid,
+      converted,
     } = orderParams;
 
     const values: any[] = [];
     let i = 1; // next $ placeholder index
 
-    // Build WHERE conditions
     const whereConditions: string[] = [];
-    whereConditions.push(`o.metadata->>'type' = $${i++}`);
-    values.push(dataSourceType || DataSource.ORDER);
-
+    if (dataSourceType === DataSource.ALL) {
+      whereConditions.push(`o.metadata->>'type' IN ($${i++}, $${i++})`);
+      values.push(DataSource.ORDER, DataSource.VECTOR);
+    } else {
+      whereConditions.push(`o.metadata->>'type' = $${i++}`);
+      values.push(dataSourceType || DataSource.ORDER);
+    }
     if (!isAdmin) {
       whereConditions.push(`o.user_id = $${i++}`);
       values.push(user_id);
@@ -81,6 +88,25 @@ class OrderService {
       values.push(date_from, date_to);
     }
 
+    if (status) {
+      whereConditions.push(`o.status = $${i++}`);
+      values.push(status);
+    }
+
+    if (is_free) {
+      whereConditions.push(`o.price = $${i++}`);
+      values.push(0);
+    }
+
+    if (is_paid) {
+      whereConditions.push(`o.price > $${i++}`);
+      values.push(0);
+    }
+
+    if (converted) {
+      whereConditions.push(`o.metadata->>'convertFromQuote' = $${i++}`);
+      values.push(true);
+    }
     // Get total page count and quotes data from repository
     const [totalPage, orders] = await Promise.all([
       OrderRepository.getTotalPageCount(
@@ -259,28 +285,28 @@ class OrderService {
   }
 
   async deliverOrder(fields: any, files: any) {
-    const { 
-      orderId, 
-      stitches, 
-      price, 
-      discount, 
-      total_price, 
-      order_category, 
-      height, 
-      width, 
-      comments, 
-      designer_level, 
-      assign_percentage, 
-      minimum_price, 
-      maximum_price, 
-      thousand_stitches, 
-      normal_delivery, 
-      edit_or_change, 
-      edit_in_stitch_file, 
-      comment_box_1, 
-      comment_box_2, 
-      comment_box_3, 
-      comment_box_4 
+    const {
+      orderId,
+      stitches,
+      price,
+      discount,
+      total_price,
+      order_category,
+      height,
+      width,
+      comments,
+      designer_level,
+      assign_percentage,
+      minimum_price,
+      maximum_price,
+      thousand_stitches,
+      normal_delivery,
+      edit_or_change,
+      edit_in_stitch_file,
+      comment_box_1,
+      comment_box_2,
+      comment_box_3,
+      comment_box_4
     } = fields;
 
     const attachmentsInput = (files || []).filter(

@@ -1,6 +1,6 @@
 import type { VectorFieldsRequest, VectorFilesRequest, QueryParams } from "~~/shared/types";
 
-class VectorRepository{
+class VectorRepository {
   private db: any;
 
   constructor() {
@@ -79,17 +79,12 @@ class VectorRepository{
     offset: number
   ) {
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
-    
+
     // Data query - Include JOIN with users table when admin is true
     const selectFields = isAdmin
-      ? `v.id,
-       v.vector_name,
-       v.price,
-       v.status,
-       v.payment_status,
-       v.created_at,
-       v.metadata,
-       u.contact_name as customer_name`
+      ? `v.*,
+       u.contact_name as customer_name,
+       u.primary_email as customer_email`
       : `v.id,
        v.vector_name,
        v.price,
@@ -137,7 +132,7 @@ class VectorRepository{
    WHERE v.id = ${id}
    ${!isAdmin ? this.db`AND v.user_id = ${userId}` : this.db``}
   `;
-  return vector[0];
+    return vector[0];
   }
 
   async updateVectorStatus(vectorId: number, status: OrderStatus | QuoteStatus) {
@@ -155,9 +150,9 @@ class VectorRepository{
       rush = ${fields.rush},
       instructions = ${fields?.instructions || null},
       updated_at = NOW()
-    WHERE id = ${vectorId} RETURNING *`;    
+    WHERE id = ${vectorId} RETURNING *`;
 
-  return vector[0];
+    return vector[0];
   }
 
   async moveToOrder(vectorId: number, fields: { price: number, additionalNotes: string }) {

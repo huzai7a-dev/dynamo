@@ -12,7 +12,7 @@ const props = defineProps({
 })
 
 // Lazy icon mapping - each icon is imported only when accessed
- const iconMap = {
+const iconMap = {
   Mail: () => import('lucide-vue-next').then(m => m.Mail),
   Phone: () => import('lucide-vue-next').then(m => m.Phone),
   Instagram: () => import('lucide-vue-next').then(m => m.Instagram),
@@ -69,30 +69,34 @@ const props = defineProps({
   PaintBucket: () => import('lucide-vue-next').then(m => m.PaintBucket),
   MessageSquare: () => import('lucide-vue-next').then(m => m.MessageSquare),
   PhoneCall: () => import('lucide-vue-next').then(m => m.PhoneCall),
-  Clock: ()=> import('lucide-vue-next').then(m => m.Clock),
-  Menu: ()=> import('lucide-vue-next').then(m => m.Menu),
-  Shirt: ()=> import('lucide-vue-next').then(m => m.Shirt),
-  Pen: ()=> import('lucide-vue-next').then(m => m.Pen),
-  Building: ()=> import('lucide-vue-next').then(m => m.Building),
-  Zap: ()=> import('lucide-vue-next').then(m => m.Zap),
-  Slash: ()=> import('lucide-vue-next').then(m => m.Slash),
-  Box: ()=> import('lucide-vue-next').then(m => m.Box),
-  PawPrint: ()=> import('lucide-vue-next').then(m => m.PawPrint),
-  Heart: ()=> import('lucide-vue-next').then(m => m.Heart),
-  Spool: ()=> import('lucide-vue-next').then(m => m.Spool),
-  Logout: ()=> import('lucide-vue-next').then(m => m.LogOut),
-  ChartNoAxesCombined: ()=> import('lucide-vue-next').then(m => m.ChartNoAxesCombined),
-  ReceiptText: ()=> import('lucide-vue-next').then(m => m.ReceiptText),
-  ChevronDown: ()=> import('lucide-vue-next').then(m => m.ChevronDown),
-  ChevronsUpDown: ()=> import('lucide-vue-next').then(m => m.ChevronsUpDown),
-  ChevronUp: ()=> import('lucide-vue-next').then(m => m.ChevronUp),
-  Settings: ()=> import('lucide-vue-next').then(m => m.Settings),
-  Rows3: ()=> import('lucide-vue-next').then(m => m.Rows3),
-  Plus: ()=> import('lucide-vue-next').then(m => m.Plus),
-  Trash: ()=> import('lucide-vue-next').then(m => m.Trash),
-  File: ()=> import('lucide-vue-next').then(m => m.File),
-  Eye: ()=> import('lucide-vue-next').then(m => m.Eye),
-  Package: ()=> import('lucide-vue-next').then(m => m.Package),
+  Clock: () => import('lucide-vue-next').then(m => m.Clock),
+  Menu: () => import('lucide-vue-next').then(m => m.Menu),
+  Shirt: () => import('lucide-vue-next').then(m => m.Shirt),
+  Pen: () => import('lucide-vue-next').then(m => m.Pen),
+  Building: () => import('lucide-vue-next').then(m => m.Building),
+  Zap: () => import('lucide-vue-next').then(m => m.Zap),
+  Slash: () => import('lucide-vue-next').then(m => m.Slash),
+  Box: () => import('lucide-vue-next').then(m => m.Box),
+  PawPrint: () => import('lucide-vue-next').then(m => m.PawPrint),
+  Heart: () => import('lucide-vue-next').then(m => m.Heart),
+  Spool: () => import('lucide-vue-next').then(m => m.Spool),
+  Logout: () => import('lucide-vue-next').then(m => m.LogOut),
+  ChartNoAxesCombined: () => import('lucide-vue-next').then(m => m.ChartNoAxesCombined),
+  ReceiptText: () => import('lucide-vue-next').then(m => m.ReceiptText),
+  ChevronDown: () => import('lucide-vue-next').then(m => m.ChevronDown),
+  ChevronsUpDown: () => import('lucide-vue-next').then(m => m.ChevronsUpDown),
+  ChevronUp: () => import('lucide-vue-next').then(m => m.ChevronUp),
+  ChevronRight: () => import('lucide-vue-next').then(m => m.ChevronRight),
+  Database: () => import('lucide-vue-next').then(m => m.Database),
+  Settings: () => import('lucide-vue-next').then(m => m.Settings),
+  Rows3: () => import('lucide-vue-next').then(m => m.Rows3),
+  Plus: () => import('lucide-vue-next').then(m => m.Plus),
+  Trash: () => import('lucide-vue-next').then(m => m.Trash),
+  File: () => import('lucide-vue-next').then(m => m.File),
+  Eye: () => import('lucide-vue-next').then(m => m.Eye),
+  Package: () => import('lucide-vue-next').then(m => m.Package),
+  Search: () => import('lucide-vue-next').then(m => m.Search),
+  AlertCircle: () => import('lucide-vue-next').then(m => m.AlertCircle),
 }
 
 export type IconName = keyof typeof iconMap
@@ -106,5 +110,8 @@ const iconComponent = computed(() => {
   return defineAsyncComponent(iconLoader)
 })
 
-const iconProps = computed(() => ({ size: props.size, color: props.color }))
-</script> 
+const iconProps = computed(() => ({
+  size: typeof props.size === 'string' ? parseInt(props.size) : props.size,
+  color: props.color
+}))
+</script>

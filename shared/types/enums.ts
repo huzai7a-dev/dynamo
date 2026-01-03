@@ -4,22 +4,23 @@ export enum OrderStatus {
     REJECTED = 'rejected',
     DELIVERED = 'delivered',
     CANCELLED = 'cancelled',
-  }
-  
+}
+
 export enum PaymentStatus {
     PAID = 'paid',
     UNPAID = 'unpaid'
 }
-  
+
 export enum DataSource {
     QUOTE = 'quote',
     ORDER = 'order',
     VECTOR = 'vector',
+    ALL = 'all'
 }
 
 export enum QuoteStatus {
     PENDING = 'pending',
-    ACCEPTED = 'accepted',
+    ACCEPTED = 'approved',
     REJECTED = 'rejected',
-    PROCEED = 'proceeded',
+    PROCEED = 'converted',
 }

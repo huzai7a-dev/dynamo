@@ -1,44 +1,26 @@
 <template>
   <div>
-    <OrderTable
-      @create-order="$router.push('/orders/create')"
-      :data="data?.data?.orders ?? []"
-      :pagination="{
-        currentPage: data?.data?.pagination.currentPage || 1,
-        totalPage: data?.data?.pagination.totalPage || 10,
-      }"
-      :searchCustomerName="customerName"
-      :searchOrderNumber="orderNumber"
-      :searchOrderName="orderName"
-      :loading="pending"
-      :error="!!error"
-      @refresh="refresh"
-      @update:searchOrderNumber="orderNumber = $event"
-      @update:searchOrderName="orderName = $event"
-      @update:selectedDateRange="dateRange = $event"
-      @update:searchCustomerName="customerName = $event"
-      @paginate="(nextPage) => (currentPage = nextPage)"
-      @row-click="$router.push(`/orders/${$event.row.id}`)"
-    />
+    <OrderTable @create-order="$router.push('/orders/create')" :data="data?.data?.orders ?? []" :pagination="{
+      currentPage: data?.data?.pagination.currentPage || 1,
+      totalPage: data?.data?.pagination.totalPage || 10,
+    }" :searchCustomerName="customerName" :searchOrderNumber="orderNumber" :searchOrderName="orderName"
+      :loading="pending" :error="!!error" @refresh="refresh" @update:searchOrderNumber="orderNumber = $event"
+      @update:searchOrderName="orderName = $event" @update:selectedDateRange="dateRange = $event"
+      @update:searchCustomerName="customerName = $event" @paginate="(nextPage) => (currentPage = nextPage)"
+      @row-click="$router.push(`/orders/${$event.row.id}`)" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import type { Pagination, TableOrders } from "~~/shared/types";
+import type { OrderResponse } from "~~/shared/types";
 
 definePageMeta({
   layout: "portal",
   middleware: ["auth"],
 });
 
-interface OrderResponse {
-  message: string;
-  data: {
-    orders: TableOrders[];
-    pagination: Pagination;
-  };
-}
+
 
 const currentPage = ref(1);
 const orderNumber = ref("");
