@@ -1,81 +1,36 @@
 <template>
-  <form
-    @submit.prevent="onSubmit"
-    class="space-y-8 max-w-3xl mx-auto bg-white p-8 rounded-2xl border border-gray-100"
-  >
+  <form @submit.prevent="onSubmit" class="space-y-8 max-w-3xl mx-auto bg-white p-8 rounded-2xl border border-gray-100">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <UiInput
-        v-model="orderName"
-        label="Order Name"
-        required
-        placeholder="Enter Order Name"
-        :error="errors.orderName"
-      />
-      <UiInput
-        v-model="poNumber"
-        label="PO Number"
-        placeholder="Enter PO Number"
-        :error="errors.poNumber"
-      />
-      <UiSelect
-        v-model="requiredFormat"
-        label="Required Format"
-        required
-        placeholder="Select"
-        :options="formatOptions"
-        :error="errors.requiredFormat"
-      />
+      <UiInput v-model="orderName" label="Order Name" required placeholder="Enter Order Name"
+        :error="errors.orderName" />
+      <UiInput v-model="poNumber" label="PO Number" placeholder="Enter PO Number" :error="errors.poNumber" />
+      <UiSelect v-model="requiredFormat" label="Required Format" required placeholder="Select" :options="formatOptions"
+        :error="errors.requiredFormat" />
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <UiInput
-        v-model="width"
-        label="Width (inches)"
-        placeholder="Enter Width (inches)"
-        type="number"
-        :error="errors.width"
-      />
-      <UiInput
-        v-model="height"
-        label="Height (inches)"
-        placeholder="Enter Height (inches)"
-        type="number"
-        :error="errors.height"
-      />
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <UiInput v-model="width" label="Width (inches)" placeholder="Enter Width (inches)" type="number"
+        :error="errors.width" />
+      <UiInput v-model="height" label="Height (inches)" placeholder="Enter Height (inches)" type="number"
+        :error="errors.height" />
+
+      <UiSelect v-model="requiredStitch" label="Required Stitch" required placeholder="Select" :options="stitchOptions"
+        :error="errors.requiredStitch" />
     </div>
     <p class="text-xs text-red-500 mt-1 mb-2">
       Please make sure to write the dimensions of your logo i.e., Width or
       Height. If not the logo will be digitized with the standard size.
     </p>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <UiSelect
-        v-model="fabric"
-        label="Fabric"
-        required
-        placeholder="Select Fabric"
-        :options="fabricOptions"
-        :error="errors.fabric"
-      />
-      <UiSelect
-        v-model="placement"
-        label="Placement"
-        required
-        placeholder="Select"
-        :options="placementOptions"
-        :error="errors.placement"
-      />
-      <UiInput
-        v-model="numColors"
-        label="Number Of Colors"
-        placeholder="Enter Color Number"
-        type="number"
-        :error="errors.numColors"
-      />
+      <UiSelect v-model="fabric" label="Fabric" required placeholder="Select Fabric" :options="fabricOptions"
+        :error="errors.fabric" />
+      <UiSelect v-model="placement" label="Placement" required placeholder="Select" :options="placementOptions"
+        :error="errors.placement" />
+      <UiInput v-model="numColors" label="Number Of Colors" placeholder="Enter Color Number" type="number"
+        :error="errors.numColors" />
     </div>
     <div class="space-y-4 flex justify-between items-center">
       <div>
-        <label class="block text-md font-semibold text-gray-700"
-          >Do You Require Blending ?</label
-        >
+        <label class="block text-md font-semibold text-gray-700">Do You Require Blending ?</label>
         <div class="flex gap-6 text-gray-600">
           <label class="flex items-center gap-2">
             <input type="radio" value="No" v-model="blending" /> No
@@ -89,9 +44,7 @@
         </div>
       </div>
       <div>
-        <label class="block text-md font-semibold text-gray-700 mb-2"
-          >Do you need this order as a rush?</label
-        >
+        <label class="block text-md font-semibold text-gray-700 mb-2">Do you need this order as a rush?</label>
         <div class="flex gap-6 text-gray-600">
           <label class="flex items-center gap-2">
             <input type="radio" value="No" v-model="rush" /> No
@@ -118,52 +71,29 @@
       </div>
     </div>
 
-    <UiInput
-      v-model="instructions"
-      label="Additional Instructions"
-      placeholder="Enter Additional Instructions"
-      type="textarea"
-      :error="errors.instructions"
-    />
+    <UiInput v-model="instructions" label="Additional Instructions" placeholder="Enter Additional Instructions"
+      type="textarea" :error="errors.instructions" />
 
-    <UiFileUploader
-      v-model:files="attachments"
-      :multiple="true"
-      accept="'*/*'"
-    />
-    
+    <UiFileUploader v-model:files="attachments" :multiple="true" accept="'*/*'" />
+
     <!-- Show existing attachments if editing -->
     <div v-if="isEditMode && existingAttachments?.length" class="space-y-4">
       <h3 class="text-lg font-semibold text-gray-700">Existing Attachments</h3>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div 
-          v-for="attachment in existingAttachments" 
-          :key="attachment.url"
-          class="relative group"
-        >
-          <img 
-            :src="attachment.url" 
-            :alt="attachment.url"
-            class="w-full h-24 object-cover rounded-lg border border-gray-200"
-          />
-          <button
-            type="button"
-            @click="removeExistingAttachment(attachment)"
-            class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-          >
+        <div v-for="attachment in existingAttachments" :key="attachment.url" class="relative group">
+          <img :src="attachment.url" :alt="attachment.url"
+            class="w-full h-24 object-cover rounded-lg border border-gray-200" />
+          <button type="button" @click="removeExistingAttachment(attachment)"
+            class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
             ×
           </button>
         </div>
       </div>
     </div>
 
-    <UiButton 
-      type="submit" 
-      fullWidth 
-      size="lg" 
-      :disabled="disabledSubmit"
-    >
-       {{ isLoading ? (isEditMode ? `Updating ${routeName}...` : `Creating ${routeName}...`) : (isEditMode ? `Update ${routeName}` : `Create ${routeName}`) }} 
+    <UiButton type="submit" fullWidth size="lg" :disabled="disabledSubmit">
+      {{ isLoading ? (isEditMode ? `Updating ${routeName}...` : `Creating ${routeName}...`) : (isEditMode ? `Update
+      ${routeName}` : `Create ${routeName}`) }}
     </UiButton>
   </form>
 </template>
@@ -171,7 +101,7 @@
 <script setup lang="ts">
 import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
-import { fabricOptions, formatOptions, placementOptions } from "~/constants";
+import { fabricOptions, formatOptions, placementOptions, stitchOptions } from "~/constants";
 import { OrderSchema } from "~~/shared/validationSchema";
 
 interface Props {
@@ -199,6 +129,7 @@ const { handleSubmit, errors, defineField, setValues } = useForm({
     requiredFormat: "",
     width: "",
     height: "",
+    requiredStitch: "",
     fabric: "",
     placement: "",
     numColors: "",
@@ -216,6 +147,7 @@ const [poNumber] = defineField("poNumber");
 const [requiredFormat] = defineField("requiredFormat");
 const [width] = defineField("width");
 const [height] = defineField("height");
+const [requiredStitch] = defineField("requiredStitch");
 const [fabric] = defineField("fabric");
 const [placement] = defineField("placement");
 const [numColors] = defineField("numColors");
@@ -224,6 +156,7 @@ const [rush] = defineField("rush");
 const [instructions] = defineField("instructions");
 const [faceless] = defineField("faceless");
 const [attachments] = defineField("attachments");
+
 
 const isLoading = ref(false);
 
@@ -257,6 +190,7 @@ const onSubmit = handleSubmit(async (formValues) => {
     fd.append("instructions", formValues.instructions ?? "");
     fd.append("faceless", formValues.faceless ?? "");
     fd.append("dataSourceType", DataSource.ORDER);
+    fd.append("requiredStitch", formValues.requiredStitch ?? "");
 
     // Add new attachments
     formValues.attachments.forEach((file, i) => {
@@ -268,10 +202,10 @@ const onSubmit = handleSubmit(async (formValues) => {
       fd.append("existingAttachments", attachment.url);
     });
 
-    const url = props.isEditMode 
-      ? `/api/${props.endpoint}/${props.orderData?.id}` 
+    const url = props.isEditMode
+      ? `/api/${props.endpoint}/${props.orderData?.id}`
       : `/api/${props.endpoint}`;
-    
+
     const method = props.isEditMode ? "PUT" : "POST";
 
     await $fetch(url, {

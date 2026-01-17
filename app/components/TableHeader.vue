@@ -5,56 +5,32 @@
       <div class="flex flex-col sm:flex-row gap-4 flex-1">
         <!-- Order Number Search -->
         <div class="flex-1 min-w-0">
-          <UiInput
-            :model-value="searchOrderNumber"
-            @update:modelValue="$emit('update:searchOrderNumber', $event)"
-            :label="`${title} Number`"
-            :placeholder="`Search by ${title} number...`"
-            size="md"
-          />
+          <UiInput :model-value="searchOrderNumber" @update:modelValue="$emit('update:searchOrderNumber', $event)"
+            :label="`${title} Number`" :placeholder="`Search by ${title} number...`" size="md" />
         </div>
         <!-- Order Name Search -->
         <div class="flex-1 min-w-0">
-          <UiInput
-            :model-value="searchOrderName"
-            @update:modelValue="$emit('update:searchOrderName', $event)"
-            :label="`${title} Name`"
-            :placeholder="`Search by ${title} name...`"
-            size="md"
-          />
+          <UiInput :model-value="searchOrderName" @update:modelValue="$emit('update:searchOrderName', $event)"
+            :label="`${title} Name`" :placeholder="`Search by ${title} name...`" size="md" />
         </div>
         <!-- Customer Name Search (Admin Only) -->
         <div v-if="isAdmin" class="flex-1 min-w-0">
-          <UiInput
-            :model-value="searchCustomerName"
-            @update:modelValue="$emit('update:searchCustomerName', $event)"
-            label="Customer Name"
-            placeholder="Search by customer name..."
-            size="md"
-          />
+          <UiInput :model-value="searchCustomerName" @update:modelValue="$emit('update:searchCustomerName', $event)"
+            label="Customer Name" placeholder="Search by customer name..." size="md" />
         </div>
         <!-- Date Range Select -->
         <div class="flex-1 min-w-0">
-          <UiDateRangeSelect
-            :model-value="selectedDateRange"
-            @update:modelValue="$emit('update:selectedDateRange', $event)"
-            label="Date Range"
-            placeholder="Select date range..."
-            size="md"
-          />
+          <UiDateRangeSelect :model-value="selectedDateRange"
+            @update:modelValue="$emit('update:selectedDateRange', $event)" label="Date Range"
+            placeholder="Select date range..." size="md" />
         </div>
-          <slot name="extra" />
+        <slot name="extra" />
       </div>
-      <!-- Create Order Button -->
+      <!-- Actions Slot or Default Create Button -->
       <div class="flex-shrink-0">
-        <UiButton
-          variant="primary"
-          size="md"
-          icon="Plus"
-          rounded
-          @click="$emit('create-order')"
-        >
-         {{ createButtonLabel || 'Create Order' }}
+        <slot name="actions" v-if="$slots.actions" />
+        <UiButton v-else variant="primary" size="md" icon="Plus" rounded @click="$emit('create-order')">
+          {{ createButtonLabel || 'Create Order' }}
         </UiButton>
       </div>
     </div>

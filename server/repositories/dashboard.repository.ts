@@ -17,8 +17,8 @@ class DashboardRepository {
             stats.vectors = Number((await this.db`SELECT COUNT(*) FROM vectors` as any[])[0]?.count || 0);
             // stats.amount = await this.db`SELECT SUM(amount) FROM orders`;
         } else {
-            stats.orders = Number((await this.db`SELECT COUNT(*) FROM orders WHERE user_id = ${userId} AND metadata->>'type' = ${DataSource.ORDER}` as any[])[0]?.count || 0);
-            stats.quotes = Number((await this.db`SELECT COUNT(*) FROM orders WHERE user_id = ${userId} AND metadata->>'type' = ${DataSource.QUOTE}` as any[])[0]?.count || 0);
+            stats.orders = Number((await this.db`SELECT COUNT(*) FROM orders WHERE user_id = ${userId}` as any[])[0]?.count || 0);
+            stats.quotes = Number((await this.db`SELECT COUNT(*) FROM quotes WHERE user_id = ${userId}` as any[])[0]?.count || 0);
             stats.vectors = Number((await this.db`SELECT COUNT(*) FROM vectors WHERE user_id = ${userId}` as any[])[0]?.count || 0);
             // stats.amount = await this.db`SELECT SUM(amount) FROM orders WHERE user_id = ${userId}`;
         }

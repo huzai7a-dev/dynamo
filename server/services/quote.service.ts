@@ -4,8 +4,6 @@ import uploadService from "./upload.service";
 import orderRepository from "../repositories/order.respository";
 import { DataSource } from "~~/shared/types/enums";
 import vectorRepository from "../repositories/vector.repository";
-import vectorService from "./vector.service";
-import orderService from "./order.service";
 import quotesRepository from "../repositories/quotes.repository";
 
 class QuoteService {
@@ -106,11 +104,11 @@ class QuoteService {
     }
 
     async getQuoteDetails(isAdmin: boolean, quoteId: number, userId: number) {
-        const quote = await orderRepository.getOrderDetails(isAdmin, quoteId, userId);
+        const quote = await quotesRepository.getQuoteDetails(isAdmin, quoteId, userId);
         return quote;
     }
 
-    async updateQuoteStatus(isAdmin: boolean, quoteId: number, status: QuoteStatus, dataSourceType: DataSource) {
+    async updateQuoteStatus(isAdmin: boolean, quoteId: number, status: QuoteStatus) {
         const AdminActions = [QuoteStatus.ACCEPTED, QuoteStatus.REJECTED]
         const UserActions = [QuoteStatus.PROCEED]
 
@@ -126,18 +124,18 @@ class QuoteService {
             }
         }
 
-        if (dataSourceType === DataSource.ORDER)
-            await orderRepository.updateOrderStatus(quoteId, status);
-        if (dataSourceType === DataSource.VECTOR)
-            await vectorRepository.updateVectorStatus(quoteId, status);
-        return
+        return await quotesRepository.updateQuoteStatus(quoteId, status);
     }
 
-    async moveToOrder(quoteId: number, fields: { price: number, additionalNotes: string }, dataSourceType: DataSource) {
-        if (dataSourceType === DataSource.ORDER)
-            await orderRepository.moveToOrder(quoteId, fields);
-        if (dataSourceType === DataSource.VECTOR)
-            await vectorRepository.moveToOrder(quoteId, fields);
+
+
+    async moveQuote(quoteId: number, fields: { price: number, additionalNotes: string }, dataSourceType: DataSource) {
+        if (dataSourceType === DataSource.ORDER) {
+            return await quotesRepository.moveToOrder(quoteId);
+        }
+        if (dataSourceType === DataSource.VECTOR) {
+            return await quotesRepository.moveToVector(quoteId);
+        }
         return
     }
 }

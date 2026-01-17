@@ -85,13 +85,7 @@ class VectorRepository {
       ? `v.*,
        u.contact_name as customer_name,
        u.primary_email as customer_email`
-      : `v.id,
-       v.vector_name,
-       v.price,
-       v.status,
-       v.payment_status,
-       v.metadata,
-       v.created_at`;
+      : `v.*`;
 
     const joinClause = isAdmin ? 'LEFT JOIN users u ON v.user_id = u.id' : '';
 
@@ -155,18 +149,18 @@ class VectorRepository {
     return vector[0];
   }
 
-  async moveToOrder(vectorId: number, fields: { price: number, additionalNotes: string }) {
-    const vector = await this.db`UPDATE vectors SET status = ${OrderStatus.IN_PROGRESS} WHERE id = ${vectorId} RETURNING *`;
-    if (fields?.price) {
-      await this.db`UPDATE vectors set price = ${fields.price} WHERE id = ${vectorId}`;
-    }
-    await this.db`UPDATE vectors SET metadata = COALESCE(metadata, '{}'::jsonb) || ${JSON.stringify({
-      type: DataSource.VECTOR,
-      convertFromQuote: true,
-      ...(fields?.additionalNotes && { additionalNotes: fields.additionalNotes })
-    })}::jsonb WHERE id = ${vectorId}`;
-    return vector[0];
-  }
+  // async moveToOrder(vectorId: number, fields: { price: number, additionalNotes: string }) {
+  //   const vector = await this.db`UPDATE vectors SET status = ${OrderStatus.IN_PROGRESS} WHERE id = ${vectorId} RETURNING *`;
+  //   if (fields?.price) {
+  //     await this.db`UPDATE vectors set price = ${fields.price} WHERE id = ${vectorId}`;
+  //   }
+  //   await this.db`UPDATE vectors SET metadata = COALESCE(metadata, '{}'::jsonb) || ${JSON.stringify({
+  //     type: DataSource.VECTOR,
+  //     convertFromQuote: true,
+  //     ...(fields?.additionalNotes && { additionalNotes: fields.additionalNotes })
+  //   })}::jsonb WHERE id = ${vectorId}`;
+  //   return vector[0];
+  // }
 }
 
 export default new VectorRepository();

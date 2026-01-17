@@ -81,6 +81,11 @@ const RegisterSchema = z.object({
     .optional()
     .describe("Reference"),
 
+  salesMan: z
+    .string()
+    .optional()
+    .describe("Salesman"),
+
   website: z
     .string()
     .url("Invalid URL")
@@ -107,6 +112,7 @@ const OrderSchema = z.object({
   requiredFormat: z.string().min(1, 'Required format is required'),
   width: z.string().optional(),
   height: z.string().optional(),
+  requiredStitch: z.string().optional(),
   fabric: z.string().min(1, 'Fabric is required'),
   placement: z.string().min(1, 'Placement is required'),
   numColors: z.string().optional(),

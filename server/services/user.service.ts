@@ -1,4 +1,5 @@
 import type { IUser } from "#shared/types";
+import { ROLE } from "~~/shared/constants";
 class UserService {
     private db: ReturnType<typeof useDb>;
     constructor() {
@@ -26,6 +27,7 @@ class UserService {
                 fax_number,
                 invoice_email,
                 reference,
+                sales_man,
                 secondary_email,
                 state,
                 website,
@@ -45,6 +47,7 @@ class UserService {
                 ${user.fax_number ?? null},
                 ${user.invoice_email ?? null},
                 ${user.reference ?? null},
+                ${user.sales_man ?? null},
                 ${user.secondary_email ?? null},
                 ${user.state ?? null},
                 ${user.website ?? null},
@@ -53,6 +56,28 @@ class UserService {
             RETURNING *;
             `;
         return result;
+    }
+
+    async getAllUsers(filters: { id?: string; user_name?: string; email?: string, company?: string } = {}) {
+        const { id, user_name, email, company } = filters;
+
+        let query = this.db`SELECT * FROM users WHERE role != ${ROLE.Admin}`;
+
+        if (id) {
+            query = this.db`${query} AND id::text LIKE ${'%' + id + '%'}`;
+        }
+        if (user_name) {
+            query = this.db`${query} AND contact_name ILIKE ${'%' + user_name + '%'}`;
+        }
+        if (email) {
+            query = this.db`${query} AND primary_email ILIKE ${'%' + email + '%'}`;
+        }
+        if (company) {
+            query = this.db`${query} AND company_name ILIKE ${'%' + company + '%'}`;
+        }
+
+        const users = await query as Array<IUser>;
+        return users;
     }
 }
 

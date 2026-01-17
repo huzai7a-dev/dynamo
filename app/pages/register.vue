@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="bg-card text-card-foreground shadow-md p-8 max-w-6xl mx-auto mt-10 border space-y-10"
-  >
+  <div class="bg-card text-card-foreground shadow-md p-8 max-w-6xl mx-auto mt-10 border space-y-10">
     <h1 class="text-3xl font-semibold">Create an Account</h1>
 
     <form @submit.prevent="onSubmit" class="space-y-8">
@@ -9,23 +7,10 @@
       <div class="space-y-4">
         <h2 class="text-xl font-medium text-foreground">Account Info</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <UiInput
-            required
-            v-model="user_name"
-            name="user_name"
-            label="User Name"
-            placeholder="JohnDoe"
-            :error="errors.user_name"
-          />
-          <UiInput
-            required
-            v-model="password"
-            name="password"
-            label="Password"
-            type="password"
-            placeholder="••••••"
-            :error="errors.password"
-          />
+          <UiInput required v-model="user_name" name="user_name" label="User Name" placeholder="JohnDoe"
+            :error="errors.user_name" />
+          <UiInput required v-model="password" name="password" label="Password" type="password" placeholder="••••••"
+            :error="errors.password" />
         </div>
       </div>
 
@@ -33,28 +18,12 @@
       <div class="space-y-4">
         <h2 class="text-xl font-medium text-foreground">Emails</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <UiInput
-            required
-            v-model="primary_email"
-            name="primary_email"
-            label="Primary Email"
-            placeholder="you@example.com"
-            :error="errors.primary_email"
-          />
-          <UiInput
-            v-model="secondary_email"
-            name="secondary_email"
-            label="Secondary Email"
-            placeholder="optional@example.com"
-            :error="errors.secondary_email"
-          />
-          <UiInput
-            v-model="invoice_email"
-            name="invoice_email"
-            label="Invoice Email"
-            placeholder="billing@example.com"
-            :error="errors.invoice_email"
-          />
+          <UiInput required v-model="primary_email" name="primary_email" label="Primary Email"
+            placeholder="you@example.com" :error="errors.primary_email" />
+          <UiInput v-model="secondary_email" name="secondary_email" label="Secondary Email"
+            placeholder="optional@example.com" :error="errors.secondary_email" />
+          <UiInput v-model="invoice_email" name="invoice_email" label="Invoice Email" placeholder="billing@example.com"
+            :error="errors.invoice_email" />
         </div>
       </div>
 
@@ -62,22 +31,10 @@
       <div class="space-y-4">
         <h2 class="text-xl font-medium text-foreground">Company Info</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <UiInput
-            required
-            v-model="company_name"
-            name="company_name"
-            label="Company Name"
-            placeholder="Acme Inc."
-            :error="errors.company_name"
-          />
-          <UiInput
-            required
-            v-model="contact_name"
-            name="contact_name"
-            label="Contact Name"
-            placeholder="Jane Doe"
-            :error="errors.contact_name"
-          />
+          <UiInput required v-model="company_name" name="company_name" label="Company Name" placeholder="Acme Inc."
+            :error="errors.company_name" />
+          <UiInput required v-model="contact_name" name="contact_name" label="Contact Name" placeholder="Jane Doe"
+            :error="errors.contact_name" />
         </div>
       </div>
 
@@ -85,28 +42,12 @@
       <div class="space-y-4">
         <h2 class="text-xl font-medium text-foreground">Contact Details</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <UiInput
-            required
-            v-model="phone_number"
-            name="phone_number"
-            label="Phone"
-            placeholder="+1 555-1234"
-            :error="errors.phone_number"
-          />
-          <UiInput
-            v-model="cell_number"
-            name="cell_number"
-            label="Cell"
-            placeholder="+1 555-6789"
-            :error="errors.cell_number"
-          />
-          <UiInput
-            v-model="fax_number"
-            name="fax_number"
-            label="Fax Number"
-            placeholder="+1 555-9876"
-            :error="errors.fax_number"
-          />
+          <UiInput required v-model="phone_number" name="phone_number" label="Phone" placeholder="+1 555-1234"
+            :error="errors.phone_number" />
+          <UiInput v-model="cell_number" name="cell_number" label="Cell" placeholder="+1 555-6789"
+            :error="errors.cell_number" />
+          <UiInput v-model="fax_number" name="fax_number" label="Fax Number" placeholder="+1 555-9876"
+            :error="errors.fax_number" />
         </div>
       </div>
 
@@ -114,35 +55,11 @@
       <div class="space-y-4">
         <h2 class="text-xl font-medium text-foreground">Location</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <UiSelect
-            v-model="country"
-            name="country"
-            label="Country"
-            placeholder="Select a country"
-            :options="countryOptions"
-            :error="errors.country"
-          />
-          <UiInput
-            v-model="city"
-            name="city"
-            label="City"
-            placeholder="New York"
-            :error="errors.city"
-          />
-          <UiInput
-            v-model="zip_code"
-            name="zip_code"
-            label="Zip Code"
-            placeholder="10001"
-            :error="errors.zip_code"
-          />
-          <UiInput
-            v-model="state"
-            name="state"
-            label="State"
-            placeholder="NY"
-            :error="errors.state"
-          />
+          <UiSelect v-model="country" name="country" label="Country" placeholder="Select a country"
+            :options="countryOptions" :error="errors.country" />
+          <UiInput v-model="city" name="city" label="City" placeholder="New York" :error="errors.city" />
+          <UiInput v-model="zip_code" name="zip_code" label="Zip Code" placeholder="10001" :error="errors.zip_code" />
+          <UiInput v-model="state" name="state" label="State" placeholder="NY" :error="errors.state" />
         </div>
       </div>
 
@@ -150,27 +67,14 @@
       <div class="space-y-4">
         <h2 class="text-xl font-medium text-foreground">Other</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <UiInput
-            v-model="reference"
-            name="reference"
-            label="Reference"
-            placeholder="Referral, Ad, etc."
-            :error="errors.reference"
-          />
-          <UiInput
-            v-model="website"
-            name="website"
-            label="Website"
-            placeholder="https://example.com"
-            :error="errors.website"
-          />
-          <UiInput
-            v-model="address"
-            name="address"
-            label="Address"
-            placeholder="123 Main St"
-            :error="errors.address"
-          />
+          <UiSelect v-model="reference" name="reference" label="Reference" :options="referenceOptions"
+            :error="errors.reference" />
+
+          <UiSelect v-if="reference === 'Salesman'" v-model="salesMan" name="salesMan" label="Salesman"
+            :options="salesManOptions" :error="errors.salesMan" />
+          <UiInput v-model="website" name="website" label="Website" placeholder="https://example.com"
+            :error="errors.website" />
+          <UiInput v-model="address" name="address" label="Address" placeholder="123 Main St" :error="errors.address" />
         </div>
       </div>
 
@@ -181,11 +85,11 @@
       </div>
 
       <div class="text-center text-sm text-muted-foreground">
-          Already have an account?
-          <NuxtLink to="/login" class="font-medium text-primary hover:underline">
-            Login here
-          </NuxtLink>
-        </div>
+        Already have an account?
+        <NuxtLink to="/login" class="font-medium text-primary hover:underline">
+          Login here
+        </NuxtLink>
+      </div>
     </form>
   </div>
 </template>
@@ -201,6 +105,19 @@ const countryOptions = [
   { label: "Canada", value: "Canada" },
   { label: "Pakistan", value: "Pakistan" },
   { label: "Germany", value: "Germany" },
+];
+
+const referenceOptions = [
+  { label: "Search Eniginer", value: "Search Eniginer" },
+  { label: "Salesman", value: "Salesman" },
+  { label: "Customer", value: "Customer" },
+  { label: "Other", value: "Other" },
+];
+
+const salesManOptions = [
+  { label: "Salesman 1", value: "Salesman 1" },
+  { label: "Salesman 2", value: "Salesman 2" },
+  { label: "Salesman 3", value: "Salesman 3" },
 ];
 
 const toast = useToast()
@@ -222,6 +139,7 @@ const { handleSubmit, defineField, errors, isSubmitting } = useForm({
     zip_code: "",
     state: "",
     reference: "",
+    salesMan: "",
     website: "",
     address: "",
   },
@@ -242,10 +160,11 @@ const [city] = defineField("city");
 const [zip_code] = defineField("zip_code");
 const [state] = defineField("state");
 const [reference] = defineField("reference");
+const [salesMan] = defineField("salesMan");
 const [website] = defineField("website");
 const [address] = defineField("address");
 
-const onSubmit = handleSubmit(async(values) => {
+const onSubmit = handleSubmit(async (values) => {
   try {
     await $fetch('/api/auth/register', {
       method: 'POST',

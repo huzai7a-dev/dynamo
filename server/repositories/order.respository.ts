@@ -28,12 +28,7 @@ class OrderRepository {
     // Data query - Include JOIN with users table when admin is true
     const selectFields = isAdmin
       ? `o.*, u.contact_name as customer_name, u.primary_email as customer_email`
-      : `o.id,
-               o.order_name,
-               o.price,
-               o.status,
-               o.payment_status,
-               o.created_at`;
+      : `o.*`;
 
     const joinClause = isAdmin ? 'LEFT JOIN users u ON o.user_id = u.id' : '';
 
@@ -107,7 +102,7 @@ class OrderRepository {
         WITH new_order AS (
           INSERT INTO orders (
             order_name, po_number, required_format,
-            width_in, height_in, fabric, placement,
+            width_in, height_in, required_stitch, fabric, placement,
             num_colors, blending, rush, instructions, 
             faceless, user_id, metadata
           )
@@ -117,6 +112,7 @@ class OrderRepository {
             ${fields.requiredFormat},
             ${widthNum},
             ${heightNum},
+            ${fields.requiredStitch},
             ${fields.fabric},
             ${fields.placement},
             ${colorsInt},
@@ -159,26 +155,26 @@ class OrderRepository {
     await this.db`UPDATE orders SET status = ${status} WHERE id = ${orderId}`;
   }
 
-  async moveToOrder(quoteId: number, fields?: { price: number, additionalNotes: string }) {
+  // async moveToOrder(quoteId: number, fields?: { price: number, additionalNotes: string }) {
 
-    if (fields?.price) {
-      await this.db`UPDATE orders set price = ${fields.price} WHERE id = ${quoteId}`;
-    }
+  //   if (fields?.price) {
+  //     await this.db`UPDATE orders set price = ${fields.price} WHERE id = ${quoteId}`;
+  //   }
 
-    await this.db`
-      UPDATE orders 
-      SET 
-        status = ${OrderStatus.IN_PROGRESS},
-        metadata = COALESCE(metadata, '{}'::jsonb) || ${JSON.stringify({
-      type: DataSource.ORDER,
-      convertFromQuote: true,
-      ...(fields?.additionalNotes && { additionalNotes: fields.additionalNotes })
-    })}::jsonb
-      WHERE id = ${quoteId}
-    `;
+  //   await this.db`
+  //     UPDATE orders 
+  //     SET 
+  //       status = ${OrderStatus.IN_PROGRESS},
+  //       metadata = COALESCE(metadata, '{}'::jsonb) || ${JSON.stringify({
+  //     type: DataSource.ORDER,
+  //     convertFromQuote: true,
+  //     ...(fields?.additionalNotes && { additionalNotes: fields.additionalNotes })
+  //   })}::jsonb
+  //     WHERE id = ${quoteId}
+  //   `;
 
-    return
-  }
+  //   return
+  // }
 }
 
 export default new OrderRepository();

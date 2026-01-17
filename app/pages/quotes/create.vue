@@ -6,11 +6,6 @@
         <p class="text-gray-600 block w-full">
           Fill in the details below to create a new quote
         </p>
-
-        <div class="w-96">
-          <UiSelect v-model="dataSourceType" label="Data Source Type" placeholder="Select"
-            :options="dataSourceTypeOptions" />
-        </div>
       </div>
 
       <!-- Form -->
@@ -23,18 +18,16 @@
 </template>
 
 <script setup lang="ts">
+
 const router = useRouter();
+const { query } = useRoute();
 const toast = useToast();
 
-const dataSourceType = ref(DataSource.ORDER);
-const dataSourceTypeOptions = [
-  { label: "Order", value: DataSource.ORDER },
-  { label: "Vector", value: DataSource.VECTOR },
-];
+const dataSourceType = ref(query?.type || DataSource.ORDER);
 
 const handleSuccess = () => {
   toast.success('Quote created successfully!');
-  // router.push('/quotes');
+  router.push('/quotes');
 };
 
 const handleError = () => {

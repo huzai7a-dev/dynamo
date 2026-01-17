@@ -23,4 +23,5 @@ export enum QuoteStatus {
     ACCEPTED = 'approved',
     REJECTED = 'rejected',
     PROCEED = 'converted',
+    QUOTED = 'quoted',
 }

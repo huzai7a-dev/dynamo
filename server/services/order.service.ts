@@ -55,13 +55,13 @@ class OrderService {
     let i = 1; // next $ placeholder index
 
     const whereConditions: string[] = [];
-    if (dataSourceType === DataSource.ALL) {
-      whereConditions.push(`o.metadata->>'type' IN ($${i++}, $${i++})`);
-      values.push(DataSource.ORDER, DataSource.VECTOR);
-    } else {
-      whereConditions.push(`o.metadata->>'type' = $${i++}`);
-      values.push(dataSourceType || DataSource.ORDER);
-    }
+    // if (dataSourceType === DataSource.ALL) {
+    //   whereConditions.push(`o.metadata->>'type' IN ($${i++}, $${i++})`);
+    //   values.push(DataSource.ORDER, DataSource.VECTOR);
+    // } else {
+    //   whereConditions.push(`o.metadata->>'type' = $${i++}`);
+    //   values.push(dataSourceType || DataSource.ORDER);
+    // }
     if (!isAdmin) {
       whereConditions.push(`o.user_id = $${i++}`);
       values.push(user_id);
@@ -104,7 +104,7 @@ class OrderService {
     }
 
     if (converted) {
-      whereConditions.push(`o.metadata->>'convertFromQuote' = $${i++}`);
+      whereConditions.push(`o.is_from_quote = $${i++}`);
       values.push(true);
     }
     // Get total page count and quotes data from repository

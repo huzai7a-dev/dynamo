@@ -46,8 +46,8 @@ class VectorService {
     // Build WHERE conditions
     const whereConditions: string[] = [];
 
-    whereConditions.push(`v.metadata->>'type' = $${i++}`);
-    values.push(dataSourceType || DataSource.VECTOR);
+    // whereConditions.push(`v.metadata->>'type' = $${i++}`);
+    // values.push(dataSourceType || DataSource.VECTOR);
 
     // Only non-admins are restricted to their own orders
     if (!isAdmin) {

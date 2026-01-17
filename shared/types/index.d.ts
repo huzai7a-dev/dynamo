@@ -87,6 +87,7 @@ export interface IVector {
   delivery_attachments: Attachment[]
   contact_name: string
   metadata?: any
+  is_form_quote: boolean
 }
 
 export interface TableVector {
@@ -97,6 +98,7 @@ export interface TableVector {
   payment_status: PaymentStatus,
   created_at: string
   contact_name: string
+  is_form_quote: boolean
 }
 
 export interface Pagination {

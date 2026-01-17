@@ -8,7 +8,7 @@
       @update:searchOrderNumber="orderNumber = $event" @update:searchOrderName="orderName = $event"
       @update:selectedDateRange="dateRange = $event" @update:searchCustomerName="customerName = $event"
       @paginate="(nextPage) => (currentPage = nextPage)"
-      @row-click="$router.push(`/quotes/${$event.row.id}?type=${dataSourceType}`)" />
+      @row-click="$router.push(`/quotes/${$event.row.id}?type=${$event.row.q_type}`)" />
   </div>
 </template>
 
