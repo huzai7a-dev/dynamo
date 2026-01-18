@@ -2,42 +2,27 @@
   <div class="min-h-screen bg-light-gray">
     <div class="container py-8">
       <!-- Header -->
-      <OrderHeader
-        :order_name="order?.order_name"
-        :po_number="order?.po_number"
-        :status="order?.status"
-      />
+      <OrderHeader :order_name="order?.order_name" :po_number="order?.po_number" :status="order?.status" />
 
       <!-- Main -->
       <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div class="lg:col-span-2 space-y-6">
-          <div
-            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-          >
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="mb-4 text-lg font-semibold text-secondary">
               Order Details
             </h2>
             <OrderMetaGrid :order="order" />
-            <AttachmentsGallery
-              class="mt-6"
-              title="Attachments"
-              noAttachmentsMessage="No order attachments uploaded."
-              :attachments="order.order_attachments || []"
-            />
+            <AttachmentsGallery class="mt-6" title="Attachments" noAttachmentsMessage="No order attachments uploaded."
+              :attachments="order.order_attachments || []" />
           </div>
 
           <!-- Delivery Details -->
-          <DeliveryDetails 
-            v-if="deliveryData" 
-            :deliveryData="deliveryData" 
-          />
-          
+          <DeliveryDetails v-if="deliveryData" :deliveryData="deliveryData" />
+
         </div>
 
         <aside class="space-y-6">
-          <div
-            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-          >
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h3 class="mb-3 text-base font-semibold text-secondary">Summary</h3>
             <div class="space-y-3">
               <div class="flex items-center justify-between">
@@ -46,14 +31,10 @@
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-sm text-charcoal/70">Payment</span>
-                <span
-                  class="text-sm font-medium"
-                  :class="
-                    order?.payment_status === 'paid'
-                      ? 'text-emerald-700'
-                      : 'text-amber-700'
-                  "
-                >
+                <span class="text-sm font-medium" :class="order?.payment_status === 'paid'
+                    ? 'text-emerald-700'
+                    : 'text-amber-700'
+                  ">
                   {{ order?.payment_status === "paid" ? "Paid" : "Pending" }}
                 </span>
               </div>
@@ -70,27 +51,18 @@
             </div>
           </div>
 
-          <div
-            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-          >
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="mb-4 text-lg font-semibold text-secondary">Notes</h2>
             <InstructionBox :instructions="order?.instructions" />
           </div>
-        
-          <div
-            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-          >
+
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h3 class="mb-3 text-base font-semibold text-secondary">Actions</h3>
             <slot name="actions">
-              <OrderActions
-                :isAdmin="isAdmin"
-                :status="order?.status"
-                @approve="updateOrderStatus(OrderStatus.IN_PROGRESS)"
-                @reject="updateOrderStatus(OrderStatus.REJECTED)"
-                @deliver="showDeliveryModal = true"
-                @cancel="updateOrderStatus(OrderStatus.CANCELLED)"
-                @edit="handleEditOrder"
-              />
+              <OrderActions :isAdmin="isAdmin" :status="order?.status"
+                @approve="updateOrderStatus(OrderStatus.IN_PROGRESS)" @reject="updateOrderStatus(OrderStatus.REJECTED)"
+                @deliver="showDeliveryModal = true" @cancel="updateOrderStatus(OrderStatus.CANCELLED)"
+                @edit="handleEditOrder" />
             </slot>
           </div>
         </aside>
@@ -98,11 +70,8 @@
     </div>
 
     <!-- Delivery Modal -->
-    <DeliveryModal
-      v-model="showDeliveryModal"
-      :orderId="String(orderId)"
-      @on:deliver="handleDeliveryComplete"
-    />
+    <DeliveryModal v-model="showDeliveryModal" :orderId="String(orderId)" :orderDate="order?.created_at"
+      @on:deliver="handleDeliveryComplete" />
   </div>
 </template>
 
@@ -151,12 +120,12 @@ const handleEditOrder = () => {
 const handleDeliveryComplete = async (deliveryData: DeliveryFormData) => {
   try {
     const fd = new FormData();
-    
+
     // Required fields
     fd.append("orderId", String(props.orderId));
     fd.append("stitches", deliveryData.stitches);
     fd.append("price", deliveryData.price);
-    
+
     // Optional fields - only append if they have values
     if (deliveryData.discount) fd.append("discount", deliveryData.discount);
     if (deliveryData.total_price) fd.append("total_price", deliveryData.total_price);
@@ -176,7 +145,7 @@ const handleDeliveryComplete = async (deliveryData: DeliveryFormData) => {
     if (deliveryData.comment_box_2) fd.append("comment_box_2", deliveryData.comment_box_2);
     if (deliveryData.comment_box_3) fd.append("comment_box_3", deliveryData.comment_box_3);
     if (deliveryData.comment_box_4) fd.append("comment_box_4", deliveryData.comment_box_4);
-    
+
     // Append attachments
     deliveryData.attachments.forEach(file => {
       fd.append("attachments", file);
@@ -186,10 +155,10 @@ const handleDeliveryComplete = async (deliveryData: DeliveryFormData) => {
       method: "POST",
       body: fd
     });
-    
+
     emit('delivery:complete', deliveryData);
     toast.success("Order delivered successfully");
-    
+
     showDeliveryModal.value = false;
   } catch (error) {
     console.error("Error completing delivery:", error);
@@ -209,10 +178,10 @@ const handleDeliveryComplete = async (deliveryData: DeliveryFormData) => {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 </style>
-

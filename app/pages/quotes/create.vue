@@ -9,10 +9,10 @@
       </div>
 
       <!-- Form -->
-      <OrderForm v-if="dataSourceType === DataSource.ORDER" endpoint="quotes" @success="handleSuccess"
-        @error="handleError" />
-      <VectorForm v-if="dataSourceType === DataSource.VECTOR" endpoint="quotes" @success="handleSuccess"
-        @error="handleError" />
+      <OrderForm headerTitle="Send Quote" v-if="dataSourceType === DataSource.ORDER" endpoint="quotes"
+        @success="handleSuccess" @error="handleError" />
+      <VectorForm headerTitle="Send Quote" v-if="dataSourceType === DataSource.VECTOR" endpoint="quotes"
+        @success="handleSuccess" @error="handleError" />
     </div>
   </div>
 </template>

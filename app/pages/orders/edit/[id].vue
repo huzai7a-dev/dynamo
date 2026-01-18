@@ -17,25 +17,14 @@
       </div>
 
       <!-- Error State -->
-      <UiErrorState 
-        v-else-if="error"
-        title="Unable to Load Order"
+      <UiErrorState v-else-if="error" title="Unable to Load Order"
         message="We couldn't load the order details. This might be due to a network issue or the order might not exist."
-        :loading="pending"
-        back-route="/orders"
-        back-text="Back to Orders"
-        @retry="() => refresh()"
-      />
+        :loading="pending" back-route="/orders" back-text="Back to Orders" @retry="() => refresh()" />
 
       <!-- Form -->
       <div v-else>
-        <OrderForm
-          v-if="order && !pending"
-          :order-data="order"
-          :is-edit-mode="true"
-          @success="handleSuccess"
-          @error="handleError"
-        />
+        <OrderForm headerTitle="Edit Order" v-if="order && !pending" :order-data="order" :is-edit-mode="true"
+          @success="handleSuccess" @error="handleError" />
       </div>
     </div>
   </div>
@@ -60,7 +49,6 @@ const order = computed(() => data.value?.data);
 
 const handleSuccess = () => {
   toast.success('Order updated successfully!');
-  // Redirect to order details page
   router.push(`/orders/${route.params.id}`);
 };
 

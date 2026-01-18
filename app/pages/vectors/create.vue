@@ -9,10 +9,7 @@
       </div>
 
       <!-- Form -->
-      <VectorForm
-        @success="handleSuccess"
-        @error="handleError"
-      />
+      <VectorForm headerTitle="Send Vector" @success="handleSuccess" @error="handleError" />
     </div>
   </div>
 </template>
@@ -22,7 +19,7 @@ const router = useRouter();
 const toast = useToast();
 
 const handleSuccess = () => {
-  toast.success('Order created successfully!');
+  toast.success('Vector placed successfully!');
   // Redirect to orders list
   router.push('/vectors');
 };

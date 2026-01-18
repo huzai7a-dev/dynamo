@@ -9,10 +9,7 @@
       </div>
 
       <!-- Form -->
-      <OrderForm
-        @success="handleSuccess"
-        @error="handleError"
-      />
+      <OrderForm headerTitle="Send Order" @success="handleSuccess" @error="handleError" />
     </div>
   </div>
 </template>
@@ -22,7 +19,7 @@ const router = useRouter();
 const toast = useToast();
 
 const handleSuccess = () => {
-  toast.success('Order created successfully!');
+  toast.success('Order placed successfully!');
   // Redirect to orders list
   router.push('/orders');
 };

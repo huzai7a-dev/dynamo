@@ -1,5 +1,8 @@
 <template>
   <form @submit.prevent="onSubmit" class="space-y-8 max-w-3xl mx-auto bg-white p-8 rounded-2xl border border-gray-100">
+    <div class="w-full text-center text-2xl font-semibold py-2 bg-primary text-white">
+      <h3>{{ headerTitle }}</h3>
+    </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <UiInput v-model="orderName" label="Order Name" required placeholder="Enter Order Name"
         :error="errors.orderName" />
@@ -92,9 +95,14 @@
     </div>
 
     <UiButton type="submit" fullWidth size="lg" :disabled="disabledSubmit">
-      {{ isLoading ? (isEditMode ? `Updating ${routeName}...` : `Creating ${routeName}...`) : (isEditMode ? `Update
-      ${routeName}` : `Create ${routeName}`) }}
+      {{ isLoading ? (isEditMode ? `Updating ${routeName}...` : `Submitting...`) : (isEditMode ? `Update
+      ${routeName}` : `Submit`) }}
     </UiButton>
+
+    <p class="text-sm text-gray-600 mt-4">If you experience any issues while uploading your files, please email us at <a
+        class="text-primary font-semibold" href="mailto:order@dynamostitches.com">order@dynamostitches.com</a> with
+      complete details.
+    </p>
   </form>
 </template>
 
@@ -108,12 +116,14 @@ interface Props {
   orderData?: IOrder;
   isEditMode?: boolean;
   endpoint?: string;
+  headerTitle?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   isEditMode: false,
   orderData: undefined,
-  endpoint: "orders"
+  endpoint: "orders",
+  headerTitle: "Order"
 });
 
 const emit = defineEmits(['success', 'error']);

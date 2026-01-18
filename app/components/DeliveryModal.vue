@@ -1,5 +1,24 @@
 <template>
   <UiModal v-model="isOpen" class="max-w-8xl min-w-6xl max-h-[90vh] overflow-y-auto">
+    <div
+      class="flex flex-wrap items-center justify-between gap-4 p-4 bg-gray-50 rounded-lg border border-gray-100 mb-6">
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-medium text-gray-500">Order #</span>
+        <span class="text-base font-semibold text-gray-900">{{ orderId }}</span>
+      </div>
+      <div class="flex items-center gap-6">
+        <div class="flex items-center gap-2">
+          <Icon name="Calendar" class="w-4 h-4 text-gray-400" />
+          <span class="text-sm text-gray-700">{{ new Date(orderDate).toDateString() }}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <Icon name="Clock" class="w-4 h-4 text-gray-400" />
+          <span class="text-sm text-gray-700">{{ new Date(orderDate).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric', hour12: true }) }}</span>
+        </div>
+      </div>
+    </div>
     <div class="space-y-8">
       <!-- Header -->
       <div class="text-center space-y-3">
@@ -19,24 +38,44 @@
             <Icon name="DollarSign" class="w-5 h-5 text-green-600" />
             <h3 class="text-lg font-semibold text-gray-900">Pricing Details</h3>
           </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <UiInput v-model="formData.stitches" label="Stitches" placeholder="Enter stitch count" type="number" required />
-            <UiInput v-model="formData.price" label="Price" placeholder="0.00" type="number" step="0.01" min="0" required />
-            <UiInput v-model="formData.discount" label="Discount" placeholder="0.00" type="number" step="0.01" min="0" />
-            <UiInput v-model="formData.total_price" label="Total Price" placeholder="0.00" type="number" step="0.01" min="0" readonly />
-          </div>
 
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <UiInput v-model="formData.stitches" label="Stitches" placeholder="Enter stitch count" type="number" />
+            <UiInput v-model="formData.price" label="Price" placeholder="0.00" type="number" step="0.01" min="0"
+              required />
+            <UiInput v-model="formData.discount" label="Discount(%)" placeholder="0.00" type="number" step="0.01"
+              min="0" />
+            <UiInput v-model="formData.total_price" label="Total Price" placeholder="0.00" type="number" step="0.01"
+              min="0" readonly />
+          </div>
+          <!-- 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <UiInput v-model="formData.minimum_price" label="Minimum Price" placeholder="0.00" type="number" step="0.01" min="0" />
             <UiInput v-model="formData.maximum_price" label="Maximum Price" placeholder="0.00" type="number" step="0.01" min="0" />
             <UiInput v-model="formData.thousand_stitches" label="1000 Stitches" placeholder="0.00" type="number" step="0.01" min="0" />
             <UiInput v-model="formData.assign_percentage" label="Assign Percentage" placeholder="0" type="number" min="0" max="100" />
-          </div>
+          </div> -->
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="space-y-2">
-              <UiSelect v-model="formData.order_category" label="Order Category" placeholder="Select Order Category" :options="[{ label: 'Free', value: 'free' }, { label: 'Paid', value: 'paid' }]" />
+            <div class="flex">
+              <div class="flex flex-col gap-2">
+                <p>Order Category</p>
+                <div class="flex gap-2">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" :checked="formData.order_category === 'free'"
+                      @change="formData.order_category = 'free'"
+                      class="rounded border-gray-300 text-primary focus:ring-primary w-5 h-5" />
+                    <span class="text-sm font-medium text-gray-700">Free</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" :checked="formData.order_category === 'paid'"
+                      @change="formData.order_category = 'paid'"
+                      class="rounded border-gray-300 text-primary focus:ring-primary w-5 h-5" />
+                    <span class="text-sm font-medium text-gray-700">Paid</span>
+                  </label>
+                </div>
+              </div>
+
             </div>
             <UiInput v-model="formData.designer_level" label="Designer Level" placeholder="Enter designer level" />
           </div>
@@ -48,10 +87,12 @@
             <Icon name="Ruler" class="w-5 h-5 text-blue-600" />
             <h3 class="text-lg font-semibold text-gray-900">Dimensions</h3>
           </div>
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <UiInput v-model="formData.height" label="Height" placeholder="Enter height" type="number" step="0.01" min="0" />
-            <UiInput v-model="formData.width" label="Width" placeholder="Enter width" type="number" step="0.01" min="0" />
+            <UiInput v-model="formData.height" label="Height" placeholder="Enter height" type="number" step="0.01"
+              min="0" />
+            <UiInput v-model="formData.width" label="Width" placeholder="Enter width" type="number" step="0.01"
+              min="0" />
           </div>
         </div>
 
@@ -61,11 +102,12 @@
             <Icon name="Truck" class="w-5 h-5 text-purple-600" />
             <h3 class="text-lg font-semibold text-gray-900">Delivery Options</h3>
           </div>
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <UiInput v-model="formData.normal_delivery" label="Normal Delivery" placeholder="Enter delivery time" />
             <UiInput v-model="formData.edit_or_change" label="Edit or Change" placeholder="Enter edit policy" />
-            <UiInput v-model="formData.edit_in_stitch_file" label="Edit in Stitch File" placeholder="Enter edit policy" />
+            <UiInput v-model="formData.edit_in_stitch_file" label="Edit in Stitch File"
+              placeholder="Enter edit policy" />
           </div>
         </div>
 
@@ -75,13 +117,9 @@
             <Icon name="MessageSquare" class="w-5 h-5 text-orange-600" />
             <h3 class="text-lg font-semibold text-gray-900">Comments & Notes</h3>
           </div>
-          
+
           <div class="space-y-4">
-            <UiTextarea v-model="formData.comments" label="Main Comments" placeholder="Enter main comments" :rows="3" />
-            <UiTextarea v-model="formData.comment_box_1" label="Comment Box 1" placeholder="Additional comments" :rows="3" />
-            <UiTextarea v-model="formData.comment_box_2" label="Comment Box 2" placeholder="Additional comments" :rows="3" />
-            <UiTextarea v-model="formData.comment_box_3" label="Comment Box 3" placeholder="Additional comments" :rows="3" />
-            <UiTextarea v-model="formData.comment_box_4" label="Comment Box 4" placeholder="Additional comments" :rows="3" />
+            <UiTextarea v-model="formData.comments" placeholder="Enter comments" :rows="3" />
           </div>
         </div>
 
@@ -91,7 +129,7 @@
             <Icon name="File" class="w-5 h-5 text-indigo-600" />
             <h3 class="text-lg font-semibold text-gray-900">Attachments</h3>
           </div>
-          
+
           <div class="space-y-3">
             <p class="text-sm text-gray-600">
               Upload the final deliverables (designs, proofs, vector files, etc.)
@@ -151,41 +189,42 @@ export interface DeliveryFormData {
 
 interface Props {
   modelValue: boolean
-  orderId: string
+  orderId: string;
+  orderDate: string,
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
-  'on:deliver': [data: DeliveryFormData] 
+  'on:deliver': [data: DeliveryFormData]
 }>()
 
 const loading = ref(false)
 
 const initialFormData: DeliveryFormData = {
-      stitches: '',
-      price: '',
-      discount: '',
-      total_price: '',
-      order_category: 'free',
-      height: '',
-      width: '',
-      comments: '',
-      designer_level: '',
-      assign_percentage: '',
-      minimum_price: '',
-      maximum_price: '',
-      thousand_stitches: '',
-      normal_delivery: '',
-      edit_or_change: '',
-      edit_in_stitch_file: '',
-      comment_box_1: '',
-      comment_box_2: '',
-      comment_box_3: '',
-      comment_box_4: '',
-      attachments: []
-    }
+  stitches: '',
+  price: '',
+  discount: '',
+  total_price: '',
+  order_category: 'free',
+  height: '',
+  width: '',
+  comments: '',
+  designer_level: '',
+  assign_percentage: '',
+  minimum_price: '',
+  maximum_price: '',
+  thousand_stitches: '',
+  normal_delivery: '',
+  edit_or_change: '',
+  edit_in_stitch_file: '',
+  comment_box_1: '',
+  comment_box_2: '',
+  comment_box_3: '',
+  comment_box_4: '',
+  attachments: []
+}
 
 const formData = ref<DeliveryFormData>(initialFormData)
 
@@ -207,8 +246,7 @@ watch([() => formData.value.price, () => formData.value.discount], () => {
 }, { immediate: true })
 
 const isFormValid = computed(() => {
-  return formData.value.stitches !== '' &&
-    parseFloat(formData.value.price) > 0 &&
+  return parseFloat(formData.value.price) > 0 &&
     formData.value.attachments.length > 0
 })
 

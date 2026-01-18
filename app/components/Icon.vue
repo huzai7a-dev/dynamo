@@ -97,6 +97,7 @@ const iconMap = {
   Package: () => import('lucide-vue-next').then(m => m.Package),
   Search: () => import('lucide-vue-next').then(m => m.Search),
   AlertCircle: () => import('lucide-vue-next').then(m => m.AlertCircle),
+  Calendar: () => import('lucide-vue-next').then(m => m.Calendar),
 }
 
 export type IconName = keyof typeof iconMap

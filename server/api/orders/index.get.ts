@@ -2,7 +2,7 @@ import type { QueryParams } from "~~/shared/types";
 import OrderService from "../../services/order.service";
 import { ROLE } from "~~/shared/constants";
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
   const { id: userId, role } = event.context.user;
   const { page, limit, order_name, order_number, date_from, date_to, status, is_free, is_paid } = getQuery(event);
   const isAdmin = role === ROLE.Admin;
@@ -32,13 +32,5 @@ export default defineCachedEventHandler(async (event) => {
       statusCode: 400,
       data: JSON.stringify(error),
     });
-  }
-}, {
-  maxAge: 60 * 5, // 5 minutes
-  name: 'orders',
-  getKey: (event) => {
-    const { id } = event.context.user
-    const query = getQuery(event)
-    return `${id}-${JSON.stringify(query)}`
   }
 });

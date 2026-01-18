@@ -109,10 +109,10 @@ const LoginSchema = z.object({
 const OrderSchema = z.object({
   orderName: z.string().min(1, 'Order name is required'),
   poNumber: z.string().optional(),
-  requiredFormat: z.string().min(1, 'Required format is required'),
+  requiredFormat: z.string().min(1, 'Format is required'),
   width: z.string().optional(),
   height: z.string().optional(),
-  requiredStitch: z.string().optional(),
+  requiredStitch: z.string().min(1, 'Stitch is required'),
   fabric: z.string().min(1, 'Fabric is required'),
   placement: z.string().min(1, 'Placement is required'),
   numColors: z.string().optional(),
@@ -126,7 +126,7 @@ const OrderSchema = z.object({
 const VectorSchema = z.object({
   vectorName: z.string().min(1, 'Vector name is required'),
   poNumber: z.string().optional(),
-  requiredFormat: z.string().min(1, 'Required format is required'),
+  requiredFormat: z.string().min(1, 'Format is required'),
   blending: z.enum(['No', 'Yes', 'Not Sure']),
   rush: z.enum(['No', 'Yes']),
   numColors: z.string().optional(),
