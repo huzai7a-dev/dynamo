@@ -1,83 +1,67 @@
 import type { IUser } from "#shared/types";
+import usersRepository from "~~/server/repositories/users.repository";
 import { ROLE } from "~~/shared/constants";
+
 class UserService {
-    private db: ReturnType<typeof useDb>;
+    // constructor no longer needs useDb
     constructor() {
-        this.db = useDb();
+        // ...existing code...
     }
 
     async getUserByEmailOrUserName(email: string, userName: string) {
-        const user = await this.db`SELECT * FROM users WHERE primary_email = ${email} OR user_name = ${userName}` as Array<IUser>;
-        return user[0];
+        return usersRepository.findByEmailOrUserName(email, userName);
     }
 
     async createUser(user: IUser) {
-        const result = await this.db`
-            INSERT INTO users (
-                user_name,
-                company_name,
-                contact_name,
-                country,
-                password,
-                phone_number,
-                primary_email,
-                address,
-                cell_number,
-                city,
-                fax_number,
-                invoice_email,
-                reference,
-                sales_man,
-                secondary_email,
-                state,
-                website,
-                zip_code
-            )
-            VALUES (
-                ${user.user_name},
-                ${user.company_name},
-                ${user.contact_name},
-                ${user.country},
-                ${user.password},
-                ${user.phone_number},
-                ${user.primary_email},
-                ${user.address ?? null},
-                ${user.cell_number ?? null},
-                ${user.city ?? null},
-                ${user.fax_number ?? null},
-                ${user.invoice_email ?? null},
-                ${user.reference ?? null},
-                ${user.sales_man ?? null},
-                ${user.secondary_email ?? null},
-                ${user.state ?? null},
-                ${user.website ?? null},
-                ${user.zip_code ?? null}
-            )
-            RETURNING *;
-            `;
-        return result;
+        return usersRepository.create(user);
     }
 
-    async getAllUsers(filters: { id?: string; user_name?: string; email?: string, company?: string } = {}) {
-        const { id, user_name, email, company } = filters;
+    async getAllUsers(filters: { id?: string; user_name?: string; email?: string; company?: string } = {}) {
+        return usersRepository.getAllUsers(filters);
+    }
 
-        let query = this.db`SELECT * FROM users WHERE role != ${ROLE.Admin}`;
+    async getUserById(id: string) {
+        const user = await usersRepository.getById(id);
+        if (!user) return null;
+        const u = { ...user } as any;
+        delete u.password;
+        return u;
+    }
 
-        if (id) {
-            query = this.db`${query} AND id::text LIKE ${'%' + id + '%'}`;
-        }
-        if (user_name) {
-            query = this.db`${query} AND contact_name ILIKE ${'%' + user_name + '%'}`;
-        }
-        if (email) {
-            query = this.db`${query} AND primary_email ILIKE ${'%' + email + '%'}`;
-        }
-        if (company) {
-            query = this.db`${query} AND company_name ILIKE ${'%' + company + '%'}`;
+    async updateUserProfile(id: string, payload: Partial<IUser>) {
+        // Only allow specific fields - whitelist
+        const allowedFields = [
+            "user_name",
+            "company_name",
+            "contact_name",
+            "country",
+            "phone_number",
+            "primary_email",
+            "address",
+            "cell_number",
+            "city",
+            "fax_number",
+            "invoice_email",
+            "reference",
+            "sales_man",
+            "secondary_email",
+            "state",
+            "website",
+            "zip_code",
+        ];
+
+        const filtered: Partial<IUser> = {};
+        for (const k of allowedFields) {
+            if ((payload as any)[k] !== undefined) {
+                (filtered as any)[k] = (payload as any)[k];
+            }
         }
 
-        const users = await query as Array<IUser>;
-        return users;
+        const updated = await usersRepository.updateById(id, filtered);
+        if (!updated) return null;
+        const u = { ...updated } as any;
+        delete u.password;
+        return u;
     }
 }
 
