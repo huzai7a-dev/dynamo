@@ -1,13 +1,13 @@
-name: Deploy to NuxtHub
+name: Deploy to Cloudflare
 on: push
 
 jobs:
   deploy:
-    name: "Deploy to NuxtHub"
+    name: "Deploy to Cloudflare"
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write
+      deployments: write
 
     steps:
       - uses: actions/checkout@v4
@@ -19,19 +19,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          # Remove or disable cache to avoid restoring broken dependencies
-          # cache: 'npm'
-      
-      - name: Clean workspace
-        run: rm -rf node_modules package-lock.json
-      
+
       - name: Install dependencies
         run: npm install
 
-      - name: Ensure NuxtHub module is installed
-        run: npx nuxthub@latest ensure
+      - name: Build
+        run: npm run build
 
-      - name: Build & Deploy to NuxtHub
-        uses: nuxt-hub/action@v2
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
         with:
-          project-key: dynamo-dashboar-uraa
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist/public --project-name=dynamo-dashboard
