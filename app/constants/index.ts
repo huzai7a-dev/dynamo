@@ -1,3 +1,4 @@
+export const CONTACT_NUMBER = '+1 469-819-2874'
 export const formatOptions = [
   { label: 'DST', value: 'DST' },
   { label: 'EMB', value: 'EMB' },

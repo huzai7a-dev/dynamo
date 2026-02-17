@@ -22,28 +22,36 @@
 
       <CustomSwiper :items="teamMembers">
         <template #card="{ item }">
-          <div class="bg-white border border-primary/10 rounded-2xl flex flex-col min-h-[250px] py-6 px-4 items-center justify-between transition-all duration-300 hover:shadow-2xl">
+          <div
+            class="bg-white border border-primary/10 rounded-2xl flex flex-col min-h-[250px] py-6 px-4 items-center justify-between transition-all duration-300 hover:shadow-2xl">
             <div class="flex flex-col items-center w-full">
-              <div class="w-24 h-24 rounded-full bg-gradient-to-br from-primary/10 to-blue-100 border-4 border-primary/20 mb-4 flex items-center justify-center overflow-hidden">
-                <NuxtImg format="webp" :src="item.image" :alt="item.name" class="w-full h-full object-cover" loading="lazy" />
+              <div
+                class="w-24 h-24 rounded-full bg-gradient-to-br from-primary/10 to-blue-100 border-4 border-primary/20 mb-4 flex items-center justify-center overflow-hidden">
+                <NuxtImg format="webp" :src="item.image" :alt="item.name" class="w-full h-full object-cover"
+                  loading="lazy" />
               </div>
               <h3 class="text-lg font-bold text-primary mb-1">{{ item.name }}</h3>
               <p class="text-secondary text-xs font-medium mb-2">{{ item.position }}</p>
             </div>
             <div class="flex justify-center gap-3 mt-4 w-full">
-              <a v-if="item.social?.instagram" :href="item.social.instagram" target="_blank" class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-pink-500 hover:bg-pink-50 transition-colors">
+              <a v-if="item.social?.instagram" :href="item.social.instagram" target="_blank"
+                class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-pink-500 hover:bg-pink-50 transition-colors">
                 <Icon name="Instagram" class="w-5 h-5" />
               </a>
-              <a v-if="item.social?.facebook" :href="item.social.facebook" target="_blank" class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-blue-600 hover:bg-blue-50 transition-colors">
+              <a v-if="item.social?.facebook" :href="item.social.facebook" target="_blank"
+                class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-blue-600 hover:bg-blue-50 transition-colors">
                 <Icon name="Facebook" class="w-5 h-5" />
               </a>
-              <a v-if="item.social?.linkedin" :href="item.social.linkedin" target="_blank" class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-secondary hover:bg-secondary/10 transition-colors">
+              <a v-if="item.social?.linkedin" :href="item.social.linkedin" target="_blank"
+                class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-secondary hover:bg-secondary/10 transition-colors">
                 <Icon name="Linkedin" class="w-5 h-5" />
               </a>
-              <a v-if="item.social?.x" :href="item.social.x" target="_blank" class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-black hover:bg-gray-100 transition-colors">
+              <a v-if="item.social?.x" :href="item.social.x" target="_blank"
+                class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-black hover:bg-gray-100 transition-colors">
                 <Icon name="X" class="w-5 h-5" />
               </a>
-              <a v-if="item.email" :href="`mailto:${item.email}`" class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-primary hover:bg-primary/10 transition-colors">
+              <a v-if="item.email" :href="`mailto:${item.email}`"
+                class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 text-primary hover:bg-primary/10 transition-colors">
                 <Icon name="Mail" class="w-5 h-5" />
               </a>
             </div>
@@ -51,7 +59,7 @@
         </template>
       </CustomSwiper>
     </div>
-    <ContactBanner/>
+    <ContactBanner />
   </section>
 </template>
 
@@ -93,8 +101,7 @@ const teamMembers = [
     email: 'jack.dynamostitches@gmail.com',
     image: '/images/user.png',
     social: {
-      instagram: 'https://www.instagram.com/jack.smith7477/',
-      x: 'https://x.com/jack_smith7477?s=11'
+      instagram: 'https://www.instagram.com/jack.smith7477/'
     }
   },
   {
@@ -123,6 +130,24 @@ const teamMembers = [
     social: {
       instagram: 'https://www.instagram.com/jonathanhenry185/'
     }
+  },
+  {
+    name: 'James Carter',
+    position: 'Sales Executive',
+    email: 'james.dynamostitches@gmail.com',
+    image: '/images/user.png',
+    social: {
+      instagram: 'https://www.instagram.com/james.carter987?igsh=NW8wMjQwaTB1dGpk'
+    }
+  },
+  {
+    name: 'Calvin Mateo',
+    position: 'Sales Executive',
+    email: 'calvin.dynamostitches@gmail.com',
+    image: '/images/user.png',
+    social: {
+      instagram: 'https://www.instagram.com/calvinmateo_?igsh=MWhybTlodzdsbTIwdg=='
+    }
   }
 ];
 </script>
@@ -136,8 +161,9 @@ const teamMembers = [
   0% {
     opacity: 0.05;
   }
+
   100% {
     opacity: 0.15;
   }
 }
-</style> 
+</style>

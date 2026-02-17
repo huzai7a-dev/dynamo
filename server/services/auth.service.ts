@@ -19,8 +19,8 @@ class AuthService {
         }
     }
 
-    async register(user: IUser){
-        const { data, error,success } = AuthService.validateUser(user);
+    async register(user: IUser) {
+        const { data, error, success } = AuthService.validateUser(user);
 
         if (!success) {
             throw createError({
@@ -29,10 +29,10 @@ class AuthService {
                 data: error
             });
         }
-    
+
         const userExist = await UserService.getUserByEmailOrUserName(data!.primary_email, data!.user_name);
-    
-        if(userExist) {
+
+        if (userExist) {
             throw createError({
                 statusCode: 500,
                 statusMessage: `User with ${userExist.primary_email === data!.primary_email ? 'email' : 'username'} already exist`,
@@ -41,7 +41,7 @@ class AuthService {
 
         const encryptedPassword = await hashPassword(data!.password);
 
-        const createdUser = await UserService.createUser({...data, password: encryptedPassword});
+        const createdUser = await UserService.createUser({ ...data, password: encryptedPassword });
 
         return {
             statusCode: 201,
@@ -53,7 +53,7 @@ class AuthService {
     async login(user: z.infer<typeof LoginSchema>) {
         const userExist = await UserService.getUserByEmailOrUserName(user.emailOrUsername, user.emailOrUsername);
 
-        if(!userExist) {
+        if (!userExist) {
             throw createError({
                 statusCode: 401,
                 statusMessage: 'Invalid credentials',
@@ -62,7 +62,7 @@ class AuthService {
 
         const isPasswordValid = await verifyPassword(userExist.password, user.password);
 
-        if(!isPasswordValid) {
+        if (!isPasswordValid) {
             throw createError({
                 statusCode: 401,
                 statusMessage: 'Invalid credentials',
@@ -76,7 +76,7 @@ class AuthService {
             fullName: userExist.contact_name,
             role: userExist.role
         }
-        
+
     }
 
 }

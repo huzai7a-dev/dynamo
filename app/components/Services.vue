@@ -7,8 +7,7 @@
         </h2>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-        <div v-for="(service, index) in services" :key="index" 
-             class="flex flex-col items-center text-center 
+        <div v-for="(service, index) in services" :key="index" class="flex flex-col items-center text-center 
                     bg-gradient-to-br from-white to-gray-50
                     border border-gray-100
                     px-8 py-10 rounded-2xl
@@ -16,14 +15,12 @@
                     hover:shadow-2xl hover:-translate-y-3 
                     hover:bg-gradient-to-br hover:from-primary/5 hover:to-primary/10
                     group cursor-pointer
-                    relative overflow-hidden"
-             :class="service.colStart">
+                    relative overflow-hidden" :class="service.colStart">
           <div class="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/0 
                       group-hover:from-primary/5 group-hover:to-primary/10 
                       transition-all duration-500"></div>
           <div class="text-center">
-            <Icon :name="service.icon" 
-                  class="w-16 h-16 text-primary mb-6 
+            <Icon :name="service.icon" class="w-16 h-16 text-primary mb-6 
                          transition-all duration-500 ease-in-out
                          group-hover:scale-110 group-hover:text-primary/90
                          relative z-10" />
@@ -46,7 +43,7 @@
 const services = [
   {
     icon: 'Anchor',
-    title: 'Embroidery digitizing',
+    title: 'Embroidery Digitizing',
     description: 'We have designers with nearly years of expertise in this industry who understand the depth of the design and intricacy of the LOGOs.'
   },
   {
@@ -72,4 +69,3 @@ const services = [
   }
 ]
 </script>
-  
