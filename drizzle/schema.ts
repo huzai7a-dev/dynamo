@@ -5,7 +5,7 @@ export const blending = pgEnum("blending", ['No', 'Yes'])
 export const quoteStatus = pgEnum("quote_status", ['pending', 'approved', 'rejected', 'converted', 'quoted'])
 export const quoteType = pgEnum("quote_type", ['order', 'vector'])
 export const rushFlag = pgEnum("rush_flag", ['No', 'Yes'])
-export const userRole = pgEnum("user_role", ['admin', 'user'])
+export const userRole = pgEnum("user_role", ['admin', 'user', 'salesman'])
 
 
 export const delivers = pgTable("delivers", {

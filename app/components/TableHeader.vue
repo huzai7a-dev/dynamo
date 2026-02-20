@@ -6,12 +6,14 @@
         <!-- Order Number Search -->
         <div class="flex-1 min-w-0">
           <UiInput :model-value="searchOrderNumber" @update:modelValue="$emit('update:searchOrderNumber', $event)"
-            :label="`${title} Number`" :placeholder="`Search by ${title} number...`" size="md" />
+            :label="`${title} ${firstPlaceholder ? getLastWord(firstPlaceholder) : ''}`"
+            :placeholder="firstPlaceholder || `Search by ${title} number...`" size="md" />
         </div>
         <!-- Order Name Search -->
         <div class="flex-1 min-w-0">
           <UiInput :model-value="searchOrderName" @update:modelValue="$emit('update:searchOrderName', $event)"
-            :label="`${title} Name`" :placeholder="`Search by ${title} name...`" size="md" />
+            :label="`${title} ${secondPlaceholder ? getLastWord(secondPlaceholder) : ''}`"
+            :placeholder="secondPlaceholder || `Search by ${title} name...`" size="md" />
         </div>
         <!-- Customer Name Search (Admin Only) -->
         <div v-if="isAdmin" class="flex-1 min-w-0">
@@ -73,6 +75,14 @@ defineProps({
     type: Object as PropType<DateRange>,
     default: () => ({ from: null, to: null })
   },
+  firstPlaceholder: {
+    type: String,
+    default: ''
+  },
+  secondPlaceholder: {
+    type: String,
+    default: ''
+  },
   isAdmin: {
     type: Boolean,
     default: false
@@ -86,4 +96,12 @@ defineEmits<{
   'update:selectedDateRange': [value: DateRange]
   'create-order': []
 }>()
+
+function getLastWord(sentence: string) {
+  const trimmedSentence = sentence.trim();
+
+  const wordsArray = trimmedSentence.split(' ');
+
+  return wordsArray.pop();
+}
 </script>

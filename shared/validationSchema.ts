@@ -81,7 +81,7 @@ const RegisterSchema = z.object({
     .optional()
     .describe("Reference"),
 
-  salesMan: z
+  sales_man: z
     .string()
     .optional()
     .describe("Salesman"),
