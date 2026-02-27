@@ -15,7 +15,8 @@
           <Icon name="Clock" class="w-4 h-4 text-gray-400" />
           <span class="text-sm text-gray-700">{{ new Date(orderDate).toLocaleTimeString('en-US', {
             hour: 'numeric',
-            minute: 'numeric', hour12: true }) }}</span>
+            minute: 'numeric', hour12: true
+          }) }}</span>
         </div>
       </div>
     </div>
@@ -180,10 +181,6 @@ export interface DeliveryFormData {
   normal_delivery: string
   edit_or_change: string
   edit_in_stitch_file: string
-  comment_box_1: string
-  comment_box_2: string
-  comment_box_3: string
-  comment_box_4: string
   attachments: File[]
 }
 
@@ -219,10 +216,6 @@ const initialFormData: DeliveryFormData = {
   normal_delivery: '',
   edit_or_change: '',
   edit_in_stitch_file: '',
-  comment_box_1: '',
-  comment_box_2: '',
-  comment_box_3: '',
-  comment_box_4: '',
   attachments: []
 }
 

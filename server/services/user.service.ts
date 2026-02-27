@@ -1,6 +1,9 @@
 import type { IUser } from "#shared/types";
 import usersRepository from "~~/server/repositories/users.repository";
 import { ROLE } from "~~/shared/constants";
+import EmailService from "./email.service";
+import { generateProfileUpdateEmail } from "../templates/profile-update.email";
+import { generateProfileUpdateAdminEmail } from "../templates/profile-update-admin.email";
 
 class UserService {
     // constructor no longer needs useDb
@@ -61,6 +64,23 @@ class UserService {
         if (!updated) return null;
         const u = { ...updated } as any;
         delete u.password;
+
+        // Fire both emails in parallel — non-blocking
+        if (u.primary_email) {
+            Promise.all([
+                EmailService.sendHtmlEmail(
+                    u.primary_email,
+                    'Your Profile Information Has Been Updated',
+                    generateProfileUpdateEmail(u)
+                ),
+                EmailService.sendHtmlEmail(
+                    useRuntimeConfig().emailUser as string,
+                    'Client Profile Update Notification',
+                    generateProfileUpdateAdminEmail(u)
+                ),
+            ]).catch((err) => console.error('Profile-update email failed:', err));
+        }
+
         return u;
     }
 }

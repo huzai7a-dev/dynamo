@@ -6,8 +6,11 @@ import {
 import { OrderStatus } from "#shared/types/enums";
 import OrderRepository from "../repositories/order.respository";
 import OrderDeliveryRepository, { type OrderDeliveryData } from "../repositories/order-delivery.repository";
-
 import uploadService, { type UploadedAsset } from "./upload.service";
+import EmailService from "./email.service";
+import UserService from "./user.service";
+import { generateOrderConfirmationEmail } from "../templates/order-confirmation.email";
+import { generateOrderDeliveryEmail } from "../templates/order-delivery.email";
 
 class OrderService {
   db: any;
@@ -32,7 +35,32 @@ class OrderService {
       });
     }
 
-    return await OrderRepository.createOrder(userId, fields, uploaded, { type: DataSource.ORDER });
+    const result = await OrderRepository.createOrder(userId, fields, uploaded, { type: DataSource.ORDER });
+
+    // Fire order confirmation email — non-blocking
+    this.sendOrderConfirmationEmail(userId, result.orderId, fields, uploaded);
+
+    return result;
+  }
+
+  private async sendOrderConfirmationEmail(
+    userId: string,
+    orderId: number,
+    fields: OrderFieldsRequest,
+    uploaded: UploadedAsset[]
+  ) {
+    try {
+      const user = await UserService.getUserById(userId);
+      if (!user?.primary_email) return;
+      const subject = `Your Order Has Been Received ${fields.orderName} - #${orderId}`;
+      const html = generateOrderConfirmationEmail({ orderId, fields, uploaded, user });
+      await Promise.all([
+        EmailService.sendHtmlEmail(user.primary_email, subject, html),
+        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, subject, html),
+      ]);
+    } catch (err) {
+      console.error('Order confirmation email failed:', err);
+    }
   }
 
   async getOrders(orderParams: QueryParams, isAdmin = false, dataSourceType?: DataSource) {
@@ -303,10 +331,6 @@ class OrderService {
       normal_delivery,
       edit_or_change,
       edit_in_stitch_file,
-      comment_box_1,
-      comment_box_2,
-      comment_box_3,
-      comment_box_4
     } = fields;
 
     const attachmentsInput = (files || []).filter(
@@ -343,10 +367,6 @@ class OrderService {
         normal_delivery: normal_delivery || undefined,
         edit_or_change: edit_or_change || undefined,
         edit_in_stitch_file: edit_in_stitch_file || undefined,
-        comment_box_1: comment_box_1 || undefined,
-        comment_box_2: comment_box_2 || undefined,
-        comment_box_3: comment_box_3 || undefined,
-        comment_box_4: comment_box_4 || undefined,
       }
     };
 
@@ -356,10 +376,48 @@ class OrderService {
     // Update order status to delivered
     await OrderRepository.updateOrderStatus(parseInt(orderId), OrderStatus.DELIVERED);
 
+    // Fire delivery notification emails — non-blocking
+    this.sendDeliveryEmail(parseInt(orderId), deliveryData, uploaded);
+
     return {
       deliveryId,
       orderId: parseInt(orderId)
     };
+  }
+
+  private async sendDeliveryEmail(
+    orderId: number,
+    delivery: Record<string, any>,
+    deliveryAttachments: UploadedAsset[]
+  ) {
+    try {
+      const order = await this.getOrderRow(orderId);
+      if (!order) return;
+      const user = await UserService.getUserById(String(order.user_id));
+      if (!user?.primary_email) return;
+
+      const subject = `Your Order is Ready ${order.order_name} - #${orderId}`;
+      const html = generateOrderDeliveryEmail({
+        orderId,
+        orderName: order.order_name,
+        user,
+        order,
+        delivery,
+        deliveryAttachments,
+      });
+
+      await Promise.all([
+        EmailService.sendHtmlEmail(user.primary_email, subject, html),
+        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, subject, html),
+      ]);
+    } catch (err) {
+      console.error('Delivery notification email failed:', err);
+    }
+  }
+
+  private async getOrderRow(orderId: number) {
+    const rows = await this.db`SELECT * FROM orders WHERE id = ${orderId} LIMIT 1`;
+    return (rows as any[])[0] ?? null;
   }
 
   async getDeliveryDetails(orderId: number) {

@@ -3,6 +3,10 @@ import uploadService, { type UploadedAsset } from "./upload.service";
 import VectorRepository from "../repositories/vector.repository";
 import AttachmentsRepository from "../repositories/attachments.repository";
 import VectorDeliveryRepository, { type VectorDeliveryData } from "../repositories/vector-delivery.repository";
+import EmailService from "./email.service";
+import UserService from "./user.service";
+import { generateVectorConfirmationEmail } from "../templates/vector-confirmation.email";
+import { generateVectorDeliveryEmail } from "../templates/vector-delivery.email";
 
 class VectorService {
 
@@ -22,7 +26,31 @@ class VectorService {
     const row = await VectorRepository.createVector(userId, fields, uploaded, { type: DataSource.VECTOR });
 
     const vectorId = row.vectorId as number;
+
+    // Fire vector confirmation email — non-blocking
+    this.sendVectorConfirmationEmail(userId, vectorId, fields, uploaded);
+
     return { vectorId };
+  }
+
+  private async sendVectorConfirmationEmail(
+    userId: string,
+    vectorId: number,
+    fields: VectorFieldsRequest,
+    uploaded: UploadedAsset[]
+  ) {
+    try {
+      const user = await UserService.getUserById(userId);
+      if (!user?.primary_email) return;
+      const subject = `Your Vector Has Been Received ${fields.vectorName} - #${vectorId}`;
+      const html = generateVectorConfirmationEmail({ vectorId, fields, uploaded, user });
+      await Promise.all([
+        EmailService.sendHtmlEmail(user.primary_email, subject, html),
+        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, subject, html),
+      ]);
+    } catch (err) {
+      console.error('Vector confirmation email failed:', err);
+    }
   }
 
   async getVectors(isAdmin: boolean, queryParams: QueryParams, dataSourceType?: DataSource) {
@@ -233,12 +261,44 @@ class VectorService {
     // Create delivery record
     const { deliveryId } = await VectorDeliveryRepository.createDelivery(deliveryData, uploaded);
     await VectorRepository.updateVectorStatus(parseInt(vectorId), OrderStatus.DELIVERED);
-    // Update order status to delivered
+
+    // Fire vector delivery notification emails — non-blocking
+    this.sendVectorDeliveryEmail(parseInt(vectorId), deliveryData, uploaded);
 
     return {
       deliveryId,
       vectorId: parseInt(vectorId)
     };
+  }
+
+  private async sendVectorDeliveryEmail(
+    vectorId: number,
+    delivery: Record<string, any>,
+    deliveryAttachments: UploadedAsset[]
+  ) {
+    try {
+      const vectorRow = await VectorRepository.findById(vectorId);
+      if (!vectorRow) return;
+      const user = await UserService.getUserById(String(vectorRow.user_id));
+      if (!user?.primary_email) return;
+
+      const subject = `Your Vector is Ready ${vectorRow.vector_name} - #${vectorId}`;
+      const html = generateVectorDeliveryEmail({
+        vectorId,
+        vectorName: vectorRow.vector_name,
+        user,
+        vector: vectorRow,
+        delivery,
+        deliveryAttachments,
+      });
+
+      await Promise.all([
+        EmailService.sendHtmlEmail(user.primary_email, subject, html),
+        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, subject, html),
+      ]);
+    } catch (err) {
+      console.error('Vector delivery email failed:', err);
+    }
   }
 
   async getDeliveryDetails(vectorId: number) {

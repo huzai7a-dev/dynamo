@@ -25,6 +25,10 @@ export default defineNuxtConfig({
     twoCheckoutSecretWord: process.env.TWOC_SECRET_WORD,
     twoCheckoutSandbox: process.env.TWOC_SANDBOX || 'true',
     twoCheckoutPublishableKey: process.env.TWOC_PUBLISHABLE_KEY,
+    emailHost: process.env.EMAIL_HOST,
+    emailPort: process.env.EMAIL_PORT,
+    emailUser: process.env.EMAIL_USER,
+    emailPass: process.env.EMAIL_PASS,
   },
   modules: [
     '@nuxtjs/tailwindcss',

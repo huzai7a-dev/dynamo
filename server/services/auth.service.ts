@@ -3,6 +3,9 @@ import type { IUser } from "#shared/types";
 import UserService from "./user.service";
 import { LoginSchema } from "#shared/validationSchema";
 import type { z } from 'zod';
+import EmailService from "./email.service";
+import { generateWelcomeEmail } from "../templates/welcome.email";
+import { generateAdminNotificationEmail } from "../templates/admin-notification.email";
 class AuthService {
     private static validateUser(requestBody: IUser) {
         const { success, error, data } = RegisterSchema.safeParse(requestBody);
@@ -42,6 +45,20 @@ class AuthService {
         const encryptedPassword = await hashPassword(data!.password);
 
         const createdUser = await UserService.createUser({ ...data, password: encryptedPassword });
+
+        // Send both emails in parallel — fire-and-forget, never block the registration response
+        Promise.all([
+            EmailService.sendHtmlEmail(
+                data!.primary_email,
+                'Welcome to Dynamo Stitches! Your Account Has Been Created',
+                generateWelcomeEmail(data!)
+            ),
+            EmailService.sendHtmlEmail(
+                useRuntimeConfig().emailUser as string,
+                'New Client Registration Notification',
+                generateAdminNotificationEmail(data!)
+            ),
+        ]).catch((err) => console.error('Email notification failed:', err));
 
         return {
             statusCode: 201,
