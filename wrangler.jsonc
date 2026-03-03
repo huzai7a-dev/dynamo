@@ -2,6 +2,9 @@
     "$schema": "node_modules/wrangler/config-schema.json",
     "name": "dynamo",
     "compatibility_date": "2025-09-20",
+    "compatibility_flags": [
+        "nodejs_compat"
+    ],
     "main": "dist/server/index.mjs",
     "assets": {
         "directory": "dist/public"
