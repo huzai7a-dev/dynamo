@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-09-20',
+  compatibilityDate: '2024-09-22',
   app: {
     head: {
       script: [
@@ -8,13 +8,7 @@ export default defineNuxtConfig({
       ]
     }
   },
-  hub: {
-    bindings: {
-      observability: {
-        logs: true,
-      },
-    },
-  },
+  hub: {},
   devtools: { enabled: true },
   runtimeConfig: {
     databaseUrl: process.env.DATABASE_URL,
@@ -55,6 +49,10 @@ export default defineNuxtConfig({
   ssr: true,
   nitro: {
     preset: 'cloudflare-module',
+    cloudflare: {
+      deployConfig: true,
+      nodeCompat: true,
+    },
   },
   vite: {
     server: {
