@@ -53,6 +53,9 @@ export default defineNuxtConfig({
     include: ['/**'],
   },
   ssr: true,
+  nitro: {
+    preset: 'cloudflare-module',
+  },
   vite: {
     server: {
       allowedHosts: [
