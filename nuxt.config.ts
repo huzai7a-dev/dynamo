@@ -1,13 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-09-20',
-  app: {
-    head: {
-      script: [
-        { src: 'https://2pay-js.2checkout.com/v1/2pay.js', defer: true }
-      ]
-    }
-  },
   hub: {
     bindings: {
       observability: {
@@ -54,11 +47,6 @@ export default defineNuxtConfig({
   },
   ssr: true,
   vite: {
-    server: {
-      allowedHosts: [
-        'd1e2-39-38-119-139.ngrok-free.app'
-      ]
-    },
     build: {
       rollupOptions: {
         output: {
