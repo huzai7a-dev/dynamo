@@ -2,15 +2,14 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-09-20',
   hub: {
-    bindings: {
-      observability: {
-        logs: true,
-      },
-    },
+    kv: false,
+    blob: false,
+    cache: false
   },
   nitro: {
     preset: 'vercel',
   },
+
   devtools: { enabled: true },
   runtimeConfig: {
     databaseUrl: process.env.DATABASE_URL,
