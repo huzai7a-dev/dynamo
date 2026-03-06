@@ -8,6 +8,9 @@ export default defineNuxtConfig({
       },
     },
   },
+  nitro: {
+    preset: 'vercel',
+  },
   devtools: { enabled: true },
   runtimeConfig: {
     databaseUrl: process.env.DATABASE_URL,
