@@ -1,11 +1,13 @@
 import { RegisterSchema } from '#shared/validationSchema'
 import type { IUser } from "#shared/types";
 import UserService from "./user.service";
+import SalesmanService from "./salesman.service";
 import { LoginSchema } from "#shared/validationSchema";
 import type { z } from 'zod';
 import EmailService from "./email.service";
 import { generateWelcomeEmail } from "../templates/welcome.email";
 import { generateAdminNotificationEmail } from "../templates/admin-notification.email";
+
 class AuthService {
     private static validateUser(requestBody: IUser) {
         const { success, error, data } = RegisterSchema.safeParse(requestBody);
@@ -46,17 +48,32 @@ class AuthService {
 
         const createdUser = await UserService.createUser({ ...data, password: encryptedPassword });
 
+        // When "Salesman" is the reference, resolve the ID to the actual name
+        // and display it directly in the Reference field (no separate Salesman row)
+        let emailData: NonNullable<typeof data> = { ...data! };
+        if (emailData.reference === "Salesman" && emailData.sales_man) {
+            try {
+                const salesmen = await SalesmanService.getAllSalesmen();
+                const match = salesmen.find((s) => String(s.id) === String(emailData.sales_man));
+                if (match) {
+                    emailData = { ...emailData, reference: match.label, sales_man: "" };
+                }
+            } catch {
+                // Non-fatal: keep "Salesman" as fallback if lookup fails
+            }
+        }
+
         try {
             await Promise.all([
                 EmailService.sendHtmlEmail(
                     data!.primary_email,
                     'Welcome to Dynamo Stitches! Your Account Has Been Created',
-                    generateWelcomeEmail(data!, ip)
+                    generateWelcomeEmail(emailData, ip)
                 ),
                 EmailService.sendHtmlEmail(
                     useRuntimeConfig().emailUser as string,
                     'New Client Registration Notification',
-                    generateAdminNotificationEmail(data!, ip)
+                    generateAdminNotificationEmail(emailData, ip)
                 ),
             ]);
         } catch (err) {

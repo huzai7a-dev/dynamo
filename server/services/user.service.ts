@@ -67,7 +67,7 @@ class UserService {
 
         // Fire both emails in parallel — non-blocking
         if (u.primary_email) {
-            Promise.all([
+            await Promise.all([
                 EmailService.sendHtmlEmail(
                     u.primary_email,
                     'Your Profile Information Has Been Updated',

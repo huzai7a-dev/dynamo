@@ -18,7 +18,6 @@ export const FIELD_ORDER: (keyof IUser)[] = [
     "country",
     "website",
     "reference",
-    "sales_man",
 ];
 
 export function formatLabel(key: string): string {
@@ -28,13 +27,14 @@ export function formatLabel(key: string): string {
 }
 
 export function buildTableRows(user: Partial<IUser>, ip?: string): string {
-    const fields = FIELD_ORDER.filter(
-        (key) => user[key] !== undefined && user[key] !== null && user[key] !== ""
-    );
-
-    const rows = fields
+    const rows = FIELD_ORDER
         .map(
-            (key, index) => `
+            (key, index) => {
+                const raw = user[key];
+                const value = (raw !== undefined && raw !== null && String(raw).trim() !== "")
+                    ? String(raw)
+                    : "-";
+                return `
         <tr style="background-color: ${index % 2 === 0 ? "#f8fffe" : "#ffffff"};">
             <td style="
                 padding: 12px 18px;
@@ -51,14 +51,15 @@ export function buildTableRows(user: Partial<IUser>, ip?: string): string {
                 font-family: 'Inter', Arial, sans-serif;
                 font-size: 13.5px;
                 color: #1C1C1C;
-            ">${user[key]}</td>
-        </tr>`
+            ">${value}</td>
+        </tr>`;
+            }
         )
         .join("");
 
     const ipRow = ip
         ? `
-        <tr style="background-color: ${fields.length % 2 === 0 ? "#f8fffe" : "#ffffff"};">
+        <tr style="background-color: ${FIELD_ORDER.length % 2 === 0 ? "#f8fffe" : "#ffffff"};">
             <td style="
                 padding: 12px 18px;
                 font-family: 'Inter', Arial, sans-serif;
