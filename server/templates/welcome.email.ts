@@ -1,8 +1,8 @@
 import type { IUser } from "#shared/types";
 import { buildTableRows } from "./email.helpers";
 
-export function generateWelcomeEmail(user: Partial<IUser>): string {
-    const tableRows = buildTableRows(user);
+export function generateWelcomeEmail(user: Partial<IUser>, ip?: string): string {
+    const tableRows = buildTableRows(user, ip);
     const year = new Date().getFullYear();
 
     return `<!DOCTYPE html>

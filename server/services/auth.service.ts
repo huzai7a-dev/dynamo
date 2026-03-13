@@ -22,7 +22,7 @@ class AuthService {
         }
     }
 
-    async register(user: IUser) {
+    async register(user: IUser, ip?: string) {
         const { data, error, success } = AuthService.validateUser(user);
 
         if (!success) {
@@ -46,19 +46,22 @@ class AuthService {
 
         const createdUser = await UserService.createUser({ ...data, password: encryptedPassword });
 
-        // Send both emails in parallel — fire-and-forget, never block the registration response
-        Promise.all([
-            EmailService.sendHtmlEmail(
-                data!.primary_email,
-                'Welcome to Dynamo Stitches! Your Account Has Been Created',
-                generateWelcomeEmail(data!)
-            ),
-            EmailService.sendHtmlEmail(
-                useRuntimeConfig().emailUser as string,
-                'New Client Registration Notification',
-                generateAdminNotificationEmail(data!)
-            ),
-        ]).catch((err) => console.error('Email notification failed:', err));
+        try {
+            await Promise.all([
+                EmailService.sendHtmlEmail(
+                    data!.primary_email,
+                    'Welcome to Dynamo Stitches! Your Account Has Been Created',
+                    generateWelcomeEmail(data!, ip)
+                ),
+                EmailService.sendHtmlEmail(
+                    useRuntimeConfig().emailUser as string,
+                    'New Client Registration Notification',
+                    generateAdminNotificationEmail(data!, ip)
+                ),
+            ]);
+        } catch (err) {
+            console.error('Email notification failed:', err);
+        }
 
         return {
             statusCode: 201,

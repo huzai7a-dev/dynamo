@@ -5,8 +5,8 @@ const COMPANY_NAME = "Dynamo Stitches";
 const ADMIN_NAME = "Admin";
 const ADMIN_PORTAL_URL = "http://www.dynamostitches.com/dashboard";
 
-export function generateAdminNotificationEmail(client: Partial<IUser>): string {
-    const tableRows = buildTableRows(client);
+export function generateAdminNotificationEmail(client: Partial<IUser>, ip?: string): string {
+    const tableRows = buildTableRows(client, ip);
     const year = new Date().getFullYear();
 
     return `<!DOCTYPE html>
