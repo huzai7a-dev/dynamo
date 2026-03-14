@@ -26,6 +26,10 @@
             <span class="text-primary font-semibold">{{ index + 1 }}</span>
           </template>
 
+          <template #column-id="{ row }">
+            {{ `VR-${row.id}` }}
+          </template>
+
           <template #column-status="{ row }">
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
               :class="getOrderStatusBadgeClass((row as TableOrders).status)">
@@ -126,7 +130,6 @@ const isAdmin = computed(() => (user.value as any)?.role === ROLE.Admin);
 const formateData = computed(() => {
   return props.data?.map((item) => ({
     ...item,
-    id: `VR-${item.id}`,
     created_at: formateDate(item.created_at),
     price: Number(item.price) > 0 ? `$${item.price}` : "-",
     ...(isAdmin.value

@@ -24,6 +24,10 @@
             <span class="text-primary font-semibold">{{ index + 1 }}</span>
           </template>
 
+          <template #column-id="{ row }">
+            {{ `OR-${row.id}` }}
+          </template>
+
           <template #column-status="{ row }">
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
               :class="getOrderStatusBadgeClass((row as TableOrders).status)">
@@ -41,7 +45,7 @@
           <template #column-convert_from_quote="{ row }">
             <span class="text-primary font-semibold">{{
               row.convert_from_quote
-            }}</span>
+              }}</span>
           </template>
 
           <template #column-actions="{ row }">
@@ -125,7 +129,6 @@ const formateData = computed(() => {
   return props.data?.map((item) => ({
     ...item,
     created_at: formateDate(item.created_at),
-    id: `OR-${item.id}`,
     price: item.price > 0 ? `$${item.price}` : "-",
     ...(isAdmin.value
       ? {
