@@ -1,74 +1,99 @@
 import type { UploadedAsset } from "../services/upload.service";
 
-interface OrderEmailData {
-    orderId: number;
-    fields: OrderFieldsRequest;
+interface QuoteEmailData {
+    quoteId: number;
+    fields: QuoteFieldsRequest;
     uploaded: UploadedAsset[];
     user: { contact_name?: string; user_name?: string };
-    subject: string;
     isAdmin?: boolean;
-    orderName: string;
+    quoteName: string;
 }
 
-function formatValue(value: any): string {
+function fmt(value: any): string {
     if (value === null || value === undefined || value === "") return "—";
     return String(value);
 }
 
-function buildOrderRows(fields: OrderFieldsRequest, orderId: number): string {
-    const rows: { label: string; value: string }[] = [
-        { label: "Order Number", value: `OR-${orderId}` },
-        { label: "Order Name", value: formatValue(fields.orderName) },
-        { label: "PO Number", value: formatValue(fields.poNumber) },
-        { label: "Required Format", value: formatValue(fields.requiredFormat) },
-        { label: "Required Stitch", value: formatValue(fields.requiredStitch) },
-        { label: "Fabric", value: formatValue(fields.fabric) },
-        { label: "Placement", value: formatValue(fields.placement) },
-        { label: "Width (in)", value: formatValue(fields.width) },
-        { label: "Height (in)", value: formatValue(fields.height) },
-        { label: "Number of Colors", value: formatValue(fields.numColors) },
-        { label: "Blending", value: formatValue(fields.blending) },
-        { label: "Rush", value: formatValue(fields.rush) },
-        { label: "Faceless", value: formatValue(fields.faceless) },
-        { label: "Instructions", value: formatValue(fields.instructions) },
-    ];
-
-    return rows
-        .filter((r) => r.value !== "—" || ["Order ID", "Order Name", "Required Format", "Required Stitch", "Fabric", "Placement", "Blending", "Rush"].includes(r.label))
-        .map((row, index) => `
-        <tr style="background-color: ${index % 2 === 0 ? "#f8fffe" : "#ffffff"};">
-            <td style="
-                padding: 12px 18px;
-                font-family: 'Inter', Arial, sans-serif;
-                font-size: 13.5px;
-                font-weight: 600;
-                color: #055d57;
-                border-right: 2px solid #dff7f6;
-                white-space: nowrap;
-                width: 180px;
-            ">${row.label}</td>
-            <td style="
-                padding: 12px 18px;
-                font-family: 'Inter', Arial, sans-serif;
-                font-size: 13.5px;
-                color: #1C1C1C;
-            ">${row.value}</td>
-        </tr>`)
-        .join("");
+function buildRow(label: string, value: string, index: number): string {
+    return `
+    <tr style="background-color: ${index % 2 === 0 ? "#f8fffe" : "#ffffff"};">
+        <td style="
+            padding: 12px 18px;
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #055d57;
+            border-right: 2px solid #dff7f6;
+            white-space: nowrap;
+            width: 180px;
+        ">${label}</td>
+        <td style="
+            padding: 12px 18px;
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 13.5px;
+            color: #1C1C1C;
+        ">${value}</td>
+    </tr>`;
 }
 
-export function generateOrderConfirmationEmail(data: OrderEmailData): string {
-    const { orderId, fields, uploaded, user, subject, isAdmin = false, orderName } = data;
+function buildQuoteRows(fields: QuoteFieldsRequest, quoteId: number): string {
+    const isOrder = fields.qType === 'order';
+    const qd: Record<string, any> = (fields.quoteData as Record<string, any>) ?? {};
+
+    const coreRows: { label: string; value: string }[] = [
+        { label: "Quote Number", value: `QR-${quoteId}` },
+        { label: "Type", value: isOrder ? "Digitizing" : "Vector" },
+        { label: "Title", value: fmt(fields.title) },
+        { label: "PO Number", value: fmt(fields.poNumber) },
+        { label: "Estimated Price", value: fields.estimatedPrice ? `$${fields.estimatedPrice}` : "—" },
+    ];
+
+    // Order-specific fields from quoteData
+    const orderRows: { label: string; value: string }[] = isOrder ? [
+        { label: "Required Format", value: fmt(qd.requiredFormat) },
+        { label: "Required Stitch", value: fmt(qd.requiredStitch) },
+        { label: "Fabric", value: fmt(qd.fabric) },
+        { label: "Placement", value: fmt(qd.placement) },
+        { label: "Width (in)", value: fmt(qd.width) },
+        { label: "Height (in)", value: fmt(qd.height) },
+        { label: "Number of Colors", value: fmt(qd.numColors) },
+        { label: "Blending", value: fmt(qd.blending) },
+        { label: "Rush", value: fmt(qd.rush) },
+        { label: "Faceless", value: fmt(qd.faceless) },
+    ] : [];
+
+    // Vector-specific fields from quoteData
+    const vectorRows: { label: string; value: string }[] = !isOrder ? [
+        { label: "Required Format", value: fmt(qd.requiredFormat) },
+        { label: "Number of Colors", value: fmt(qd.numColors) },
+        { label: "Blending", value: fmt(qd.blending) },
+        { label: "Rush", value: fmt(qd.rush) },
+        { label: "Vector Type", value: fmt(qd.vectorType) },
+    ] : [];
+
+    const instructionRow: { label: string; value: string }[] = [
+        { label: "Instructions", value: fmt(fields.instructions) },
+    ];
+
+    const allRows = [...coreRows, ...orderRows, ...vectorRows, ...instructionRow]
+        .filter(r => r.value !== "—" || ["Quote Number", "Type", "Title", "Required Format", "Blending", "Rush"].includes(r.label));
+
+    return allRows.map((row, i) => buildRow(row.label, row.value, i)).join("");
+}
+
+export function generateQuoteConfirmationEmail(data: QuoteEmailData): string {
+    const { quoteId, fields, uploaded, user, isAdmin = false, quoteName } = data;
     const displayName = user.contact_name || user.user_name || "Valued Customer";
-    const orderRows = buildOrderRows(fields, orderId);
+    const quoteRows = buildQuoteRows(fields, quoteId);
     const year = new Date().getFullYear();
+    const subject = `Quote Has Been Created — ${quoteName}`;
 
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-     ${!isAdmin ? `<title>${subject}</title>` : ''}
+    ${!isAdmin ? `<title>${subject}</title>` : ""}
 </head>
 <body style="margin: 0; padding: 0; background-color: #f0fafa; font-family: 'Inter', Arial, sans-serif;">
 
@@ -112,14 +137,14 @@ export function generateOrderConfirmationEmail(data: OrderEmailData): string {
                                 font-weight: 700;
                                 color: #ffffff;
                                 line-height: 1.3;
-                            ">${subject.replace(orderName, '')}</h1>` : ''}
+                            ">Quote Has Been Created</h1>` : ""}
                             <p style="
                                 margin: 8px 0 0 0;
                                 font-size: 15px;
                                 color: rgba(255,255,255,0.90);
                                 font-family: 'Inter', Arial, sans-serif;
                                 font-weight: 500;
-                            ">${orderName}</p>
+                            ">${quoteName}</p>
                         </td>
                     </tr>
 
@@ -139,14 +164,14 @@ export function generateOrderConfirmationEmail(data: OrderEmailData): string {
                                 color: #374151;
                                 line-height: 1.75;
                                 font-family: 'Inter', Arial, sans-serif;
-                            ">Thank you for placing your order with <strong style="color: #008080;">Dynamo Stitches</strong>. Your order has been successfully received and is now being processed by our team.</p>
+                            ">Thank you for submitting your quote request with <strong style="color: #008080;">Dynamo Stitches</strong>. Your quote has been successfully received and our team will review it shortly.</p>
                             <p style="
                                 margin: 0;
                                 font-size: 14.5px;
                                 color: #374151;
                                 line-height: 1.75;
                                 font-family: 'Inter', Arial, sans-serif;
-                            ">You may also monitor your order status within your account under <strong>Order Records</strong>. After signing in, you will be able to download your files directly from the portal.</p>
+                            ">You can track the status of your quote anytime under <strong>Quote Records</strong> in your account portal.</p>
                         </td>
                     </tr>
 
@@ -161,12 +186,12 @@ export function generateOrderConfirmationEmail(data: OrderEmailData): string {
                                     color: #008080;
                                     text-transform: uppercase;
                                     letter-spacing: 0.5px;
-                                ">Request Order Details</span>
+                                ">Quote Details</span>
                             </div>
                         </td>
                     </tr>
 
-                    <!-- Order Details Table -->
+                    <!-- Quote Details Table -->
                     <tr>
                         <td style="padding: 0 40px 32px 40px;">
                             <table width="100%" cellpadding="0" cellspacing="0" style="
@@ -199,7 +224,7 @@ export function generateOrderConfirmationEmail(data: OrderEmailData): string {
                                         text-transform: uppercase;
                                     ">Details</th>
                                 </tr>
-                                ${orderRows}
+                                ${quoteRows}
                             </table>
                         </td>
                     </tr>

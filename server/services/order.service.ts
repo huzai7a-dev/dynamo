@@ -7,7 +7,7 @@ import { OrderStatus } from "#shared/types/enums";
 import OrderRepository from "../repositories/order.respository";
 import OrderDeliveryRepository, { type OrderDeliveryData } from "../repositories/order-delivery.repository";
 import uploadService, { type UploadedAsset } from "./upload.service";
-import EmailService from "./email.service";
+import EmailService, { buildMailAttachments } from "./email.service";
 import UserService from "./user.service";
 import { generateOrderConfirmationEmail } from "../templates/order-confirmation.email";
 import { generateOrderDeliveryEmail } from "../templates/order-delivery.email";
@@ -37,8 +37,7 @@ class OrderService {
 
     const result = await OrderRepository.createOrder(userId, fields, uploaded, { type: DataSource.ORDER });
 
-    // Fire order confirmation email — non-blocking
-    this.sendOrderConfirmationEmail(userId, result.orderId, fields, uploaded);
+    await this.sendOrderConfirmationEmail(userId, result.orderId, fields, uploaded);
 
     return result;
   }
@@ -52,11 +51,15 @@ class OrderService {
     try {
       const user = await UserService.getUserById(userId);
       if (!user?.primary_email) return;
-      const subject = `Your Order Has Been Received ${fields.orderName} - #${orderId}`;
-      const html = generateOrderConfirmationEmail({ orderId, fields, uploaded, user });
+      const orderName = `${fields.orderName}-OR-${orderId}`
+      const subject = `Your Order Has Been Created ${orderName}`;
+      const clientHTML = generateOrderConfirmationEmail({ orderId, fields, uploaded, user, subject, isAdmin: false, orderName });
+      const adminHTML = generateOrderConfirmationEmail({ orderId, fields, uploaded, user, subject, isAdmin: true, orderName });
+      const mailAttachments = buildMailAttachments(uploaded, "attachment", `OR-${orderId}`);
+
       await Promise.all([
-        EmailService.sendHtmlEmail(user.primary_email, subject, html),
-        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, subject, html),
+        EmailService.sendHtmlEmail(user.primary_email, subject, clientHTML, mailAttachments),
+        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, orderName, adminHTML, mailAttachments),
       ]);
     } catch (err) {
       console.error('Order confirmation email failed:', err);
@@ -406,9 +409,11 @@ class OrderService {
         deliveryAttachments,
       });
 
+      const mailAttachments = buildMailAttachments(deliveryAttachments, "delivery-file", `OR-${orderId}`);
+
       await Promise.all([
-        EmailService.sendHtmlEmail(user.primary_email, subject, html),
-        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, subject, html),
+        EmailService.sendHtmlEmail(user.primary_email, subject, html, mailAttachments),
+        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, subject, html, mailAttachments),
       ]);
     } catch (err) {
       console.error('Delivery notification email failed:', err);

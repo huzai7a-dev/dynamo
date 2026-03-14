@@ -2,68 +2,40 @@
   <div class="space-y-6">
     <h3 v-if="title" class="text-2xl font-bold text-gray-900">{{ title }}</h3>
 
-    <div
-      class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
-    >
-      <TableHeader
-        createButtonLabel="Place Vector"
-        title="Vector"
-        :searchOrderNumber="searchOrderNumber"
-        :searchOrderName="searchOrderName"
-        :selectedDateRange="selectedDateRange"
-        :isAdmin="isAdmin"
-        :searchCustomerName="searchCustomerName"
-        @create-order="emit('create-order')"
-        @update:searchOrderNumber="
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <TableHeader firstPlaceholder="Search by vector number" secondPlaceholder="Search by vector name"
+        createButtonLabel="Place Vector" title="Vector" :searchOrderNumber="searchOrderNumber"
+        :searchOrderName="searchOrderName" :selectedDateRange="selectedDateRange" :isAdmin="isAdmin"
+        :searchCustomerName="searchCustomerName" @create-order="emit('create-order')" @update:searchOrderNumber="
           (val: string) => emit('update:searchOrderNumber', val)
-        "
-        @update:searchOrderName="
+        " @update:searchOrderName="
           (val: string) => emit('update:searchOrderName', val)
-        "
-        @update:searchCustomerName="
+        " @update:searchCustomerName="
           (val: string) => emit('update:searchCustomerName', val)
-        "
-        @update:selectedDateRange="
+        " @update:selectedDateRange="
           (val) => emit('update:selectedDateRange', val)
-        "
-      />
+        " />
 
       <div class="p-6">
-        <UiTable
-          :data="formateData"
-          :columns="columns"
-          :pagination="props.pagination"
-          :loading="props.loading"
-          :error="props.error"
-          :sortBy="props.sortBy"
-          :sortOrder="props.sortOrder"
-          @updateSort="
+        <UiTable :data="formateData" :columns="columns" :pagination="props.pagination" :loading="props.loading"
+          :error="props.error" :sortBy="props.sortBy" :sortOrder="props.sortOrder" @updateSort="
             (sortBy: string, sortOrder: string) =>
               emit('sort', sortBy, sortOrder)
-          "
-          @updatePage="emit('paginate', $event)"
-          @rowClick="emit('rowClick', $event)"
-        >
+          " @updatePage="emit('paginate', $event)" @rowClick="emit('rowClick', $event)">
           <template #column-serial_number="{ index }">
             <span class="text-primary font-semibold">{{ index + 1 }}</span>
           </template>
 
           <template #column-status="{ row }">
-            <span
-              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
-              :class="getOrderStatusBadgeClass((row as TableOrders).status)"
-            >
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
+              :class="getOrderStatusBadgeClass((row as TableOrders).status)">
               {{ formatOrderStatus((row as TableOrders).status) }}
             </span>
           </template>
 
           <template #column-payment_status="{ row }">
-            <span
-              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
-              :class="
-                getPaymentStatusBadgeClass((row as TableOrders).payment_status)
-              "
-            >
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border" :class="getPaymentStatusBadgeClass((row as TableOrders).payment_status)
+              ">
               {{ formatPaymentStatus((row as TableOrders).payment_status) }}
             </span>
           </template>
@@ -71,47 +43,29 @@
           <!-- Actions column: Eye (open modal) + reuse OrderActions -->
           <template #column-actions="{ row }">
             <div class="flex items-center gap-2" @click.stop>
-              <button
-                class="p-2 rounded hover:bg-slate-100"
-                @click.stop="openDetail(row.id)"
-                title="View"
-              >
+              <button class="p-2 rounded hover:bg-slate-100" @click.stop="openDetail(row.id)" title="View">
                 <Icon name="Eye" class="w-5 h-5 text-slate-600" />
               </button>
 
-              <OrderActions
-                size="compact"
-                :isAdmin="isAdmin"
-                :status="(row as any).status"
-                @approve="handleApprove(row.id)"
-                @reject="handleReject(row.id)"
-                @deliver="handleDeliver(row.id, row.created_at)"
-                @cancel="handleCancel(row.id)"
-                @edit="handleEdit(row.id)"
-              />
+              <OrderActions size="compact" :isAdmin="isAdmin" :status="(row as any).status"
+                @approve="handleApprove(row.id)" @reject="handleReject(row.id)"
+                @deliver="handleDeliver(row.id, row.created_at)" @cancel="handleCancel(row.id)"
+                @edit="handleEdit(row.id)" />
             </div>
           </template>
         </UiTable>
 
         <!-- Vector detail modal -->
-        <VectorDetailModal
-          v-model="showDetailModal"
-          :vectorId="String(selectedVectorId)"
-          @refresh="emit('refresh')"
-        />
+        <VectorDetailModal v-model="showDetailModal" :vectorId="String(selectedVectorId)" @refresh="emit('refresh')" />
 
         <!-- Delivery modal for quick deliver from table actions -->
-        <DeliveryModal
-          v-model="showDeliveryModal"
-          :orderId="String(selectedVectorId)"
-          :orderDate="selectedVectorDate || ''"
-          @on:deliver="
+        <DeliveryModal v-model="showDeliveryModal" :orderId="String(selectedVectorId)"
+          :orderDate="selectedVectorDate || ''" @on:deliver="
             () => {
               showDeliveryModal = false;
               emit('refresh');
             }
-          "
-        />
+          " />
       </div>
     </div>
   </div>
@@ -172,13 +126,14 @@ const isAdmin = computed(() => (user.value as any)?.role === ROLE.Admin);
 const formateData = computed(() => {
   return props.data?.map((item) => ({
     ...item,
+    id: `VR-${item.id}`,
     created_at: formateDate(item.created_at),
-    price: Number(item.price) > 0 ? `$${item.price}` : "N/A",
+    price: Number(item.price) > 0 ? `$${item.price}` : "-",
     ...(isAdmin.value
       ? {
-          customer_name: item?.customer_name,
-          is_from_quote: item?.is_from_quote ? "Yes" : "No",
-        }
+        customer_name: item?.customer_name,
+        is_from_quote: item?.is_from_quote ? "Yes" : "No",
+      }
       : {}),
   }));
 });
@@ -194,9 +149,9 @@ const columns = ref([
   { label: "Vector Name", key: "vector_name" },
   ...(isAdmin.value
     ? [
-        { label: "Customer Name", key: "customer_name" },
-        { label: "Converted From Quote", key: "is_from_quote" },
-      ]
+      { label: "Customer Name", key: "customer_name" },
+      { label: "Converted From Quote", key: "is_from_quote" },
+    ]
     : []),
   { label: "Price", key: "price" },
   { label: "Vector Status", key: "status" },

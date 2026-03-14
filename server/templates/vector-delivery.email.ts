@@ -85,61 +85,10 @@ function buildCombinedRows(vector: Record<string, any>, delivery: Record<string,
     return html;
 }
 
-function buildAttachmentRows(attachments: UploadedAsset[]): string {
-    if (!attachments.length) return "";
-
-    const links = attachments
-        .map((a, i) => `
-            <tr>
-                <td style="padding: 8px 0;">
-                    <a href="${a.url}" style="
-                        display: inline-flex;
-                        align-items: center;
-                        gap: 6px;
-                        font-family: 'Inter', Arial, sans-serif;
-                        font-size: 13.5px;
-                        color: #008080;
-                        text-decoration: none;
-                        font-weight: 500;
-                    ">
-                        <span style="font-size: 14px;">📎</span>
-                        ${a.originalFilename ? a.originalFilename : `Delivery File ${i + 1}`}
-                    </a>
-                </td>
-            </tr>`)
-        .join("");
-
-    return `
-    <tr>
-        <td style="padding: 0 40px 28px 40px;">
-            <div style="border-left: 4px solid #008080; padding-left: 12px; margin-bottom: 14px;">
-                <span style="
-                    font-family: 'Poppins', 'Inter', Arial, sans-serif;
-                    font-size: 15px;
-                    font-weight: 700;
-                    color: #008080;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                ">Delivery Attachments</span>
-            </div>
-            <table cellpadding="0" cellspacing="0" style="
-                background: #f8fffe;
-                border: 1.5px solid #dff7f6;
-                border-radius: 8px;
-                padding: 12px 18px;
-                width: 100%;
-            ">
-                ${links}
-            </table>
-        </td>
-    </tr>`;
-}
-
 export function generateVectorDeliveryEmail(data: VectorDeliveryEmailData): string {
     const { vectorId, vectorName, user, vector, delivery, deliveryAttachments } = data;
     const displayName = user.contact_name || user.user_name || "Valued Customer";
     const combinedRows = buildCombinedRows(vector, delivery);
-    const attachmentSection = buildAttachmentRows(deliveryAttachments);
     const year = new Date().getFullYear();
 
     return `<!DOCTYPE html>
@@ -295,8 +244,6 @@ export function generateVectorDeliveryEmail(data: VectorDeliveryEmailData): stri
                             </table>
                         </td>
                     </tr>
-
-                    ${attachmentSection}
 
                     <!-- Closing -->
                     <tr>

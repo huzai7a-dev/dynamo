@@ -16,6 +16,7 @@ export const formatOptions = [
   { label: 'KSM', value: 'KSM' },
   { label: 'TAP', value: 'TAP' },
   { label: 'POF', value: 'POF' },
+  { label: 'OFM', value: 'OFM' },
   { label: 'Other', value: 'Other' }
 ]
 export const fabricOptions = [
@@ -39,14 +40,16 @@ export const placementOptions = [
   { label: 'Chest', value: 'Chest' },
   { label: 'Center Chest', value: 'Center Chest' },
   { label: 'Gloves', value: 'Gloves' },
-  { label: 'Cap Side', value: 'Cap Side' },
+  { label: 'Cap Side Panel', value: 'Cap Side Panel' },
+  { label: 'Visor', value: 'Visor' },
+  { label: 'Head Band', value: 'Head Band' },
   { label: 'Cap Back', value: 'Cap Back' },
   { label: 'Towel', value: 'Towel' },
   { label: 'JacketBack', value: 'JacketBack' },
-  { label: 'Bag', value: 'bag' },
-  { label: 'Socks', value: 'socks' },
-  { label: 'sleeve', value: 'sleeve' },
-  { label: 'other', value: 'other' }
+  { label: 'Bag', value: 'Bag' },
+  { label: 'Socks', value: 'Socks' },
+  { label: 'Sleeves', value: 'Sleeves' },
+  { label: 'Other', value: 'Other' }
 ]
 
 

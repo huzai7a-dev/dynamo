@@ -104,7 +104,7 @@ class OrderRepository {
             order_name, po_number, required_format,
             width_in, height_in, required_stitch, fabric, placement,
             num_colors, blending, rush, instructions, 
-            faceless, user_id, metadata
+            faceless, user_id, payment_status, status, metadata
           )
           VALUES (
             ${fields.orderName},
@@ -121,6 +121,8 @@ class OrderRepository {
             ${fields?.instructions || null},
             ${fields?.faceless || null},
             ${userId},
+            ${PaymentStatus.UNPAID},
+            ${OrderStatus.PENDING},
             ${metadata}
           )
           RETURNING id

@@ -1,25 +1,13 @@
 <template>
   <div>
-    <VectorsTable
-      @create-order="$router.push('/vectors/create')"
-      :data="data?.data?.vectors ?? []"
-      :pagination="{
-        currentPage: data?.data?.pagination.currentPage || 1,
-        totalPage: data?.data?.pagination.totalPage || 10,
-      }"
-      :searchCustomerName="customerName"
-      :searchOrderNumber="orderNumber"
-      :searchOrderName="orderName"
-      :loading="pending"
-      :error="!!error"
-      @refresh="refresh"
-      @update:searchOrderNumber="orderNumber = $event"
-      @update:searchOrderName="orderName = $event"
-      @update:selectedDateRange="dateRange = $event"
-      @update:searchCustomerName="customerName = $event"
-      @paginate="(nextPage) => (currentPage = nextPage)"
-      @row-click="$router.push(`/vectors/${$event.row.id}`)"
-    />
+    <VectorsTable @create-order="$router.push('/vectors/create')" :data="data?.data?.vectors ?? []" :pagination="{
+      currentPage: data?.data?.pagination.currentPage || 1,
+      totalPage: data?.data?.pagination.totalPage || 10,
+    }" :searchCustomerName="customerName" :searchOrderNumber="orderNumber" :searchOrderName="orderName"
+      :loading="pending" :error="!!error" @refresh="refresh" @update:searchOrderNumber="orderNumber = $event"
+      @update:searchOrderName="orderName = $event" @update:selectedDateRange="dateRange = $event"
+      @update:searchCustomerName="customerName = $event" @paginate="(nextPage) => (currentPage = nextPage)"
+      @row-click="$router.push(`/vectors/${$event.row.id}`)" />
   </div>
 </template>
 
@@ -66,7 +54,7 @@ const params = computed(() => ({
 
 const debounceParams: Ref<QueryParams> = ref(useDebounce(params, 500));
 
-const { data, pending, error, refresh } = useFetch<OrderResponse>(
+const { data, pending, error, refresh } = await useFetch<OrderResponse>(
   "/api/vectors",
   {
     params: debounceParams,

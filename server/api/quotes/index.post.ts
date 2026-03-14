@@ -11,7 +11,6 @@ export default defineEventHandler(async (event) => {
         const { dataSourceType, orderName, vectorName, poNumber, instructions, estimatedPrice, ...quoteData } = fields;
         const title = dataSourceType === 'order' ? orderName : vectorName;
 
-        console.log({ quoteData })
         const payload = {
             title,
             qType: dataSourceType,

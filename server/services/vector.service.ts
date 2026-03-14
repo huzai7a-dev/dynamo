@@ -3,7 +3,7 @@ import uploadService, { type UploadedAsset } from "./upload.service";
 import VectorRepository from "../repositories/vector.repository";
 import AttachmentsRepository from "../repositories/attachments.repository";
 import VectorDeliveryRepository, { type VectorDeliveryData } from "../repositories/vector-delivery.repository";
-import EmailService from "./email.service";
+import EmailService, { buildMailAttachments } from "./email.service";
 import UserService from "./user.service";
 import { generateVectorConfirmationEmail } from "../templates/vector-confirmation.email";
 import { generateVectorDeliveryEmail } from "../templates/vector-delivery.email";
@@ -27,8 +27,7 @@ class VectorService {
 
     const vectorId = row.vectorId as number;
 
-    // Fire vector confirmation email — non-blocking
-    this.sendVectorConfirmationEmail(userId, vectorId, fields, uploaded);
+    await this.sendVectorConfirmationEmail(userId, vectorId, fields, uploaded);
 
     return { vectorId };
   }
@@ -42,11 +41,15 @@ class VectorService {
     try {
       const user = await UserService.getUserById(userId);
       if (!user?.primary_email) return;
-      const subject = `Your Vector Has Been Received ${fields.vectorName} - #${vectorId}`;
-      const html = generateVectorConfirmationEmail({ vectorId, fields, uploaded, user });
+      const vectorName = `${fields.vectorName}-VR-${vectorId}`
+      const subject = `Your Vector Has Been Created ${vectorName}`;
+      const clientHTML = generateVectorConfirmationEmail({ vectorId, fields, uploaded, user, subject, isAdmin: false, vectorName });
+      const adminHTML = generateVectorConfirmationEmail({ vectorId, fields, uploaded, user, subject, isAdmin: true, vectorName });
+      const mailAttachments = buildMailAttachments(uploaded, "attachment", `VR-${vectorId}`);
+
       await Promise.all([
-        EmailService.sendHtmlEmail(user.primary_email, subject, html),
-        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, subject, html),
+        EmailService.sendHtmlEmail(user.primary_email, subject, clientHTML, mailAttachments),
+        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, vectorName, adminHTML, mailAttachments),
       ]);
     } catch (err) {
       console.error('Vector confirmation email failed:', err);
@@ -262,8 +265,7 @@ class VectorService {
     const { deliveryId } = await VectorDeliveryRepository.createDelivery(deliveryData, uploaded);
     await VectorRepository.updateVectorStatus(parseInt(vectorId), OrderStatus.DELIVERED);
 
-    // Fire vector delivery notification emails — non-blocking
-    this.sendVectorDeliveryEmail(parseInt(vectorId), deliveryData, uploaded);
+    await this.sendVectorDeliveryEmail(parseInt(vectorId), deliveryData, uploaded);
 
     return {
       deliveryId,
@@ -292,9 +294,11 @@ class VectorService {
         deliveryAttachments,
       });
 
+      const mailAttachments = buildMailAttachments(deliveryAttachments, "delivery-file", `VR-${vectorId}`);
+
       await Promise.all([
-        EmailService.sendHtmlEmail(user.primary_email, subject, html),
-        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, subject, html),
+        EmailService.sendHtmlEmail(user.primary_email, subject, html, mailAttachments),
+        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, subject, html, mailAttachments),
       ]);
     } catch (err) {
       console.error('Vector delivery email failed:', err);

@@ -1,4 +1,3 @@
-import type { VectorFieldsRequest } from "#shared/types";
 import type { UploadedAsset } from "../services/upload.service";
 
 interface VectorEmailData {
@@ -6,6 +5,9 @@ interface VectorEmailData {
     fields: VectorFieldsRequest;
     uploaded: UploadedAsset[];
     user: { contact_name?: string; user_name?: string };
+    subject: string;
+    isAdmin?: boolean;
+    vectorName: string;
 }
 
 function fmt(value: any): string {
@@ -15,7 +17,7 @@ function fmt(value: any): string {
 
 function buildVectorRows(fields: VectorFieldsRequest, vectorId: number): string {
     const rows: { label: string; value: string }[] = [
-        { label: "Vector ID", value: `#${vectorId}` },
+        { label: "Vector Number", value: `VR-${vectorId}` },
         { label: "Vector Name", value: fmt(fields.vectorName) },
         { label: "PO Number", value: fmt(fields.poNumber) },
         { label: "Required Format", value: fmt(fields.requiredFormat) },
@@ -54,61 +56,10 @@ function buildVectorRows(fields: VectorFieldsRequest, vectorId: number): string 
         .join("");
 }
 
-function buildAttachmentRows(uploaded: UploadedAsset[]): string {
-    if (!uploaded.length) return "";
-
-    const links = uploaded
-        .map((a, i) => `
-            <tr>
-                <td style="padding: 8px 0;">
-                    <a href="${a.url}" style="
-                        display: inline-flex;
-                        align-items: center;
-                        gap: 6px;
-                        font-family: 'Inter', Arial, sans-serif;
-                        font-size: 13.5px;
-                        color: #008080;
-                        text-decoration: none;
-                        font-weight: 500;
-                    ">
-                        <span style="font-size: 14px;">📎</span>
-                        ${a.originalFilename ? a.originalFilename : `Attachment ${i + 1}`}
-                    </a>
-                </td>
-            </tr>`)
-        .join("");
-
-    return `
-    <tr>
-        <td style="padding: 0 40px 28px 40px;">
-            <div style="border-left: 4px solid #008080; padding-left: 12px; margin-bottom: 14px;">
-                <span style="
-                    font-family: 'Poppins', 'Inter', Arial, sans-serif;
-                    font-size: 15px;
-                    font-weight: 700;
-                    color: #008080;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                ">Attachments</span>
-            </div>
-            <table cellpadding="0" cellspacing="0" style="
-                background: #f8fffe;
-                border: 1.5px solid #dff7f6;
-                border-radius: 8px;
-                padding: 12px 18px;
-                width: 100%;
-            ">
-                ${links}
-            </table>
-        </td>
-    </tr>`;
-}
-
 export function generateVectorConfirmationEmail(data: VectorEmailData): string {
-    const { vectorId, fields, uploaded, user } = data;
+    const { vectorId, fields, uploaded, user, isAdmin = false, subject, vectorName } = data;
     const displayName = user.contact_name || user.user_name || "Valued Customer";
     const vectorRows = buildVectorRows(fields, vectorId);
-    const attachmentSection = buildAttachmentRows(uploaded);
     const year = new Date().getFullYear();
 
     return `<!DOCTYPE html>
@@ -116,7 +67,7 @@ export function generateVectorConfirmationEmail(data: VectorEmailData): string {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vector Received – ${fields.vectorName}</title>
+    ${!isAdmin ? `<title>${subject}</title>` : ''}
 </head>
 <body style="margin: 0; padding: 0; background-color: #f0fafa; font-family: 'Inter', Arial, sans-serif;">
 
@@ -153,21 +104,21 @@ export function generateVectorConfirmationEmail(data: VectorEmailData): string {
                                     letter-spacing: 0.5px;
                                 ">✦ Dynamo Stitches</span>
                             </div>
-                            <h1 style="
+                            ${!isAdmin ? `<h1 style="
                                 margin: 0;
                                 font-family: 'Poppins', 'Inter', Arial, sans-serif;
                                 font-size: 22px;
                                 font-weight: 700;
                                 color: #ffffff;
                                 line-height: 1.3;
-                            ">Your Vector Has Been Received</h1>
+                            ">${subject.replace(vectorName, '')}</h1>` : ''}
                             <p style="
                                 margin: 8px 0 0 0;
                                 font-size: 15px;
                                 color: rgba(255,255,255,0.90);
                                 font-family: 'Inter', Arial, sans-serif;
                                 font-weight: 500;
-                            ">${fields.vectorName} &nbsp;·&nbsp; #${vectorId}</p>
+                            ">${vectorName}</p>
                         </td>
                     </tr>
 
@@ -251,8 +202,6 @@ export function generateVectorConfirmationEmail(data: VectorEmailData): string {
                             </table>
                         </td>
                     </tr>
-
-                    ${attachmentSection}
 
                     <!-- Closing -->
                     <tr>

@@ -1,14 +1,19 @@
 <template>
-  <div class="profile-page max-w-3xl mx-auto px-6">
-    <div v-if="loading" class="text-gray-600">Loading...</div>
+  <div class="profile-page max-w-6xl mx-auto px-6">
+    <div v-if="loading" class="text-gray-600 mt-10">Loading...</div>
     <div v-else>
-      <UserForm :initialValues="profile" @submitted="onFormSubmitted" />
-      <div v-if="error" class="text-sm text-red-600 mt-2">
-        {{ errorMessage }}
-      </div>
-      <div v-if="successMessage" class="text-sm text-green-600 mt-2">
-        {{ successMessage }}
-      </div>
+      <!-- Read-only view -->
+      <UserProfileView v-if="!isEditing" :profile="profile" @edit="isEditing = true" />
+
+      <!-- Edit form -->
+      <template v-else>
+        <UserForm :initialValues="profile" :externalLoading="isSaving" @submitted="onFormSubmitted" />
+        <div class="max-w-6xl mx-auto mt-3 flex justify-end">
+          <UiButton @click="cancelEdit">Cancel</UiButton>
+        </div>
+      </template>
+
+
     </div>
   </div>
 </template>
@@ -22,12 +27,13 @@ definePageMeta({
 
 import { ref, reactive, onMounted } from "vue";
 import UserForm from "~/components/UserForm.vue";
+import UserProfileView from "~/components/UserProfileView.vue";
+import { useToast } from "~/composables/useToast";
 
 const loading = ref(true);
-const error = ref(false);
-const errorMessage = ref("");
-const successMessage = ref("");
 const isSaving = ref(false);
+const isEditing = ref(false);
+const toast = useToast();
 
 const profile = reactive({
   id: null as null | number,
@@ -48,6 +54,7 @@ const profile = reactive({
   state: "",
   website: "",
   zip_code: "",
+  sales_man_name: "",
 });
 const { user } = useUserSession();
 
@@ -62,33 +69,25 @@ function populateProfile(data: any) {
 
 async function fetchProfile() {
   loading.value = true;
-  error.value = false;
-  errorMessage.value = "";
   try {
-    const res = await $fetch(`/api/profiles/${user.value.id}`);
+    const res = await $fetch(`/api/profiles/${user.value.id}`) as any;
     populateProfile(res?.data ?? res);
-    successMessage.value = "";
   } catch (err: any) {
-    error.value = true;
-    errorMessage.value = err?.message ?? "Failed to fetch profile";
+    toast.error(err?.message ?? "Failed to fetch profile");
     console.error("fetchProfile error", err);
   } finally {
     loading.value = false;
   }
 }
 
-function resetForm() {
+function cancelEdit() {
+  isEditing.value = false;
   fetchProfile();
 }
 
 async function onFormSubmitted(payload: any) {
-  // call update profile endpoint
-  error.value = false;
-  errorMessage.value = "";
-  successMessage.value = "";
   if (!profile.id) {
-    error.value = true;
-    errorMessage.value = "Missing profile id";
+    toast.error("Missing profile id");
     return;
   }
 
@@ -97,27 +96,24 @@ async function onFormSubmitted(payload: any) {
     const res = await $fetch(`/api/profiles/${profile.id}`, {
       method: "PUT",
       body: payload,
-    });
-    // expect { message, data }
+    }) as any;
     const updated = res?.data ?? res;
     populateProfile(updated);
-    successMessage.value = res?.message ?? "Profile updated successfully";
-    console.log("Profile updated", updated);
+    toast.success(res?.message ?? "Profile updated successfully");
+    isEditing.value = false;
   } catch (err: any) {
-    error.value = true;
-    // $fetch errors may have .data
-    errorMessage.value =
+    const msg =
       err?.data?.message ||
       err?.data?.statusMessage ||
       err?.message ||
       "Failed to update profile";
+    toast.error(msg);
     console.error("update profile error", err);
   } finally {
     isSaving.value = false;
   }
 }
 
-// fetch on mount
 onMounted(() => {
   fetchProfile();
 });

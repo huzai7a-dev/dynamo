@@ -1,15 +1,17 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { QuoteStatus } from '~~/shared/types/enums';
-
 
 interface Props {
   isAdmin?: boolean
   status: QuoteStatus
+  size?: "default" | "compact"
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   isAdmin: false,
-  status: QuoteStatus.PENDING
+  status: QuoteStatus.PENDING,
+  size: "default"
 })
 
 const emit = defineEmits<{
@@ -20,36 +22,74 @@ const emit = defineEmits<{
   (e: 'edit'): void
   (e: 'deliver'): void
 }>()
+
+const isCompact = computed(() => props.size === "compact");
 </script>
 
 <template>
-  <div class="flex flex-wrap items-center gap-3">
-    <!-- Admin Actions -->
-    <template v-if="isAdmin">
-      <!-- For Pending Status - Show only Deliver Order button -->
-      <button v-if="status === QuoteStatus.PENDING || status === QuoteStatus.REJECTED"
-        class="rounded-2xl bg-blue-600 px-4 py-2 font-medium text-white shadow hover:bg-blue-700 transition"
-        @click="emit('deliver')">
-        Deliver Order
-      </button>
-    </template>
-
-    <!-- Non-Admin Actions -->
-    <template v-else>
-      <!-- Actions for Quoted Status -->
-      <template v-if="status === QuoteStatus.QUOTED">
-        <button class="rounded-2xl bg-green-600 px-4 py-2 font-medium text-white shadow hover:bg-green-700 transition"
-          @click="emit('accept')">
-          Accept
-        </button>
-        <button
-          class="rounded-2xl border border-red-300 bg-red-50 px-4 py-2 font-medium text-red-700 hover:bg-red-100 transition"
-          @click="emit('reject')">
-          Reject
+  <div>
+    <div v-if="isCompact" class="flex items-center gap-1">
+      <!-- Compact Admin Actions -->
+      <template v-if="props.isAdmin">
+        <button v-if="props.status === QuoteStatus.PENDING || props.status === QuoteStatus.REJECTED"
+          class="text-xs px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+          @click.stop="emit('deliver')">
+          Deliver
         </button>
       </template>
 
-    </template>
+      <!-- Compact Non-Admin Actions -->
+      <template v-else>
+        <button class="text-xs px-2 py-1 rounded bg-white border border-gray-200 transition" @click="emit('edit')">
+          Edit
+        </button>
+        <template v-if="props.status === QuoteStatus.QUOTED">
+          <button class="text-xs px-2 py-1 rounded bg-primary text-white transition" @click="emit('accept')">
+            Convert
+          </button>
 
+
+          <!-- <button
+            class="text-xs px-2 py-1 rounded border border-red-300 bg-red-50 text-red-700 hover:bg-red-100 transition"
+            @click.stop="emit('reject')">
+            Reject
+          </button> -->
+        </template>
+
+      </template>
+    </div>
+
+    <div v-else class="flex flex-wrap items-center gap-3">
+      <!-- Default Admin Actions -->
+      <template v-if="props.isAdmin">
+        <button v-if="props.status === QuoteStatus.PENDING || props.status === QuoteStatus.REJECTED"
+          class="rounded-2xl bg-blue-600 px-4 py-2 font-medium text-white shadow hover:bg-blue-700 transition"
+          @click="emit('deliver')">
+          Deliver Order
+        </button>
+      </template>
+
+      <!-- Default Non-Admin Actions -->
+      <template v-else>
+        <button class="rounded-2xl bg-green-600 px-4 py-2 font-medium text-white shadow transition"
+          @click="emit('edit')">
+          Edit
+        </button>
+        <template v-if="props.status === QuoteStatus.QUOTED">
+          <button class="rounded-2xl bg-primary px-4 py-2 font-medium text-white shadow transition"
+            @click="emit('accept')">
+            Convert
+          </button>
+
+
+          <!-- <button
+            class="rounded-2xl border border-red-300 bg-red-50 px-4 py-2 font-medium text-red-700 hover:bg-red-100 transition"
+            @click="emit('reject')">
+            Reject
+          </button> -->
+        </template>
+
+      </template>
+    </div>
   </div>
 </template>

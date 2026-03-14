@@ -1,6 +1,6 @@
 export enum OrderStatus {
     PENDING = 'pending',
-    IN_PROGRESS = 'in_progress',
+    IN_PROGRESS = 'processing',
     REJECTED = 'rejected',
     DELIVERED = 'delivered',
     CANCELLED = 'cancelled',
@@ -8,7 +8,7 @@ export enum OrderStatus {
 
 export enum PaymentStatus {
     PAID = 'paid',
-    UNPAID = 'unpaid'
+    UNPAID = 'payable'
 }
 
 export enum DataSource {

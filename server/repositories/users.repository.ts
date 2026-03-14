@@ -82,7 +82,14 @@ class UsersRepository {
 	}
 
 	async getById(id: string) {
-		const users = await this.db`SELECT * FROM users WHERE id = ${id}` as Array<IUser>;
+		const users = await this.db`
+			SELECT
+				u.*,
+				sm.contact_name AS sales_man_name
+			FROM users u
+			LEFT JOIN users sm ON sm.id::text = u.sales_man
+			WHERE u.id = ${id}
+		` as Array<IUser & { sales_man_name: string | null }>;
 		return users[0] ?? null;
 	}
 

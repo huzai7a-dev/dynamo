@@ -1,10 +1,11 @@
 import type { QuoteFieldsRequest, QuoteFilesRequest, QueryParams } from "~~/shared/types";
 import type { UploadedAsset } from "./upload.service";
 import uploadService from "./upload.service";
-import orderRepository from "../repositories/order.respository";
 import { DataSource } from "~~/shared/types/enums";
-import vectorRepository from "../repositories/vector.repository";
 import quotesRepository from "../repositories/quotes.repository";
+import UserService from "./user.service";
+import EmailService, { buildMailAttachments } from "./email.service";
+import { generateQuoteConfirmationEmail } from "../templates/quote-confirmation.email";
 
 class QuoteService {
 
@@ -21,7 +22,33 @@ class QuoteService {
                 tags: [dataSourceType],
             });
         }
-        return quotesRepository.createQuote(userId, fields, uploaded);
+        const quote = await quotesRepository.createQuote(userId, fields, uploaded);
+        await this.sendQuoteConfirmationEmail(userId, quote.quote_id, fields, uploaded);
+        return quote;
+    }
+
+    private async sendQuoteConfirmationEmail(
+        userId: string,
+        quoteId: number,
+        fields: QuoteFieldsRequest,
+        uploaded: UploadedAsset[]
+    ) {
+        try {
+            const user = await UserService.getUserById(userId);
+            if (!user?.primary_email) return;
+            const quoteName = `${fields.title}-QR-${quoteId}`;
+            const subject = `Quote Has Been Created — ${quoteName}`;
+            const clientHTML = generateQuoteConfirmationEmail({ quoteId, fields, uploaded, user, isAdmin: false, quoteName });
+            const adminHTML = generateQuoteConfirmationEmail({ quoteId, fields, uploaded, user, isAdmin: true, quoteName });
+            const mailAttachments = buildMailAttachments(uploaded, "attachment", `QR-${quoteId}`);
+
+            await Promise.all([
+                EmailService.sendHtmlEmail(user.primary_email, subject, clientHTML, mailAttachments),
+                EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, quoteName, adminHTML, mailAttachments),
+            ]);
+        } catch (err) {
+            console.error('Quote confirmation email failed:', err);
+        }
     }
 
     async getAllQuotes(quoteParams: QueryParams, isAdmin = false) {

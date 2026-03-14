@@ -40,14 +40,6 @@
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/settings"
-                class="flex items-center w-full px-4 py-3 text-sm hover:bg-gray-50 transition-colors duration-150 group"
-                @click="closeMenu">
-                <Icon name="Settings" class="mr-3 h-5 w-5 text-gray-600 group-hover:text-primary" />
-                <span class="text-gray-700 group-hover:text-gray-900">Settings</span>
-              </NuxtLink>
-            </li>
-            <li>
               <hr class="my-2 border-gray-100" />
             </li>
             <li>

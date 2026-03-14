@@ -24,11 +24,11 @@
       <!-- Form -->
       <div v-else>
         <OrderForm headerTitle="Edit Quote" v-if="quote && !pending && dataSourceType === DataSource.ORDER"
-          :orderData="quote" :is-edit-mode="true" @success="() => handleSuccess(DataSource.ORDER)"
+          :orderData="quote as any" :is-edit-mode="true" @success="() => handleSuccess(DataSource.ORDER)"
           @error="handleError" />
 
         <VectorForm headerTitle="Edit Quote" v-if="quote && !pending && dataSourceType === DataSource.VECTOR"
-          :vectorData="quote" :isEditMode="true" @success="() => handleSuccess(DataSource.VECTOR)"
+          :vectorData="quote as any" :isEditMode="true" @success="() => handleSuccess(DataSource.VECTOR)"
           @error="handleError" />
       </div>
     </div>
@@ -36,6 +36,9 @@
 </template>
 
 <script setup lang="ts">
+import type { IOrder, IVector } from '~~/shared/types';
+import { DataSource } from '~~/shared/types/enums';
+
 interface QuoteResponse {
   message: string;
   data: IOrder | IVector;
@@ -65,7 +68,7 @@ const handleError = () => {
 };
 
 definePageMeta({
-  name: "Edit Order",
+  name: "Edit Quote",
   layout: "portal",
   middleware: ["auth"],
 });

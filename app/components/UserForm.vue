@@ -1,7 +1,7 @@
 <template>
   <div class="bg-card text-card-foreground shadow-md p-8 max-w-6xl mx-auto mt-10 border space-y-10">
     <h1 class="text-3xl font-semibold" v-if="submitUrl">Create an Account</h1>
-    <h1 class="text-3xl font-semibold" v-else>Profile</h1>
+    <h1 class="text-3xl font-semibold bg-primary text-white px-4 py-2" v-else>Edit Profile</h1>
 
     <form @submit.prevent="onSubmit" class="space-y-8">
       <!-- Account Section -->
@@ -69,11 +69,11 @@
         <h2 class="text-xl font-medium text-foreground">Other</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <UiSelect v-model="reference" name="reference" label="Reference" :options="referenceOptions"
-            :error="errors.reference" />
+            :error="errors.reference" :disabled="!submitUrl" />
 
           <UiSelect v-if="reference === 'Salesman'" v-model="sales_man" name="sales_man" label="Salesman"
             :placeholder="loadingSalesmen ? 'Loading salesmen...' : 'Select a salesman'" :options="salesManOptions"
-            :error="errors.sales_man" :disabled="loadingSalesmen" />
+            :error="errors.sales_man" :disabled="loadingSalesmen || !submitUrl" />
           <UiInput v-model="website" name="website" label="Website" placeholder="https://example.com"
             :error="errors.website" />
           <UiInput v-model="address" name="address" label="Address" placeholder="123 Main St" :error="errors.address" />
@@ -81,7 +81,8 @@
       </div>
 
       <div class="pt-4">
-        <UiButton rounded type="submit" :loading="isSubmitting" fullWidth>
+        <UiButton rounded type="submit" :loading="isSubmitting || externalLoading"
+          :disabled="isSubmitting || externalLoading" fullWidth>
           {{ submitUrl ? "Register" : "Save changes" }}
         </UiButton>
       </div>
@@ -104,6 +105,7 @@ const props = defineProps({
   },
   submitUrl: { type: String, default: "" },
   successRedirect: { type: String, default: "" },
+  externalLoading: { type: Boolean, default: false },
 });
 const emit = defineEmits(["submitted", "success", "error"]);
 
@@ -126,18 +128,16 @@ const salesManOptions = ref<Array<{ label: string; value: string }>>([]);
 const loadingSalesmen = ref(false);
 
 onMounted(async () => {
-  if (props.submitUrl) {
-    loadingSalesmen.value = true;
-    try {
-      const res = await $fetch<{ success: boolean; data: Array<{ id: number; label: string; value: string }> }>('/api/salesmen');
-      if (res.success) {
-        salesManOptions.value = res.data.map((s) => ({ label: s.label, value: s.value }));
-      }
-    } catch (e) {
-      console.error('Failed to load salesmen', e);
-    } finally {
-      loadingSalesmen.value = false;
+  loadingSalesmen.value = true;
+  try {
+    const res = await $fetch<{ success: boolean; data: Array<{ id: number; label: string; value: string }> }>('/api/salesmen');
+    if (res.success) {
+      salesManOptions.value = res.data.map((s) => ({ label: s.label, value: s.value }));
     }
+  } catch (e) {
+    console.error('Failed to load salesmen', e);
+  } finally {
+    loadingSalesmen.value = false;
   }
 });
 

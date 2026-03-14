@@ -8,7 +8,7 @@
       @update:searchOrderNumber="orderNumber = $event" @update:searchOrderName="orderName = $event"
       @update:selectedDateRange="dateRange = $event" @update:searchCustomerName="customerName = $event"
       @paginate="(nextPage) => (currentPage = nextPage)"
-      @row-click="$router.push(`/quotes/${$event.row.id}?type=${$event.row.q_type}`)" />
+      @row-click="$router.push(`/quotes/${$event.row.id}?type=${($event.row as any).original_q_type}`)" />
   </div>
 </template>
 
@@ -48,7 +48,7 @@ const params = computed(() => ({
 
 const debounceParams: Ref<QueryParams> = ref(useDebounce(params, 500));
 
-const { data, pending, error, refresh } = useFetch<OrderResponse>("/api/quotes", {
+const { data, pending, error, refresh } = await useFetch<OrderResponse>("/api/quotes", {
   params: debounceParams,
   keepalive: true,
   lazy: true,

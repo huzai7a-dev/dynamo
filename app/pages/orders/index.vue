@@ -39,7 +39,7 @@ const params = computed(() => ({
 
 const debounceParams: Ref<QueryParams> = ref(useDebounce(params, 500));
 
-const { data, pending, error, refresh } = useFetch<OrderResponse>("/api/orders", {
+const { data, pending, error, refresh } = await useFetch<OrderResponse>("/api/orders", {
   params: debounceParams,
   // keepalive: true,
   // lazy: true,
