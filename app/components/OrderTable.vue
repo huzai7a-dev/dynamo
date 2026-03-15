@@ -42,6 +42,10 @@
             </span>
           </template>
 
+          <template #column-order_name="{ row }">
+            {{ row?.is_from_quote ? `${row.order_name} (QR-${row?.from_quote_id})` : row.order_name }}
+          </template>
+
           <template #column-convert_from_quote="{ row }">
             <span class="text-primary font-semibold">{{
               row.convert_from_quote

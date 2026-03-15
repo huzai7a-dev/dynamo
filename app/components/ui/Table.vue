@@ -46,7 +46,7 @@
         <tr>
           <th v-for="column in columns" :key="column.key" class="px-4 py-2 cursor-pointer"
             @click="sortData(column.key)">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-center">
               <span>{{ column.label }}</span>
               <!-- Sort icon -->
               <svg v-if="sortBy === column.key" class="w-4 h-4 ml-2" :class="sortOrder === 'asc' ? 'rotate-180' : ''"
@@ -237,7 +237,7 @@ table {
 th,
 td {
   padding: 0.75rem;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid #e5e7eb;
 }
 

@@ -1,7 +1,7 @@
 <template>
   <div class="bg-card text-card-foreground shadow-md p-8 max-w-6xl mx-auto mt-10 border space-y-10">
     <h1 class="text-3xl font-semibold" v-if="submitUrl">Create an Account</h1>
-    <h1 class="text-3xl font-semibold bg-primary text-white px-4 py-2" v-else>Edit Profile</h1>
+    <h1 class="text-3xl font-semibold bg-primary text-white px-4 py-2 text-center" v-else>Edit Profile</h1>
 
     <form @submit.prevent="onSubmit" class="space-y-8">
       <!-- Account Section -->

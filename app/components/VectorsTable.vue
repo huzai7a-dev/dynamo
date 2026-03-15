@@ -30,6 +30,10 @@
             {{ `VR-${row.id}` }}
           </template>
 
+          <template #column-vector_name="{ row }">
+            {{ row?.is_from_quote ? `${row.vector_name} (QR-${row?.from_quote_id})` : row.vector_name }}
+          </template>
+
           <template #column-status="{ row }">
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
               :class="getOrderStatusBadgeClass((row as TableOrders).status)">
