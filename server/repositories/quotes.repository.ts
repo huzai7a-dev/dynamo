@@ -150,6 +150,11 @@ class QuotesRepository {
       // Start Transaction
       await this.db`BEGIN`;
 
+      // Normalize numeric-like fields: Postgres numeric/int columns can't accept empty string ("")
+      const width = quote.quote_data.width;
+      const height = quote.quote_data.height;
+      const numColors = quote.quote_data.numColors;
+
       // 2. Insert into Orders (Mapping quote_data to columns)
       const newOrder = await this.db`
       INSERT INTO public.orders (
@@ -164,13 +169,13 @@ class QuotesRepository {
         ${quote.user_id},
         ${quote.quote_data.fabric}, 
         ${quote.quote_data.placement},
-        ${quote.quote_data.width},
-        ${quote.quote_data.height},
+        ${width === '' || width === undefined || width === null ? null : width},
+        ${height === '' || height === undefined || height === null ? null : height},
         ${quote.quote_data.requiredFormat},
         ${quote.estimatedPrice || 0}, 
         ${quote.quote_data.rush},
         ${quote.quote_data.blending},
-        ${quote.quote_data.numColors},
+        ${numColors === '' || numColors === undefined || numColors === null ? null : numColors},
         ${quote.id}, 
         true,
         ${OrderStatus.IN_PROGRESS}
@@ -219,6 +224,9 @@ class QuotesRepository {
     try {
       await this.db`BEGIN`;
 
+      // Normalize numeric-like field for vectors as well
+      const numColors = quote.quote_data.numColors;
+
       // 2. Insert into Vectors
       const newVector = await this.db`
       INSERT INTO public.vectors (
@@ -235,7 +243,7 @@ class QuotesRepository {
         ${quote.quote_data.requiredFormat},
         ${quote.quote_data.blending || 'No'},
         ${quote.quote_data.rush || 'No'},
-        ${quote.quote_data.numColors},
+        ${numColors === '' || numColors === undefined || numColors === null ? null : numColors},
         ${quote.estimated_price || 0}, 
         ${quote.id}, 
         true,
