@@ -1,11 +1,10 @@
 <template>
   <button :class="[
-    'inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
+    'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
     sizeClass,
     variantClass,
     {
       'w-full': fullWidth,
-      'rounded-full': rounded,
       'opacity-50 cursor-not-allowed': disabled || loading,
       'pointer-events-none': loading,
     }

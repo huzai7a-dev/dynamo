@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-x-auto relative">
+  <div class="overflow-x-auto relative rounded-lg border-2 border-primary overflow-hidden pb-2">
     <!-- Status States: Loading, Error, Empty -->
     <div v-if="loading && data.length === 0"
       class="min-h-[400px] flex flex-col items-center justify-center p-12 text-center animate-in fade-in duration-500">
@@ -38,19 +38,20 @@
     </div>
 
     <table v-else :class="[
-      'min-w-full table-auto border-collapse text-sm',
+      'min-w-full table-auto border-collapse text-sm font-sans',
       loading ? 'opacity-40 pointer-events-none transition-opacity duration-300' : 'transition-opacity duration-300',
     ]">
       <!-- Table header -->
-      <thead class="bg-primary text-white sticky top-0 z-10">
+      <thead class="bg-primary sticky top-0 z-10">
         <tr>
-          <th v-for="column in columns" :key="column.key" class="px-4 py-2 cursor-pointer"
+          <th v-for="column in columns" :key="column.key"
+            class="px-5 py-3 text-left text-xs font-semibold text-white uppercase tracking-widest cursor-pointer select-none"
             @click="sortData(column.key)">
-            <div class="flex items-center justify-center">
+            <div class="flex items-center gap-1">
               <span>{{ column.label }}</span>
-              <!-- Sort icon -->
-              <svg v-if="sortBy === column.key" class="w-4 h-4 ml-2" :class="sortOrder === 'asc' ? 'rotate-180' : ''"
-                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg v-if="sortBy === column.key" class="w-3 h-3 text-white/60"
+                :class="sortOrder === 'asc' ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
             </div>
@@ -61,11 +62,12 @@
       <!-- Table body -->
       <tbody>
         <tr v-if="data.length === 0 && !loading">
-          <td colspan="columns.length" class="text-center py-10 text-muted">No data available</td>
+          <td :colspan="columns.length" class="text-center py-10 text-gray-400 text-sm">No data available</td>
         </tr>
-        <tr v-for="(row, index) in data" :key="index" class="border-t cursor-pointer"
+        <tr v-for="(row, index) in data" :key="index"
+          class="bg-white border-b border-primary-light/30 last:border-b-0 cursor-pointer hover:bg-primary-light/10 transition-colors duration-150"
           @click="emit('rowClick', { row, index })">
-          <td v-for="column in columns" :key="column.key" class="px-4 py-2">
+          <td v-for="column in columns" :key="column.key" class="px-5 py-4 text-sm text-gray-700">
             <!-- Slot for custom content in specific columns -->
             <template v-if="$slots[`column-${column.key}`]">
               <slot :name="`column-${column.key}`" :row="row" :column="column" :index="index" />
@@ -79,16 +81,16 @@
     </table>
 
     <!-- Pagination -->
-    <div v-if="pagination && !infiniteScroll" class="flex justify-between items-center mt-4">
+    <div v-if="pagination && !infiniteScroll" class="flex justify-between items-center mt-5 px-2">
       <button :disabled="pagination.currentPage <= 1" @click="changePage(pagination.currentPage - 1)"
-        class="px-4 py-2 text-white bg-primary rounded disabled:opacity-50">
+        class="px-4 py-1.5 text-sm font-semibold rounded-md border border-gray-200 text-gray-600 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition font-sans">
         Previous
       </button>
-      <span class="text-sm">
+      <span class="text-sm text-gray-500 font-sans">
         Page {{ pagination.currentPage }} of {{ pagination.totalPage }}
       </span>
       <button :disabled="pagination.currentPage >= pagination.totalPage" @click="changePage(pagination.currentPage + 1)"
-        class="px-4 py-2 text-white bg-primary rounded disabled:opacity-50">
+        class="px-4 py-1.5 text-sm font-semibold rounded-md bg-primary text-white hover:bg-primary-dark disabled:opacity-40 disabled:cursor-not-allowed transition font-sans">
         Next
       </button>
     </div>
@@ -232,24 +234,5 @@ table {
   width: 100%;
   border-spacing: 0;
   border-collapse: collapse;
-}
-
-th,
-td {
-  padding: 0.75rem;
-  text-align: center;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-th {
-  background-color: #008080;
-}
-
-tbody tr:hover {
-  background-color: #f3f4f6;
-}
-
-button:disabled {
-  cursor: not-allowed;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen w-full flex bg-gray-100 dark:bg-gray-900 overflow-hidden">
+  <div class="h-screen w-full flex overflow-hidden" style="background: linear-gradient(135deg, #f0f9f9 0%, #e8f5f5 50%, #f5fafa 100%)">
     <LayoutPortalSideNav />
 
     <div class="flex-1 flex flex-col">

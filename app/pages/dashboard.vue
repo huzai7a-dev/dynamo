@@ -1,7 +1,5 @@
 <template>
-  <div class="p-6 space-y-6">
-    <component :is="dashboard[(user as any)?.role as ROLE]" />
-  </div>
+  <component :is="dashboard[(user as any)?.role as ROLE]" />
 </template>
 
 <script setup lang="ts">

@@ -98,7 +98,14 @@ const iconMap = {
   Search: () => import('lucide-vue-next').then(m => m.Search),
   AlertCircle: () => import('lucide-vue-next').then(m => m.AlertCircle),
   Calendar: () => import('lucide-vue-next').then(m => m.Calendar),
+  TrendingUp: () => import('lucide-vue-next').then(m => m.TrendingUp),
+  PieChart: () => import('lucide-vue-next').then(m => m.PieChart),
+  Sparkles: () => import('lucide-vue-next').then(m => m.Sparkles),
+  Filter: () => import('lucide-vue-next').then(m => m.Filter),
   Home: () => import('lucide-vue-next').then(m => m.Home),
+  MapPin: () => import('lucide-vue-next').then(m => m.MapPin),
+  Globe: () => import('lucide-vue-next').then(m => m.Globe),
+  Hash: () => import('lucide-vue-next').then(m => m.Hash),
 }
 
 export type IconName = keyof typeof iconMap

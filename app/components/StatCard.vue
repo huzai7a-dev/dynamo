@@ -1,28 +1,33 @@
 <template>
-    <div class="bg-white shadow-lg rounded-2xl p-5 flex items-center space-x-4 transition hover:shadow-xl">
-      <!-- Icon -->
-      <div class="bg-primary-light p-3 rounded-full">
-        <Icon class=" text-primary" :name="icon"  />
-      </div>
-  
-      <!-- Text content -->
-      <div class="flex flex-col">
-        <span class="text-sm text-gray-500 font-medium">{{ label }}</span>
-        <span class="text-xl font-semibold text-gray-800">{{ value }}</span>
+  <div class="relative flex flex-col justify-between rounded-lg p-5 min-w-[150px] h-[120px] overflow-hidden" :class="gradient">
+    <!-- Top row: label + icon -->
+    <div class="flex items-start justify-between">
+      <span class="text-[10px] font-bold tracking-widest uppercase text-white/80 font-sans">{{ label }}</span>
+      <div class="flex items-center justify-center w-9 h-9 rounded-icon bg-white/20 shrink-0">
+        <Icon class="text-white text-lg" :name="icon" />
       </div>
     </div>
-  </template>
+
+    <!-- Value -->
+    <span class="text-3xl font-extrabold text-white font-sans leading-none">{{ value }}</span>
+
+    <!-- Bottom divider -->
+    <div class="absolute bottom-3 left-4 right-4 h-px bg-white/30 rounded-full" />
+  </div>
+</template>
   
 <script setup lang="ts">
 import Icon from './Icon.vue';
 
-    interface Props {
-        label: string,
-        value: string | number,
-        icon: string
-    }
+interface Props {
+  label: string;
+  value: string | number;
+  icon: string;
+  gradient?: string;
+}
 
-    defineProps<Props>()
-
+withDefaults(defineProps<Props>(), {
+  gradient: 'bg-gradient-card-dark',
+});
 </script>
   

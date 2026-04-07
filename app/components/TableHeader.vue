@@ -1,34 +1,67 @@
 <template>
-  <div class="p-6 border-b border-gray-100">
-    <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-end justify-between">
+  <div class="px-5 pt-5 pb-4 space-y-3">
+
+    <!-- Header: icon + title + description -->
+    <div class="space-y-0.5">
+      <div class="flex items-center gap-2">
+        <Icon name="Filter" class="text-primary w-5 h-5" />
+        <h2 class="text-xl font-extrabold text-primary-dark font-sans leading-tight">Search &amp; Filters</h2>
+      </div>
+      <p class="text-sm text-muted font-sans pl-7">{{ description }}</p>
+    </div>
+
+    <!-- Filters Row -->
+    <div class="flex flex-col lg:flex-row gap-3 items-start lg:items-center justify-between">
       <!-- Search Fields -->
-      <div class="flex flex-col sm:flex-row gap-4 flex-1">
-        <!-- Order Number Search -->
+      <div class="flex flex-col sm:flex-row gap-3 flex-1">
+
+        <!-- First search -->
+        <div class="flex-1 min-w-0 flex items-center gap-2 border border-gray-200 rounded-md px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary/40 transition">
+          <Icon name="Search" class="w-4 h-4 text-gray-400 shrink-0" />
+          <input
+            :value="searchOrderNumber"
+            @input="$emit('update:searchOrderNumber', ($event.target as HTMLInputElement).value)"
+            :placeholder="firstPlaceholder || `${title} number...`"
+            class="flex-1 text-sm text-gray-700 placeholder-gray-400 bg-transparent outline-none font-sans"
+          />
+        </div>
+
+        <!-- Second search -->
+        <div class="flex-1 min-w-0 flex items-center gap-2 border border-gray-200 rounded-md px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary/40 transition">
+          <Icon name="Search" class="w-4 h-4 text-gray-400 shrink-0" />
+          <input
+            :value="searchOrderName"
+            @input="$emit('update:searchOrderName', ($event.target as HTMLInputElement).value)"
+            :placeholder="secondPlaceholder || `${title} name...`"
+            class="flex-1 text-sm text-gray-700 placeholder-gray-400 bg-transparent outline-none font-sans"
+          />
+        </div>
+
+        <!-- Customer Name (Admin Only) -->
+        <div v-if="isAdmin" class="flex-1 min-w-0 flex items-center gap-2 border border-gray-200 rounded-md px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary/40 transition">
+          <Icon name="Search" class="w-4 h-4 text-gray-400 shrink-0" />
+          <input
+            :value="searchCustomerName"
+            @input="$emit('update:searchCustomerName', ($event.target as HTMLInputElement).value)"
+            placeholder="Customer name..."
+            class="flex-1 text-sm text-gray-700 placeholder-gray-400 bg-transparent outline-none font-sans"
+          />
+        </div>
+
+        <!-- Date Range -->
         <div class="flex-1 min-w-0">
-          <UiInput :model-value="searchOrderNumber" @update:modelValue="$emit('update:searchOrderNumber', $event)"
-            :label="`${title} ${firstPlaceholder ? getLastWord(firstPlaceholder) : ''}`"
-            :placeholder="firstPlaceholder || `Search by ${title} number...`" size="md" />
+          <UiDateRangeSelect
+            :model-value="selectedDateRange"
+            @update:modelValue="$emit('update:selectedDateRange', $event)"
+            placeholder="Select date"
+            size="md"
+          />
         </div>
-        <!-- Order Name Search -->
-        <div class="flex-1 min-w-0">
-          <UiInput :model-value="searchOrderName" @update:modelValue="$emit('update:searchOrderName', $event)"
-            :label="`${title} ${secondPlaceholder ? getLastWord(secondPlaceholder) : ''}`"
-            :placeholder="secondPlaceholder || `Search by ${title} name...`" size="md" />
-        </div>
-        <!-- Customer Name Search (Admin Only) -->
-        <div v-if="isAdmin" class="flex-1 min-w-0">
-          <UiInput :model-value="searchCustomerName" @update:modelValue="$emit('update:searchCustomerName', $event)"
-            label="Customer Name" placeholder="Search by customer name..." size="md" />
-        </div>
-        <!-- Date Range Select -->
-        <div class="flex-1 min-w-0">
-          <UiDateRangeSelect :model-value="selectedDateRange"
-            @update:modelValue="$emit('update:selectedDateRange', $event)" label="Date Range"
-            placeholder="Select date range..." size="md" />
-        </div>
+
         <slot name="extra" />
       </div>
-      <!-- Actions Slot or Default Create Button -->
+
+      <!-- Actions slot or default create button -->
       <div class="flex-shrink-0">
         <slot name="actions" v-if="$slots.actions" />
         <UiButton v-else variant="primary" size="md" icon="Plus" rounded @click="$emit('create-order')">
@@ -36,6 +69,7 @@
         </UiButton>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -54,6 +88,10 @@ defineProps({
   title: {
     type: String,
     default: 'Order'
+  },
+  description: {
+    type: String,
+    default: 'Filter by order number, vector number, quote number, or date'
   },
   createButtonLabel: {
     type: String,
