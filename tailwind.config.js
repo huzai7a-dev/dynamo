@@ -175,7 +175,7 @@ export default {
 				"gradient-card-green":
 					"linear-gradient(to bottom right, #299BA3, #16A249)",
 				"gradient-card-orange":
-					"linear-gradient(to bottom right, #FACC14, #FB923C)",
+					"linear-gradient(to bottom right, #F97316, #EF4444)",
 			},
 		},
 	},

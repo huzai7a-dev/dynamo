@@ -3,8 +3,8 @@ import { ROLE } from "~~/shared/constants";
 
 const ALL_ITEMS: Record<string, { title: string; icon: IconName; href: string }> = {
     DASHBOARD: {
-        title: 'Dashboard',
-        icon: 'ChartNoAxesCombined',
+        title: 'Overall Records',
+        icon: 'LayoutDashboard',
         href: '/dashboard',
     },
     ORDERS: {
@@ -51,6 +51,11 @@ const SALESMAN_NAV_ITEMS = [
     ALL_ITEMS.DASHBOARD,
 ];
 
+export const CREATE_NAV_ITEMS = [
+    { title: "Create Order", icon: "ShoppingCart", href: "/orders/create" },
+    { title: "Create Quote", icon: "Quote", href: "/quotes/create" },
+    { title: "Create Vector", icon: "PenTool", href: "/vectors/create" },
+];
 const NAV_ITEMS = {
     [ROLE.User]: USER_NAV_ITEMS,
     [ROLE.Admin]: ADMIN_NAV_ITEMS,

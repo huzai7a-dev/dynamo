@@ -83,7 +83,7 @@
     <!-- Pagination -->
     <div v-if="pagination && !infiniteScroll" class="flex justify-between items-center mt-5 px-2">
       <button :disabled="pagination.currentPage <= 1" @click="changePage(pagination.currentPage - 1)"
-        class="px-4 py-1.5 text-sm font-semibold rounded-md border border-gray-200 text-gray-600 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition font-sans">
+        class="px-4 py-1.5 text-sm font-semibold rounded-md border border-gray-200 text-gray-600 bg-primary text-white hover:bg-primary-dark disabled:opacity-40 disabled:cursor-not-allowed transition font-sans">
         Previous
       </button>
       <span class="text-sm text-gray-500 font-sans">

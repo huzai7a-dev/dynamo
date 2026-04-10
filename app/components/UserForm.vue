@@ -1,99 +1,99 @@
 <template>
-  <!-- Register mode: centered header + logo + scrollable full-width form -->
+  <!-- Register mode: centered header + logo + card form -->
   <div v-if="submitUrl" class="w-full flex flex-col items-center gap-5">
 
     <!-- Header -->
-    <div class="text-center space-y-3">
-      <h1 class="text-3xl font-bold text-gray-900">Create Account</h1>
+    <div class="text-center space-y-2">
+      <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Create Account</h1>
       <img src="/images/full-logo.png" alt="Dynamo Stitches" class="h-14 mx-auto object-contain" />
     </div>
 
-    <!-- Scrollable form -->
-    <form @submit.prevent="onSubmit" class="w-full space-y-4 px-12 overflow-y-auto max-h-[calc(100vh-220px)] pb-2">
+    <!-- Card -->
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-gray-100 px-8 py-8">
+      <form @submit.prevent="onSubmit" class="space-y-4 max-h-[calc(100vh-280px)] pb-2">
 
-      <!-- Row 1: Username | Password -->
-      <div class="grid grid-cols-2 gap-4">
-        <UiInput required v-model="user_name" name="user_name" label="Username"
-          placeholder="Username" icon-left="User" :error="errors.user_name" />
-        <UiInput required v-model="password" name="password" label="Password"
-          type="password" placeholder="Password" icon-left="Lock" :error="errors.password" />
-      </div>
+        <!-- Row 1: Username | Password -->
+        <div class="grid grid-cols-2 gap-4">
+          <UiInput required v-model="user_name" name="user_name" label="Username" placeholder="Username"
+            icon-left="User" :error="errors.user_name" />
+          <UiInput required v-model="password" name="password" label="Password" type="password" placeholder="Password"
+            icon-left="Lock" :error="errors.password" />
+        </div>
 
-      <!-- Row 2: Email | Invoice Email -->
-      <div class="grid grid-cols-2 gap-4">
-        <UiInput required v-model="primary_email" name="primary_email" label="Email"
-          placeholder="Email" icon-left="Mail" :error="errors.primary_email" />
-        <UiInput required v-model="invoice_email" name="invoice_email" label="Invoice Email"
-          placeholder="Invoice Email" icon-left="Mail" :error="errors.invoice_email" />
-      </div>
+        <!-- Row 2: Email | Invoice Email -->
+        <div class="grid grid-cols-2 gap-4">
+          <UiInput required v-model="primary_email" name="primary_email" label="Email" placeholder="Email"
+            icon-left="Mail" :error="errors.primary_email" />
+          <UiInput required v-model="invoice_email" name="invoice_email" label="Invoice Email"
+            placeholder="Invoice Email" icon-left="Mail" :error="errors.invoice_email" />
+        </div>
 
-      <!-- Row 3: Company Name | Contact Name | Phone -->
-      <div class="grid grid-cols-3 gap-4">
-        <UiInput required v-model="company_name" name="company_name" label="Company Name"
-          placeholder="Company" icon-left="Building2" :error="errors.company_name" />
-        <UiInput required v-model="contact_name" name="contact_name" label="Contact Name"
-          placeholder="Contact Name" icon-left="User" :error="errors.contact_name" />
-        <UiInput required v-model="phone_number" name="phone_number" label="Phone"
-          placeholder="Phone" icon-left="Phone" :error="errors.phone_number" />
-      </div>
+        <!-- Row 3: Company Name | Contact Name | Phone -->
+        <div class="grid grid-cols-3 gap-4">
+          <UiInput required v-model="company_name" name="company_name" label="Company Name" placeholder="Company"
+            icon-left="Building2" :error="errors.company_name" />
+          <UiInput required v-model="contact_name" name="contact_name" label="Contact Name" placeholder="Contact Name"
+            icon-left="User" :error="errors.contact_name" />
+          <UiInput required v-model="phone_number" name="phone_number" label="Phone" placeholder="Phone"
+            icon-left="Phone" :error="errors.phone_number" />
+        </div>
 
-      <!-- Row 4: Cell | Fax | State -->
-      <div class="grid grid-cols-3 gap-4">
-        <UiInput v-model="cell_number" name="cell_number" label="Cell"
-          placeholder="Cell" icon-left="Phone" :error="errors.cell_number" />
-        <UiInput v-model="fax_number" name="fax_number" label="Fax"
-          placeholder="Fax" icon-left="Phone" :error="errors.fax_number" />
-        <UiInput v-model="state" name="state" label="State"
-          placeholder="State" icon-left="MapPin" :error="errors.state" />
-      </div>
+        <!-- Row 4: Cell | Fax | State -->
+        <div class="grid grid-cols-3 gap-4">
+          <UiInput v-model="cell_number" name="cell_number" label="Cell" placeholder="Cell" icon-left="Phone"
+            :error="errors.cell_number" />
+          <UiInput v-model="fax_number" name="fax_number" label="Fax" placeholder="Fax" icon-left="Phone"
+            :error="errors.fax_number" />
+          <UiInput v-model="state" name="state" label="State" placeholder="State" icon-left="MapPin"
+            :error="errors.state" />
+        </div>
 
-      <!-- Row 5: City | Zip Code | Reference -->
-      <div class="grid grid-cols-3 gap-4">
-        <UiInput v-model="city" name="city" label="City"
-          placeholder="City" icon-left="MapPin" :error="errors.city" />
-        <UiInput v-model="zip_code" name="zip_code" label="Zip Code"
-          placeholder="Zip Code" icon-left="Hash" :error="errors.zip_code" />
-        <UiSelect v-model="reference" name="reference" label="Reference"
-          :options="referenceOptions" :error="errors.reference" />
-      </div>
+        <!-- Row 5: City | Zip Code | Reference -->
+        <div class="grid grid-cols-3 gap-4">
+          <UiInput v-model="city" name="city" label="City" placeholder="City" icon-left="MapPin" :error="errors.city" />
+          <UiInput v-model="zip_code" name="zip_code" label="Zip Code" placeholder="Zip Code" icon-left="Hash"
+            :error="errors.zip_code" />
+          <UiSelect v-model="reference" name="reference" label="Reference" :options="referenceOptions"
+            :error="errors.reference" />
+        </div>
 
-      <!-- Row 6: Address | Website -->
-      <div class="grid grid-cols-2 gap-4">
-        <UiInput v-model="address" name="address" label="Address"
-          placeholder="Address" icon-left="MapPin" :error="errors.address" />
-        <UiInput v-model="website" name="website" label="Website"
-          placeholder="Website" icon-left="Globe" :error="errors.website" />
-      </div>
+        <!-- Row 6: Address | Website -->
+        <div class="grid grid-cols-2 gap-4">
+          <UiInput v-model="address" name="address" label="Address" placeholder="Address" icon-left="MapPin"
+            :error="errors.address" />
+          <UiInput v-model="website" name="website" label="Website" placeholder="Website" icon-left="Globe"
+            :error="errors.website" />
+        </div>
 
-      <!-- Salesman (conditional) -->
-      <div v-if="reference === 'Salesman'">
-        <UiSelect v-model="sales_man" name="sales_man" label="Salesman"
-          :placeholder="loadingSalesmen ? 'Loading...' : 'Select a salesman'"
-          :options="salesManOptions" :error="errors.sales_man"
-          :disabled="loadingSalesmen" />
-      </div>
+        <!-- Salesman (conditional) -->
+        <div v-if="reference === 'Salesman'">
+          <UiSelect v-model="sales_man" name="sales_man" label="Salesman"
+            :placeholder="loadingSalesmen ? 'Loading...' : 'Select a salesman'" :options="salesManOptions"
+            :error="errors.sales_man" :disabled="loadingSalesmen" />
+        </div>
 
-      <!-- Terms checkbox -->
-      <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none pt-1">
-        <input type="checkbox" required class="w-4 h-4 rounded border-gray-300 accent-primary" />
-        I agree to the
-        <NuxtLink to="/terms" class="text-primary font-semibold hover:underline">Terms of Service</NuxtLink>
-        and
-        <NuxtLink to="/privacy" class="text-primary font-semibold hover:underline">Privacy Policy</NuxtLink>
-      </label>
+        <!-- Terms checkbox -->
+        <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none pt-1">
+          <input type="checkbox" required class="w-4 h-4 rounded border-gray-300 accent-primary" />
+          I agree to the
+          <NuxtLink to="/terms" class="text-primary font-semibold hover:underline">Terms of Service</NuxtLink>
+          and
+          <NuxtLink to="/privacy" class="text-primary font-semibold hover:underline">Privacy Policy</NuxtLink>
+        </label>
 
-      <!-- Submit -->
-      <UiButton type="submit" :loading="isSubmitting || externalLoading"
-        :disabled="isSubmitting || externalLoading" fullWidth size="lg">
-        Create Account
-      </UiButton>
+        <!-- Submit -->
+        <UiButton type="submit" :loading="isSubmitting || externalLoading" :disabled="isSubmitting || externalLoading"
+          fullWidth size="lg">
+          Create Account
+        </UiButton>
 
-      <!-- Sign in link -->
-      <p class="text-center text-sm text-gray-500 pb-2">
-        Already have an account?
-        <NuxtLink to="/login" class="font-semibold text-primary hover:underline ml-1">Sign in here</NuxtLink>
-      </p>
-    </form>
+        <!-- Sign in link -->
+        <p class="text-center text-sm text-gray-500 pt-1 pb-1">
+          Already have an account?
+          <NuxtLink to="/login" class="font-semibold text-primary hover:underline ml-1">Sign in here</NuxtLink>
+        </p>
+      </form>
+    </div>
   </div>
 
   <!-- Edit Profile mode: compact card layout (unchanged UX) -->
@@ -102,46 +102,44 @@
 
     <form @submit.prevent="onSubmit" class="space-y-8">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <UiInput required v-model="user_name" name="user_name" label="User Name"
-          placeholder="JohnDoe" icon-left="User" :error="errors.user_name" :disabled="true" />
+        <UiInput required v-model="user_name" name="user_name" label="User Name" placeholder="JohnDoe" icon-left="User"
+          :error="errors.user_name" :disabled="true" />
         <UiInput required v-model="primary_email" name="primary_email" label="Primary Email"
           placeholder="you@example.com" icon-left="Mail" :error="errors.primary_email" />
         <UiInput v-model="secondary_email" name="secondary_email" label="Secondary Email"
           placeholder="optional@example.com" icon-left="Mail" :error="errors.secondary_email" />
         <UiInput required v-model="invoice_email" name="invoice_email" label="Invoice Email"
           placeholder="billing@example.com" icon-left="Mail" :error="errors.invoice_email" />
-        <UiInput required v-model="company_name" name="company_name" label="Company Name"
-          placeholder="Acme Inc." icon-left="Building2" :error="errors.company_name" />
-        <UiInput required v-model="contact_name" name="contact_name" label="Contact Name"
-          placeholder="Jane Doe" icon-left="User" :error="errors.contact_name" />
-        <UiInput required v-model="phone_number" name="phone_number" label="Phone"
-          placeholder="+1 555-1234" icon-left="Phone" :error="errors.phone_number" />
-        <UiInput v-model="cell_number" name="cell_number" label="Cell"
-          placeholder="+1 555-6789" icon-left="Phone" :error="errors.cell_number" />
-        <UiInput v-model="fax_number" name="fax_number" label="Fax"
-          placeholder="+1 555-9876" icon-left="Phone" :error="errors.fax_number" />
-        <UiSelect v-model="country" name="country" label="Country"
-          placeholder="Select a country" :options="countryOptions" :error="errors.country" />
-        <UiInput v-model="city" name="city" label="City"
-          placeholder="New York" icon-left="MapPin" :error="errors.city" />
-        <UiInput v-model="zip_code" name="zip_code" label="Zip Code"
-          placeholder="10001" icon-left="Hash" :error="errors.zip_code" />
-        <UiInput v-model="state" name="state" label="State"
-          placeholder="NY" icon-left="MapPin" :error="errors.state" />
-        <UiSelect v-model="reference" name="reference" label="Reference"
-          :options="referenceOptions" :error="errors.reference" :disabled="true" />
+        <UiInput required v-model="company_name" name="company_name" label="Company Name" placeholder="Acme Inc."
+          icon-left="Building2" :error="errors.company_name" />
+        <UiInput required v-model="contact_name" name="contact_name" label="Contact Name" placeholder="Jane Doe"
+          icon-left="User" :error="errors.contact_name" />
+        <UiInput required v-model="phone_number" name="phone_number" label="Phone" placeholder="+1 555-1234"
+          icon-left="Phone" :error="errors.phone_number" />
+        <UiInput v-model="cell_number" name="cell_number" label="Cell" placeholder="+1 555-6789" icon-left="Phone"
+          :error="errors.cell_number" />
+        <UiInput v-model="fax_number" name="fax_number" label="Fax" placeholder="+1 555-9876" icon-left="Phone"
+          :error="errors.fax_number" />
+        <UiSelect v-model="country" name="country" label="Country" placeholder="Select a country"
+          :options="countryOptions" :error="errors.country" />
+        <UiInput v-model="city" name="city" label="City" placeholder="New York" icon-left="MapPin"
+          :error="errors.city" />
+        <UiInput v-model="zip_code" name="zip_code" label="Zip Code" placeholder="10001" icon-left="Hash"
+          :error="errors.zip_code" />
+        <UiInput v-model="state" name="state" label="State" placeholder="NY" icon-left="MapPin" :error="errors.state" />
+        <UiSelect v-model="reference" name="reference" label="Reference" :options="referenceOptions"
+          :error="errors.reference" :disabled="true" />
         <UiSelect v-if="reference === 'Salesman'" v-model="sales_man" name="sales_man" label="Salesman"
-          :placeholder="loadingSalesmen ? 'Loading salesmen...' : 'Select a salesman'"
-          :options="salesManOptions" :error="errors.sales_man"
-          :disabled="loadingSalesmen || true" />
-        <UiInput v-model="website" name="website" label="Website"
-          placeholder="https://example.com" icon-left="Globe" :error="errors.website" />
-        <UiInput v-model="address" name="address" label="Address"
-          placeholder="123 Main St" icon-left="MapPin" :error="errors.address" />
+          :placeholder="loadingSalesmen ? 'Loading salesmen...' : 'Select a salesman'" :options="salesManOptions"
+          :error="errors.sales_man" :disabled="loadingSalesmen || true" />
+        <UiInput v-model="website" name="website" label="Website" placeholder="https://example.com" icon-left="Globe"
+          :error="errors.website" />
+        <UiInput v-model="address" name="address" label="Address" placeholder="123 Main St" icon-left="MapPin"
+          :error="errors.address" />
       </div>
 
-      <UiButton type="submit" :loading="isSubmitting || externalLoading"
-        :disabled="isSubmitting || externalLoading" fullWidth size="lg">
+      <UiButton type="submit" :loading="isSubmitting || externalLoading" :disabled="isSubmitting || externalLoading"
+        fullWidth size="lg">
         Save Changes
       </UiButton>
     </form>

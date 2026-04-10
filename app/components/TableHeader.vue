@@ -16,58 +16,51 @@
       <div class="flex flex-col sm:flex-row gap-3 flex-1">
 
         <!-- First search -->
-        <div class="flex-1 min-w-0 flex items-center gap-2 border border-gray-200 rounded-md px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary/40 transition">
+        <div
+          class="flex-1 min-w-0 flex items-center gap-2 border border-gray-200 rounded-md px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary/40 transition">
           <Icon name="Search" class="w-4 h-4 text-gray-400 shrink-0" />
-          <input
-            :value="searchOrderNumber"
+          <input :value="searchOrderNumber"
             @input="$emit('update:searchOrderNumber', ($event.target as HTMLInputElement).value)"
             :placeholder="firstPlaceholder || `${title} number...`"
-            class="flex-1 text-sm text-gray-700 placeholder-gray-400 bg-transparent outline-none font-sans"
-          />
+            class="flex-1 text-sm text-gray-700 placeholder-gray-400 bg-transparent outline-none font-sans" />
         </div>
 
         <!-- Second search -->
-        <div class="flex-1 min-w-0 flex items-center gap-2 border border-gray-200 rounded-md px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary/40 transition">
+        <div
+          class="flex-1 min-w-0 flex items-center gap-2 border border-gray-200 rounded-md px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary/40 transition">
           <Icon name="Search" class="w-4 h-4 text-gray-400 shrink-0" />
-          <input
-            :value="searchOrderName"
+          <input :value="searchOrderName"
             @input="$emit('update:searchOrderName', ($event.target as HTMLInputElement).value)"
             :placeholder="secondPlaceholder || `${title} name...`"
-            class="flex-1 text-sm text-gray-700 placeholder-gray-400 bg-transparent outline-none font-sans"
-          />
+            class="flex-1 text-sm text-gray-700 placeholder-gray-400 bg-transparent outline-none font-sans" />
         </div>
 
         <!-- Customer Name (Admin Only) -->
-        <div v-if="isAdmin" class="flex-1 min-w-0 flex items-center gap-2 border border-gray-200 rounded-md px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary/40 transition">
+        <div v-if="isAdmin"
+          class="flex-1 min-w-0 flex items-center gap-2 border border-gray-200 rounded-md px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary/40 transition">
           <Icon name="Search" class="w-4 h-4 text-gray-400 shrink-0" />
-          <input
-            :value="searchCustomerName"
+          <input :value="searchCustomerName"
             @input="$emit('update:searchCustomerName', ($event.target as HTMLInputElement).value)"
             placeholder="Customer name..."
-            class="flex-1 text-sm text-gray-700 placeholder-gray-400 bg-transparent outline-none font-sans"
-          />
+            class="flex-1 text-sm text-gray-700 placeholder-gray-400 bg-transparent outline-none font-sans" />
         </div>
 
         <!-- Date Range -->
         <div class="flex-1 min-w-0">
-          <UiDateRangeSelect
-            :model-value="selectedDateRange"
-            @update:modelValue="$emit('update:selectedDateRange', $event)"
-            placeholder="Select date"
-            size="md"
-          />
+          <UiDateRangeSelect :model-value="selectedDateRange"
+            @update:modelValue="$emit('update:selectedDateRange', $event)" placeholder="Select date" size="md" />
         </div>
 
         <slot name="extra" />
       </div>
 
       <!-- Actions slot or default create button -->
-      <div class="flex-shrink-0">
+      <!-- <div class="flex-shrink-0">
         <slot name="actions" v-if="$slots.actions" />
         <UiButton v-else variant="primary" size="md" icon="Plus" rounded @click="$emit('create-order')">
           {{ createButtonLabel || 'Create Order' }}
         </UiButton>
-      </div>
+      </div> -->
     </div>
 
   </div>

@@ -1,43 +1,46 @@
 <template>
   <div class="w-full flex flex-col items-center gap-6">
 
-    <!-- Centered header -->
-    <div class="text-center space-y-3">
-      <h1 class="text-3xl font-bold text-gray-900">Login to Account</h1>
+    <!-- Centered header above card -->
+    <div class="text-center space-y-2">
+      <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Login to Account</h1>
       <img src="/images/full-logo.png" alt="Dynamo Stitches" class="h-14 mx-auto object-contain" />
     </div>
 
-    <!-- Form — full width -->
-    <form @submit.prevent="onSubmit" class="w-full space-y-5 px-12">
-      <UiInput required v-model="emailOrUsername" name="emailOrUsername" label="Email or Username"
-        placeholder="you@example.com or JohnDoe" icon-left="User" :error="errors.emailOrUsername" />
-      <UiInput required v-model="password" name="password" label="Password" type="password" placeholder="••••••••"
-        icon-left="Lock" :error="errors.password" />
+    <!-- Card -->
+    <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl border border-gray-100 px-8 py-8">
+      <form @submit.prevent="onSubmit" class="space-y-5">
+        <UiInput required v-model="emailOrUsername" name="emailOrUsername" label="Email or Username"
+          placeholder="you@example.com or JohnDoe" icon-left="User" :error="errors.emailOrUsername" />
+        <UiInput required v-model="password" name="password" label="Password" type="password" placeholder="••••••••"
+          icon-left="Lock" :error="errors.password" />
 
-      <!-- Remember me row -->
-      <div class="flex items-center justify-between text-sm">
-        <label class="flex items-center gap-2 text-gray-600 cursor-pointer select-none">
-          <input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-primary" />
-          Remember me
-        </label>
-        <NuxtLink to="/forgot-password" class="text-primary font-medium hover:underline">
-          Forgot password?
-        </NuxtLink>
-      </div>
+        <!-- Remember me row -->
+        <div class="flex items-center justify-between text-sm">
+          <label class="flex items-center gap-2 text-gray-600 cursor-pointer select-none">
+            <input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-primary" />
+            Remember me
+          </label>
+          <NuxtLink to="/forgot-password" class="text-primary font-medium hover:underline">
+            Forgot password?
+          </NuxtLink>
+        </div>
 
-      <!-- Submit -->
-      <UiButton type="submit" :loading="isSubmitting" fullWidth size="lg">
-        Login
-      </UiButton>
+        <!-- Submit -->
+        <UiButton type="submit" :loading="isSubmitting" fullWidth size="lg">
+          Login
+        </UiButton>
 
-      <!-- Register -->
-      <p class="text-center text-sm text-gray-500">
-        Don't have an account?
-        <NuxtLink to="/register" class="font-semibold text-primary hover:underline ml-1">
-          Register here
-        </NuxtLink>
-      </p>
-    </form>
+        <!-- Register -->
+        <p class="text-center text-sm text-gray-500 pt-1">
+          Don't have an account?
+          <NuxtLink to="/register" class="font-semibold text-primary hover:underline ml-1">
+            Register here
+          </NuxtLink>
+        </p>
+      </form>
+    </div>
+
   </div>
 </template>
 

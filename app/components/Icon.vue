@@ -106,6 +106,7 @@ const iconMap = {
   MapPin: () => import('lucide-vue-next').then(m => m.MapPin),
   Globe: () => import('lucide-vue-next').then(m => m.Globe),
   Hash: () => import('lucide-vue-next').then(m => m.Hash),
+  LayoutDashboard: () => import('lucide-vue-next').then(m => m.LayoutDashboard),
 }
 
 export type IconName = keyof typeof iconMap

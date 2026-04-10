@@ -3,7 +3,8 @@
     <h3 v-if="title" class="text-2xl font-bold text-gray-900">{{ title }}</h3>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <TableHeader firstPlaceholder="Search by vector number" secondPlaceholder="Search by vector name"
+      <TableHeader description="Filter by vector number, vector name, and date range"
+        firstPlaceholder="Search by vector number" secondPlaceholder="Search by vector name"
         createButtonLabel="Place Vector" title="Vector" :searchOrderNumber="searchOrderNumber"
         :searchOrderName="searchOrderName" :selectedDateRange="selectedDateRange" :isAdmin="isAdmin"
         :searchCustomerName="searchCustomerName" @create-order="emit('create-order')" @update:searchOrderNumber="

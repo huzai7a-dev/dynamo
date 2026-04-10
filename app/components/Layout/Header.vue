@@ -1,16 +1,16 @@
 <template>
   <!-- Contact Info Bar (scrolls away) -->
   <HeaderTopBar />
-  
+
   <!-- Fixed Header (always visible) -->
-  <header  :class="[
+  <header :class="[
     'fixed w-full z-50 bg-[#033c39] shadow-md md:py-5 py-2 transition-all duration-300',
     'top-0',
     isScrolled ? 'md:top-0' : 'md:top-10'
   ]">
     <div class="container mx-auto flex items-center justify-between">
       <NuxtLink key="/" to="/">
-       <UiLogo class="text-2xl"/>
+        <UiLogo class="text-2xl" />
       </NuxtLink>
 
       <DesktopNav :nav-items="navItems" />
@@ -43,7 +43,7 @@ const handleScroll = () => {
   if (typeof window === 'undefined') {
     return;
   }
-  
+
   if (window.scrollY > 0) {
     isScrolled.value = true
   } else {

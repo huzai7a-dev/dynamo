@@ -7,6 +7,31 @@
 
     <!-- Navigation -->
     <nav v-if="navItems.length" class="flex-1 px-4 py-6 overflow-y-auto">
+      <p class="text-white/50 text-xs font-semibold uppercase tracking-wider mb-2">Actions</p>
+
+      <ul class="space-y-2">
+        <li v-for="item in CREATE_NAV_ITEMS" :key="item?.href">
+          <NuxtLink v-if="item" :to="item.href" :class="[
+            'flex items-center px-4 py-3 rounded-lg transition-all duration-200 group',
+            isActive(item.href)
+              ? 'bg-white/20 text-white shadow-sm'
+              : 'text-white/80 hover:bg-white/10 hover:text-white'
+          ]">
+            <Icon :name="item.icon" :class="[
+              'w-5 h-5 mr-3 flex-shrink-0',
+              isActive(item.href)
+                ? 'text-white'
+                : 'text-white/70 group-hover:text-white'
+            ]" />
+            <span :class="['text-sm', isActive(item.href) ? 'font-medium' : 'font-normal']">
+              {{ item.title }}
+            </span>
+
+          </NuxtLink>
+        </li>
+      </ul>
+      <p class="text-white/50 text-xs font-semibold uppercase tracking-wider mb-2 mt-4">Records</p>
+
       <ul class="space-y-2">
         <li v-for="item in navItems" :key="item?.href">
           <NuxtLink v-if="item" :to="item.href" :class="[
