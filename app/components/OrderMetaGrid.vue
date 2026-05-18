@@ -20,6 +20,7 @@ defineProps<{
     is_free: boolean;
     stitches: number;
     created_at: string;
+    instructions: string;
     updated_at: string;
   };
 }>();
@@ -30,10 +31,7 @@ defineProps<{
     <KeyValue label="PO Number" :value="order.po_number" />
     <KeyValue label="Height" :value="`${order.height_in}`" />
     <KeyValue label="Width" :value="`${order.width_in}`" />
-    <KeyValue
-      label="Required Format"
-      :value="order.required_format?.toUpperCase()"
-    />
+    <KeyValue label="Required Format" :value="order.required_format?.toUpperCase()" />
     <KeyValue label="Fabric" :value="order.fabric" />
     <KeyValue label="Placement" :value="order.placement" />
     <KeyValue label="# Colors" :value="order.num_colors?.toString()" />
@@ -41,20 +39,12 @@ defineProps<{
     <KeyValue label="Rush" :value="order.rush" />
     <KeyValue label="Required Stitch" :value="order.required_stitch" />
     <KeyValue label="Payment Status" :value="order.payment_status" />
-    <KeyValue
-      label="Price"
-      :value="order.price === '0.00' ? '-' : `$${order.price}`"
-    />
-    <KeyValue
-      label="Faceless"
-      :value="order.faceless === null ? '-' : order.faceless ? 'Yes' : 'No'"
-    />
-    <KeyValue
-      label="Last Updated"
-      :value="new Date(order.updated_at).toLocaleString()"
-    />
+    <KeyValue label="Price" :value="order.price === '0.00' ? '-' : `$${order.price}`" />
+    <KeyValue label="Faceless" :value="order.faceless === null ? '-' : order.faceless ? 'Yes' : 'No'" />
+    <KeyValue label="Last Updated" :value="new Date(order.updated_at).toLocaleString()" />
 
     <KeyValue label="Free Order" :value="order.is_free ? 'Yes' : 'No'" />
     <KeyValue label="Stitches Count" :value="order.stitches?.toString()" />
+    <KeyValue label="Instructions" :value="order.instructions" />
   </div>
 </template>

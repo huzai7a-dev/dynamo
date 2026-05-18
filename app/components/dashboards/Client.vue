@@ -19,7 +19,7 @@
             <StatCard icon="Rows3" label="Orders" :value="data?.orders ?? 0" gradient="bg-gradient-card-dark" />
             <StatCard icon="Quote" label="Quotes" :value="data?.quotes ?? 0" gradient="bg-gradient-card-teal" />
             <StatCard icon="PenTool" label="Vectors" :value="data?.vectors ?? 0" gradient="bg-gradient-card-green" />
-            <StatCard icon="DollarSign" label="Amount" :value="`$${data?.amount ?? 0}`"
+            <StatCard icon="DollarSign" label="Payable Amount" :value="`$${data?.amount ?? 0}`"
                 gradient="bg-gradient-card-orange" />
         </div>
 

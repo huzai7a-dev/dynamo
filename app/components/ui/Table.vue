@@ -45,9 +45,9 @@
       <thead class="bg-primary sticky top-0 z-10">
         <tr>
           <th v-for="column in columns" :key="column.key"
-            class="px-5 py-3 text-left text-xs font-semibold text-white uppercase tracking-widest cursor-pointer select-none"
+            class="px-5 py-3 text-center text-xs font-semibold text-white uppercase tracking-widest cursor-pointer select-none"
             @click="sortData(column.key)">
-            <div class="flex items-center gap-1">
+            <div class="flex items-center justify-center gap-1">
               <span>{{ column.label }}</span>
               <svg v-if="sortBy === column.key" class="w-3 h-3 text-white/60"
                 :class="sortOrder === 'asc' ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -67,7 +67,7 @@
         <tr v-for="(row, index) in data" :key="index"
           class="bg-white border-b border-primary-light/30 last:border-b-0 cursor-pointer hover:bg-primary-light/10 transition-colors duration-150"
           @click="emit('rowClick', { row, index })">
-          <td v-for="column in columns" :key="column.key" class="px-5 py-4 text-sm text-gray-700">
+          <td v-for="column in columns" :key="column.key" class="px-5 py-4 text-sm text-gray-700 text-center">
             <!-- Slot for custom content in specific columns -->
             <template v-if="$slots[`column-${column.key}`]">
               <slot :name="`column-${column.key}`" :row="row" :column="column" :index="index" />

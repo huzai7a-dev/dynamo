@@ -97,5 +97,22 @@ export default defineEventHandler(async (event) => {
       items
   `;
 
+    // Mark items as 'invoiced' so they no longer appear on the unpaid items page
+    if (orderIds.length > 0) {
+        await db`
+      UPDATE orders 
+      SET payment_status = 'invoiced', updated_at = NOW()
+      WHERE id = ANY(${orderIds}) AND user_id = ${userId}
+    `;
+    }
+
+    if (vectorIds.length > 0) {
+        await db`
+      UPDATE vectors 
+      SET payment_status = 'invoiced', updated_at = NOW()
+      WHERE id = ANY(${vectorIds}) AND user_id = ${userId}
+    `;
+    }
+
     return transaction;
 });

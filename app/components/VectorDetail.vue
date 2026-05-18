@@ -2,7 +2,16 @@
   <div class="min-h-screen bg-light-gray">
     <div class="container py-8">
       <!-- Header -->
-      <OrderHeader :order_name="vector?.vector_name" :po_number="vector?.po_number" :status="vector?.status" />
+      <OrderHeader :order_name="vector?.vector_name" :po_number="vector?.po_number" :status="vector?.status">
+        <template #actions>
+          <div class="space-y-2">
+            <OrderActions :isAdmin="isAdmin" :status="vector?.status"
+              @approve="updateVectorStatus(OrderStatus.IN_PROGRESS)" @reject="updateVectorStatus(OrderStatus.REJECTED)"
+              @deliver="showDeliveryModal = true" @cancel="updateVectorStatus(OrderStatus.CANCELLED)"
+              @edit="handleEditVector" />
+          </div>
+        </template>
+      </OrderHeader>
 
       <!-- Main -->
       <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -32,8 +41,8 @@
               <div class="flex items-center justify-between">
                 <span class="text-sm text-charcoal/70">Payment</span>
                 <span class="text-sm font-medium" :class="vector?.payment_status === 'paid'
-                    ? 'text-emerald-700'
-                    : 'text-amber-700'
+                  ? 'text-emerald-700'
+                  : 'text-amber-700'
                   ">
                   {{ vector?.payment_status === "paid" ? "Paid" : "Pending" }}
                 </span>
@@ -51,12 +60,12 @@
             </div>
           </div>
 
-          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <!-- <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="mb-4 text-lg font-semibold text-secondary">Notes</h2>
             <InstructionBox :instructions="vector?.instructions" />
-          </div>
+          </div> -->
 
-          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <!-- <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h3 class="mb-3 text-base font-semibold text-secondary">Actions</h3>
             <slot name="actions">
               <OrderActions :isAdmin="isAdmin" :status="vector?.status"
@@ -64,7 +73,7 @@
                 @reject="updateVectorStatus(OrderStatus.REJECTED)" @deliver="showDeliveryModal = true"
                 @cancel="updateVectorStatus(OrderStatus.CANCELLED)" @edit="handleEditVector" />
             </slot>
-          </div>
+          </div> -->
         </aside>
       </div>
     </div>
@@ -141,10 +150,10 @@ const handleDeliveryComplete = async (deliveryData: DeliveryFormData) => {
     if (deliveryData.normal_delivery) fd.append("normal_delivery", deliveryData.normal_delivery);
     if (deliveryData.edit_or_change) fd.append("edit_or_change", deliveryData.edit_or_change);
     if (deliveryData.edit_in_stitch_file) fd.append("edit_in_stitch_file", deliveryData.edit_in_stitch_file);
-    if (deliveryData.comment_box_1) fd.append("comment_box_1", deliveryData.comment_box_1);
-    if (deliveryData.comment_box_2) fd.append("comment_box_2", deliveryData.comment_box_2);
-    if (deliveryData.comment_box_3) fd.append("comment_box_3", deliveryData.comment_box_3);
-    if (deliveryData.comment_box_4) fd.append("comment_box_4", deliveryData.comment_box_4);
+    // if (deliveryData.comment_box_1) fd.append("comment_box_1", deliveryData.comment_box_1);
+    // if (deliveryData.comment_box_2) fd.append("comment_box_2", deliveryData.comment_box_2);
+    // if (deliveryData.comment_box_3) fd.append("comment_box_3", deliveryData.comment_box_3);
+    // if (deliveryData.comment_box_4) fd.append("comment_box_4", deliveryData.comment_box_4);
 
     // Append attachments
     deliveryData.attachments.forEach(file => {

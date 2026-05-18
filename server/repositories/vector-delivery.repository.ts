@@ -18,7 +18,7 @@ export interface VectorDeliveryData {
 
 class VectorDeliveryRepository {
   private db: ReturnType<typeof useDb>;
-  
+
   constructor() {
     this.db = useDb();
   }
@@ -46,6 +46,12 @@ class VectorDeliveryRepository {
           ${deliveryData.price_criteria ? JSON.stringify(deliveryData.price_criteria) : null},
           ${deliveryData.customer_requirement ? JSON.stringify(deliveryData.customer_requirement) : null}
         )
+        RETURNING id
+      ),
+      update_vector_price AS (
+        UPDATE vectors 
+        SET price = ${deliveryData.total_price || 0}
+        WHERE id = ${deliveryData.vector_id}
         RETURNING id
       ),
       data AS (

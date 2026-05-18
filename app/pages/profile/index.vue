@@ -1,6 +1,9 @@
 <template>
-  <div class="profile-page max-w-6xl mx-auto px-6">
-    <div v-if="loading" class="text-gray-600 mt-10">Loading...</div>
+  <div class="profile-page max-w-6xl mx-auto px-6 py-10">
+    <div v-if="loading" class="flex flex-col items-center justify-center py-20 space-y-4">
+      <div class="h-12 w-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+      <p class="text-primary font-semibold animate-pulse">Loading Profile...</p>
+    </div>
     <div v-else>
       <!-- Read-only view -->
       <UserProfileView v-if="!isEditing" :profile="profile" @edit="isEditing = true" />
@@ -8,12 +11,10 @@
       <!-- Edit form -->
       <template v-else>
         <UserForm :initialValues="profile" :externalLoading="isSaving" @submitted="onFormSubmitted" />
-        <div class="max-w-6xl mx-auto mt-3 flex justify-end">
-          <UiButton @click="cancelEdit">Cancel</UiButton>
+        <div class="max-w-6xl mx-auto mt-6 flex justify-end">
+          <UiButton variant="outline" @click="cancelEdit">Cancel</UiButton>
         </div>
       </template>
-
-
     </div>
   </div>
 </template>

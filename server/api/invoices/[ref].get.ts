@@ -27,40 +27,61 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 404, message: 'Invoice not found' });
     }
 
-    // Fetch Items details
     // transaction.items is a JSON array [{ type: 'order', id: 1 }, ... ]
-    // We need to fetch details for these items to display them.
     const items = transaction.items as Array<{ type: 'order' | 'vector', id: number }>;
     const orderIds = items.filter(i => i.type === 'order').map(i => i.id);
     const vectorIds = items.filter(i => i.type === 'vector').map(i => i.id);
 
-    let orders = [];
-    let vectors = [];
+    let orders: any[] = [];
+    let vectors: any[] = [];
 
     if (orderIds.length > 0) {
         orders = await db`
-      SELECT id, order_name as "name", price, created_at as "date"
+      SELECT
+        id,
+        order_name as "name",
+        price::float as price,
+        created_at as "date"
       FROM orders
       WHERE id = ANY(${orderIds})
     `;
     }
 
     if (vectorIds.length > 0) {
+        // Cast id to int so Neon returns a JS number (bigserial is returned as a
+        // string by the driver by default, which breaks strict === comparison with
+        // the JS-number IDs stored in the payment_transactions JSONB items array).
         vectors = await db`
-      SELECT id, vector_name as "name", price, created_at as "date"
+      SELECT
+        id::int as id,
+        vector_name as "name",
+        price::float as price,
+        created_at as "date"
       FROM vectors
       WHERE id = ANY(${vectorIds})
     `;
     }
 
-    // Combine and format
+    // Combine and format.
+    // id::int in the SQL above guarantees vectors.id comes back as a JS number,
+    // so strict === works correctly for both orders (integer) and vectors (bigserial).
     const detailedItems = items.map(item => {
         if (item.type === 'order') {
             const order = orders.find(o => o.id === item.id);
-            return { ...item, ...order, name: order?.name || 'Unknown Order', price: order?.price || 0, date: order?.date };
+            return {
+                ...item,
+                name: order?.name || 'Unknown Order',
+                price: order?.price ?? 0,
+                date: order?.date || null,
+            };
         } else {
             const vector = vectors.find(v => v.id === item.id);
-            return { ...item, ...vector, name: vector?.name || 'Unknown Vector', price: vector?.price || 0, date: vector?.date };
+            return {
+                ...item,
+                name: vector?.name || 'Unknown Vector',
+                price: vector?.price ?? 0,
+                date: vector?.date || null,
+            };
         }
     });
 

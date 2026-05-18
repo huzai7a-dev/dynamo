@@ -3,65 +3,48 @@
   <OrderDetailSkeleton v-if="pending" />
 
   <!-- Error State -->
-  <UiErrorState
-    v-else-if="error"
-    title="Unable to Load Order"
+  <UiErrorState v-else-if="error" title="Unable to Load Order"
     message="We couldn't load the order details. This might be due to a network issue or the order might not exist."
-    :loading="pending"
-    back-route="/orders"
-    back-text="Back to Orders"
-    @retry="() => refresh()"
-  />
+    :loading="pending" back-route="/orders" back-text="Back to Orders" @retry="() => refresh()" />
 
   <!-- Success State -->
-  <div v-else-if="order" class="min-h-screen bg-light-gray">
+  <div v-else-if="order" class="min-h-screen">
     <div class="container py-8">
       <!-- Header -->
-      <OrderHeader
-        :order_name="order?.order_name"
-        :po_number="order?.po_number"
-        :status="order?.status"
-      />
+      <OrderHeader :order_name="order?.order_name" :po_number="order?.po_number" :status="order?.status">
+        <template #actions>
+          <OrderActions :isAdmin="isAdmin" :status="order?.status" @approve="updateOrderStatus(OrderStatus.IN_PROGRESS)"
+            @reject="updateOrderStatus(OrderStatus.REJECTED)" @deliver="showDeliveryModal = true"
+            @cancel="updateOrderStatus(OrderStatus.CANCELLED)" @edit="handleEditOrder" />
+        </template>
+      </OrderHeader>
 
       <!-- Main -->
       <div class="mt-8">
         <div class="lg:col-span-2 space-y-6">
-          <div
-            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-          >
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="mb-4 text-lg font-semibold text-secondary">
               Order Details
             </h2>
             <OrderMetaGrid :order="{ ...order, ...deliveryData }" />
-            <AttachmentsGallery
-              class="mt-6"
-              title="Attachments"
-              noAttachmentsMessage="No order attachments uploaded."
-              :attachments="order.order_attachments || []"
-            />
+            <AttachmentsGallery class="mt-6" title="Attachments" noAttachmentsMessage="No order attachments uploaded."
+              :attachments="order.order_attachments || []" />
           </div>
 
           <!-- Delivery Details -->
           <!-- <DeliveryDetails v-if="deliveryData" :deliveryData="deliveryData" /> -->
           <!-- Delivery Attachments -->
-          <div
-            v-if="
-              deliveryData &&
-              deliveryData.delivery_attachments &&
-              deliveryData.delivery_attachments.length > 0
-            "
-            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-          >
+          <div v-if="
+            deliveryData &&
+            deliveryData.delivery_attachments &&
+            deliveryData.delivery_attachments.length > 0
+          " class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div class="mb-6">
-              <h3
-                class="mb-3 text-sm font-medium text-charcoal/70 uppercase tracking-wide"
-              >
+              <h3 class="mb-3 text-sm font-medium text-charcoal/70 uppercase tracking-wide">
                 Delivery Attachments
               </h3>
-              <AttachmentsGallery
-                :attachments="deliveryData.delivery_attachments"
-                noAttachmentsMessage="No delivery attachments available."
-              />
+              <AttachmentsGallery :attachments="deliveryData.delivery_attachments"
+                noAttachmentsMessage="No delivery attachments available." />
             </div>
           </div>
         </div>
@@ -114,12 +97,8 @@
   </div>
 
   <!-- Delivery Modal -->
-  <DeliveryModal
-    v-model="showDeliveryModal"
-    :orderId="String(route.params.id)"
-    :orderDate="order?.created_at"
-    @on:deliver="handleDeliveryComplete"
-  />
+  <DeliveryModal v-model="showDeliveryModal" :orderId="String(route.params.id)" :orderDate="order?.created_at"
+    @on:deliver="handleDeliveryComplete" />
 </template>
 
 <script setup lang="ts">

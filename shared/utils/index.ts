@@ -1,72 +1,136 @@
+import crypto from 'crypto';
+
 export const formateDate = (date: string) => {
   const formatted = new Date(date).toLocaleString("en-US", {
     year: "numeric",
     month: "short",
     day: "2-digit",
-    // hour: "2-digit",
-    // minute: "2-digit",
-    // hour12: true,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
   });
 
   return formatted
 }
 
-
-import crypto from 'crypto';
+// ─────────────────────────────────────────────────────────────────────────────
+// BUY LINK SIGNATURE (uses Buy-Link Secret Word)
+// ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Validates the incoming IPN signature from 2Checkout
+ * Generates the HMAC-SHA256 signature for a 2Checkout dynamic buy link.
+ *
+ * Algorithm (from official docs):
+ *  1. Select signed params: currency, price, prod, qty, type (alphabetical order).
+ *     NOTE: `merchant` is explicitly excluded.
+ *  2. Serialize each value: prepend the raw string length to the value.
+ *     e.g. "usd" → "3usd", "115.00" → "6115.00"
+ *  3. Concatenate all serialized values.
+ *  4. HMAC-SHA256 using the Buy-Link Secret Word as the key.
  */
-export function validateTCOSignature(body: any, secretWord: string): boolean {
-  const receivedHash = body.HASH;
+export function generateBuyLinkSignature(
+  params: Record<string, string>,
+  secretWord: string
+): string {
+  // Alphabetical order — 'merchant' and other non-signed params should NOT be in 'params'
+  const orderedKeys = Object.keys(params).sort();
 
-  // 1. Remove the HASH field from the object to calculate the signature
-  const { HASH, ...data } = body;
+  const serialized = orderedKeys
+    .map(key => {
+      const val = params[key];
+      return `${val.length}${val}`;
+    })
+    .join('');
 
-  // 2. 2Checkout IPN hash calculation:
-  // For each field, you must concatenate: [length of value] + [value]
-  let result = "";
-  Object.keys(data).forEach((key) => {
-    const value = data[key];
-    // If the value is an array (common in IPNs), iterate through it
+  return crypto
+    .createHmac('sha256', secretWord)
+    .update(serialized)
+    .digest('hex');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// IPN VERIFICATION (uses Secret Key — different from Buy-Link Secret Word)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Validates the incoming IPN request from 2Checkout.
+ *
+ * Uses SIGNATURE_SHA2_256 (SHA-256). MD5 is deprecated by 2Checkout.
+ *
+ * Algorithm:
+ *  1. Collect all POST fields, excluding SIGNATURE_SHA2_256 and SIGNATURE_SHA3_256.
+ *  2. For each field value (sorted by key alphabetically), serialize: length+value.
+ *     Arrays are iterated and each element is serialized separately.
+ *  3. HMAC-SHA256 with the Secret Key.
+ *  4. Compare against SIGNATURE_SHA2_256 from the POST body.
+ */
+export function validateIPNSignature(body: Record<string, any>, secretKey: string): boolean {
+  const received = body.SIGNATURE_SHA2_256;
+  if (!received) return false;
+
+  // Exclude both signature fields
+  const excluded = new Set(['SIGNATURE_SHA2_256', 'SIGNATURE_SHA3_256']);
+
+  // Sort keys alphabetically
+  const sortedKeys = Object.keys(body)
+    .filter(k => !excluded.has(k))
+    .sort();
+
+  let serialized = '';
+  for (const key of sortedKeys) {
+    const value = body[key];
     if (Array.isArray(value)) {
-      value.forEach((val) => {
-        result += val.length + val;
-      });
+      for (const v of value) {
+        const str = String(v);
+        serialized += `${str.length}${str}`;
+      }
     } else {
-      result += String(value).length + String(value);
+      const str = String(value);
+      serialized += `${str.length}${str}`;
     }
-  });
+  }
 
-  const expectedHash = crypto
-    .createHmac('md5', secretWord) // Use 'sha256' if configured in your dashboard
-    .update(result)
+  const expected = crypto
+    .createHmac('sha256', secretKey)
+    .update(serialized)
     .digest('hex');
 
-  return expectedHash === receivedHash;
+  return expected === received;
 }
 
 /**
- * Generates the mandatory response hash to confirm receipt of IPN
+ * Generates the mandatory EPAYMENT read-receipt hash.
+ *
+ * 2Checkout requires this confirmation so it stops retrying the IPN.
+ * Format: EPAYMENT|{IPN_PID[0]}|{IPN_PNAME[0]}|{IPN_DATE}|{DATE_NOW}|{HASH}
+ *
+ * Uses SHA-256 (matching validateIPNSignature above).
  */
-export function generateResponseHash(body: any, secretWord: string): string {
-  // 2Checkout requires a specific confirmation string:
-  // IPN_PID (Product ID) + IPN_PNAME (Product Name) + IPN_DATE + DATE_NOW
-  // This is then hashed with the Secret Word.
-
-  const pid = body.IPN_PID[0];
-  const pname = body.IPN_PNAME[0];
+export function generateIPNResponseHash(body: Record<string, any>, secretKey: string): string {
+  const pid = Array.isArray(body.IPN_PID) ? body.IPN_PID[0] : body.IPN_PID;
+  const pname = Array.isArray(body.IPN_PNAME) ? body.IPN_PNAME[0] : body.IPN_PNAME;
   const ipnDate = body.IPN_DATE;
-  const dateNow = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+  const dateNow = new Date().toISOString().replace('T', ' ').replace(/\..+/, '');
 
-  const dataString =
-    pid.length + pid +
-    pname.length + pname +
-    ipnDate.length + ipnDate +
-    dateNow.length + dateNow;
+  const parts = [pid, pname, ipnDate, dateNow];
+  const dataString = parts.map(v => `${String(v).length}${v}`).join('');
 
   return crypto
-    .createHmac('md5', secretWord)
+    .createHmac('sha256', secretKey)
     .update(dataString)
     .digest('hex');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LEGACY EXPORTS (kept for backward compat, prefer the new functions above)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** @deprecated Use validateIPNSignature instead */
+export function validateTCOSignature(body: any, secretKey: string): boolean {
+  return validateIPNSignature(body, secretKey);
+}
+
+/** @deprecated Use generateIPNResponseHash instead */
+export function generateResponseHash(body: any, secretKey: string): string {
+  return generateIPNResponseHash(body, secretKey);
 }

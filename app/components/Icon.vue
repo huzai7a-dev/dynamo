@@ -107,6 +107,9 @@ const iconMap = {
   Globe: () => import('lucide-vue-next').then(m => m.Globe),
   Hash: () => import('lucide-vue-next').then(m => m.Hash),
   LayoutDashboard: () => import('lucide-vue-next').then(m => m.LayoutDashboard),
+  Copy: () => import('lucide-vue-next').then(m => m.Copy),
+  Check: () => import('lucide-vue-next').then(m => m.Check),
+  Paperclip: () => import('lucide-vue-next').then(m => m.Paperclip),
 }
 
 export type IconName = keyof typeof iconMap

@@ -1,7 +1,20 @@
 import type { IconName } from "~/components/Icon.vue";
 import { ROLE } from "~~/shared/constants";
 
-const ALL_ITEMS: Record<string, { title: string; icon: IconName; href: string }> = {
+interface NavChild {
+    title: string;
+    icon: IconName;
+    href: string;
+}
+
+interface NavItem {
+    title: string;
+    icon: IconName;
+    href: string;
+    children?: NavChild[];
+}
+
+const ALL_ITEMS: Record<string, NavItem> = {
     DASHBOARD: {
         title: 'Overall Records',
         icon: 'LayoutDashboard',
@@ -31,11 +44,16 @@ const ALL_ITEMS: Record<string, { title: string; icon: IconName; href: string }>
         title: "Invoices",
         icon: "ReceiptText",
         href: "/invoices",
+        children: [
+            { title: "Invoice",         icon: "FileText",    href: "/invoices" },
+            { title: "Unpaid Invoice",  icon: "AlertCircle", href: "/invoices/unpaid" },
+            { title: "Invoice History", icon: "History",     href: "/invoices/history" },
+        ],
     },
 }
 
 const USER_NAV_ITEMS = [
-    ALL_ITEMS.DASHBOARD,
+    // ALL_ITEMS.DASHBOARD,
     ALL_ITEMS.ORDERS,
     ALL_ITEMS.VECTORS,
     ALL_ITEMS.QUOTES,

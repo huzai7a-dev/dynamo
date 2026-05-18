@@ -18,12 +18,13 @@ export interface OrderDeliveryData {
 
 class OrderDeliveryRepository {
   private db: ReturnType<typeof useDb>;
-  
+
   constructor() {
     this.db = useDb();
   }
 
   async createDelivery(deliveryData: OrderDeliveryData, attachments: UploadedAsset[] = []) {
+    console.log("🚀 ~ OrderDeliveryRepository ~ createDelivery ~ deliveryData:", deliveryData, attachments)
     const rows = await this.db`
       WITH new_delivery AS (
         INSERT INTO order_deliveries (
@@ -46,6 +47,12 @@ class OrderDeliveryRepository {
           ${deliveryData.price_criteria ? JSON.stringify(deliveryData.price_criteria) : null},
           ${deliveryData.customer_requirement ? JSON.stringify(deliveryData.customer_requirement) : null}
         )
+        RETURNING id
+      ),
+      update_order_price AS (
+        UPDATE orders 
+        SET price = ${deliveryData.total_price || 0}
+        WHERE id = ${deliveryData.order_id}
         RETURNING id
       ),
       data AS (

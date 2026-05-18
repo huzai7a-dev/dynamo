@@ -1,110 +1,78 @@
 <template>
-  <div v-if="modelValue" class="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-4">
-    <div class="w-full max-w-4xl rounded-xl bg-white shadow-lg overflow-auto max-h-[90vh]">
-      <div class="flex items-center justify-between p-4 border-b">
-        <h3 class="text-lg font-semibold">Vector Details</h3>
-        <button class="p-2" @click="close">✕</button>
-      </div>
+  <transition name="fade">
+    <div v-if="modelValue" class="fixed inset-0 z-50 flex items-start justify-center p-6">
+      <div class="fixed inset-0 bg-black/40" @click="close"></div>
 
-      <div class="p-6">
-        <div v-if="pending" class="flex items-center justify-center py-12">
-          <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+      <div class="relative w-full max-w-5xl max-h-[90vh] overflow-auto rounded-2xl bg-white shadow-lg">
+        <div class="flex items-center justify-between border-b px-6 py-4">
+          <h3 class="text-lg font-semibold text-secondary">Vector Details</h3>
+          <button class="p-2 rounded hover:bg-slate-100" @click="close">
+            <Icon name="X" />
+          </button>
         </div>
 
-        <div v-else-if="error" class="text-center text-rose-600">
-          Failed to load vector details.
-          <div class="mt-4">
-            <button class="px-3 py-2 bg-primary text-white rounded" @click="() => refresh()">
-              Retry
-            </button>
+        <div class="p-6">
+          <div v-if="pending" class="flex items-center justify-center py-12">
+            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
           </div>
-        </div>
 
-        <div v-else-if="vector">
-          <OrderHeader :order_name="vector.vector_name" :po_number="vector.po_number" :status="vector.status" />
+          <UiErrorState v-else-if="error" title="Unable to Load Vector"
+            message="We couldn't load the vector details. This might be due to a network issue or the vector might not exist."
+            :loading="pending" back-route="/vectors" back-text="Back to Vectors" @retry="refresh" />
 
-          <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <div class="lg:col-span-2 space-y-6">
-              <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 class="mb-4 text-lg font-semibold text-secondary">
-                  Order Details
-                </h2>
-                <VectorMetaGrid :vector="vector" />
-                <AttachmentsGallery class="mt-6" title="Attachments"
-                  noAttachmentsMessage="No vector attachments uploaded."
-                  :attachments="vector.vector_attachments || []" />
+          <div v-else-if="vector" class="min-h-[40vh]">
+            <!-- Header -->
+            <OrderHeader :order_name="vector.vector_name" :po_number="vector.po_number" :status="vector.status"
+              :updated_at="vector.updated_at">
+              <template #actions>
+                <OrderActions size="compact" :isAdmin="isAdmin" :status="vector.status"
+                  @approve="updateVectorStatus(OrderStatus.IN_PROGRESS)"
+                  @reject="updateVectorStatus(OrderStatus.REJECTED)" @deliver="showDeliveryModal = true"
+                  @cancel="updateVectorStatus(OrderStatus.CANCELLED)" @edit="handleEditVector" />
+              </template>
+            </OrderHeader>
+
+            <div class="p-8 space-y-8 bg-slate-50/50">
+              <!-- Section: Vector Information -->
+              <div class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+                <div class="px-6 py-4 bg-primary/5 flex items-center gap-2 border-b border-slate-100">
+                  <Icon name="Info" :size="18" class="text-primary" />
+                  <h2 class="text-sm font-bold text-primary uppercase tracking-wider">Vector Information</h2>
+                </div>
+                <div class="p-6">
+                  <VectorMetaGrid :vector="vector" />
+                </div>
+              </div>
+
+              <!-- Section: Attachments -->
+              <div class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+                <div class="px-6 py-4 bg-amber-50 flex items-center gap-2 border-b border-slate-100">
+                  <Icon name="Paperclip" :size="18" class="text-amber-600" />
+                  <h2 class="text-sm font-bold text-amber-600 uppercase tracking-wider font-sans">Attachments</h2>
+                </div>
+                <div class="p-6">
+                  <AttachmentsGallery noAttachmentsMessage="No vector attachments uploaded."
+                    :attachments="vector.vector_attachments || []" />
+                </div>
               </div>
 
               <DeliveryDetails v-if="deliveryData" :deliveryData="deliveryData" />
             </div>
-
-            <aside class="space-y-6">
-              <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h3 class="mb-3 text-base font-semibold text-secondary">
-                  Summary
-                </h3>
-                <div class="space-y-3">
-                  <div class="flex items-center justify-between">
-                    <span class="text-sm text-charcoal/70">Status</span>
-                    <UiStatusBadge :status="vector.status" />
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-sm text-charcoal/70">Payment</span>
-                    <span class="text-sm font-medium" :class="vector.payment_status === 'paid'
-                      ? 'text-emerald-700'
-                      : 'text-amber-700'
-                      ">
-                      {{
-                        vector.payment_status === "paid" ? "Paid" : "Pending"
-                      }}
-                    </span>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-sm text-charcoal/70">Estimate</span>
-                    <span class="text-sm font-medium text-secondary">{{
-                      vector.price === "0.00"
-                        ? "To be quoted"
-                        : `$${vector.price}`
-                    }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 class="mb-4 text-lg font-semibold text-secondary">Notes</h2>
-                <InstructionBox :instructions="vector.instructions" />
-              </div>
-
-              <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h3 class="mb-3 text-base font-semibold text-secondary">
-                  Actions
-                </h3>
-                <OrderActions :isAdmin="isAdmin" :status="vector.status"
-                  @approve="updateVectorStatus(OrderStatus.IN_PROGRESS)"
-                  @reject="updateVectorStatus(OrderStatus.REJECTED)" @deliver="showDeliveryModal = true"
-                  @cancel="updateVectorStatus(OrderStatus.CANCELLED)" @edit="handleEditVector" />
-              </div>
-            </aside>
           </div>
         </div>
       </div>
 
-      <div class="flex items-center justify-end gap-2 p-4 border-t">
-        <button class="px-4 py-2 rounded bg-gray-100" @click="close">
-          Close
-        </button>
-      </div>
+      <!-- Delivery Modal inside detail modal -->
+      <DeliveryModal v-model="showDeliveryModal" :orderId="vectorId ? String(vectorId) : ''"
+        :orderDate="vector?.created_at || ''" @on:deliver="handleDeliveryComplete" />
     </div>
-
-    <!-- Delivery modal used inside detail modal -->
-    <DeliveryModal v-model="showDeliveryModal" :orderId="vectorId ? String(vectorId) : ''"
-      :orderDate="vector?.created_at || ''" @on:deliver="handleDeliveryComplete" />
-  </div>
+  </transition>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import type { IVector, VectorDelivery } from "~~/shared/types";
+import Icon from "./Icon.vue";
 import OrderHeader from "./OrderHeader.vue";
 import VectorMetaGrid from "./VectorMetaGrid.vue";
 import AttachmentsGallery from "./AttachmentsGallery.vue";
