@@ -68,25 +68,25 @@ export function validateIPNSignature(body: Record<string, any>, secretKey: strin
   const received = body.SIGNATURE_SHA2_256;
   if (!received) return false;
 
-  // Exclude both signature fields
-  const excluded = new Set(['SIGNATURE_SHA2_256', 'SIGNATURE_SHA3_256']);
+  // Exclude signature fields
+  const excluded = new Set(['HASH', 'SIGNATURE_SHA2_256', 'SIGNATURE_SHA3_256']);
 
-  // Sort keys alphabetically
-  const sortedKeys = Object.keys(body)
-    .filter(k => !excluded.has(k))
-    .sort();
-
+  // IMPORTANT: Maintain the order of the fields as they appear in the POST body.
+  // Do NOT sort alphabetically — that's only for buy-link signatures.
   let serialized = '';
-  for (const key of sortedKeys) {
+  for (const key of Object.keys(body)) {
+    if (excluded.has(key)) continue;
+
     const value = body[key];
     if (Array.isArray(value)) {
       for (const v of value) {
         const str = String(v);
-        serialized += `${str.length}${str}`;
+        // Use byte-length for proper UTF-8 handling (matches PHP strlen)
+        serialized += `${Buffer.byteLength(str, 'utf8')}${str}`;
       }
     } else {
       const str = String(value);
-      serialized += `${str.length}${str}`;
+      serialized += `${Buffer.byteLength(str, 'utf8')}${str}`;
     }
   }
 
