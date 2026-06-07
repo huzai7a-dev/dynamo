@@ -86,3 +86,20 @@ export const stitchOptions = [
   { label: 'Chain Stitch', value: 'Chain Stitch' },
   { label: 'Motif Stitch (different patterns)', value: 'Motif Stitch (different patterns)' }
 ]
+
+export const COMPANY = {
+  name: 'Dynamo Stitches',
+  tagline: 'EMBROIDERY. DIGITIZING. EXCELLENCE.',
+  email: 'accounts@dynamostitches.com',
+  orderEmail: 'order@dynamostitches.com',
+  phone: '+1 469-819-2874',
+  website: 'www.dynamostitches.com',
+  address: '[ Your Company Address Here ]',
+}
+
+export const PAYMENT_INFO = {
+  bankName: '[ Your Bank Name ]',
+  accountName: '[ Your Account Name ]',
+  accountNumber: '[ 1234567890 ]',
+  routingNumber: '[ 121000248 ]',
+}

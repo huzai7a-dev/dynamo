@@ -48,6 +48,7 @@
             class="px-5 py-3 text-center text-xs font-semibold text-white uppercase tracking-widest cursor-pointer select-none"
             @click="sortData(column.key)">
             <div class="flex items-center justify-center gap-1">
+              <Icon v-if="column.icon" :name="column.icon" class="w-3.5 h-3.5 text-white/70" />
               <span>{{ column.label }}</span>
               <svg v-if="sortBy === column.key" class="w-3 h-3 text-white/60"
                 :class="sortOrder === 'asc' ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -110,6 +111,7 @@ import Icon, { type IconName } from '../Icon.vue';
 interface Column {
   key: string;
   label: string;
+  icon?: string;
 }
 
 // Props to pass data and configuration

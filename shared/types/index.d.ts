@@ -155,3 +155,11 @@ export interface OrderResponse {
     pagination: Pagination;
   };
 }
+
+declare module '#auth-utils' {
+  interface User {
+    id: number;
+    email?: string;
+    role?: string;
+  }
+}

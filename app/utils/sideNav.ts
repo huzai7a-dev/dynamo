@@ -47,6 +47,7 @@ const ALL_ITEMS: Record<string, NavItem> = {
         children: [
             { title: "Invoice",         icon: "FileText",    href: "/invoices" },
             { title: "Unpaid Invoice",  icon: "AlertCircle", href: "/invoices/unpaid" },
+            { title: "Paid Invoices",   icon: "CheckCircle", href: "/invoices/paid" },
             { title: "Invoice History", icon: "History",     href: "/invoices/history" },
         ],
     },

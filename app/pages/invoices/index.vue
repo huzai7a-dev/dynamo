@@ -1,8 +1,16 @@
 <template>
   <div class="flex flex-col gap-6">
-    <!-- Header -->
-    <div class="flex shrink-0 justify-between items-center">
-      <h3 class="text-2xl font-black text-secondary tracking-tight">Invoice</h3>
+    <!-- Page Header -->
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+        <Icon name="FileText" class="w-6 h-6 text-primary" />
+      </div>
+      <div>
+        <h3 class="text-2xl font-black text-secondary tracking-tight">Invoice</h3>
+        <p class="text-sm text-charcoal/50 font-medium">
+          {{ allItems.length > 0 ? 'Review your invoice details below.' : 'Create and manage your invoices.' }}
+        </p>
+      </div>
     </div>
 
     <!-- Loading State -->
@@ -22,102 +30,184 @@
     <!-- Main Content -->
     <div v-else>
       <!-- Empty State -->
-      <div v-if="allItems.length === 0" class="flex items-center justify-center py-24">
-        <div class="bg-white rounded-[3rem] border border-slate-200 p-20 text-center shadow-xl max-w-lg animate-in zoom-in-95 duration-700">
-          <div class="bg-primary/10 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-10">
-            <Icon name="Check" class="w-12 h-12 text-primary" />
+      <InvoiceEmptyState
+        v-if="allItems.length === 0"
+        title="No Invoices Yet"
+        description="You haven't created any invoices yet. Get started by creating your first invoice."
+        action-label="Create New Invoice"
+        action-icon="FilePlus"
+        action-route="/orders"
+      />
+
+      <!-- Data State -->
+      <template v-else>
+        <!-- Total Payable Amount Card -->
+        <div class="bg-white rounded-2xl border border-primary/20 p-6 flex items-center justify-between mb-6 shadow-sm overflow-hidden">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <Icon name="CircleDollarSign" class="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <p class="text-sm font-medium text-charcoal/60">Total Payable Amount</p>
+              <p class="text-2xl font-black text-primary tracking-tight">${{ selectedTotal.toFixed(2) }}</p>
+            </div>
           </div>
-          <h3 class="text-3xl font-black text-secondary mb-4 italic tracking-tight">NO PENDING ITEMS</h3>
-          <p class="text-charcoal/50 font-medium leading-relaxed">
-            You're all caught up! There are no unpaid orders or vectors in your account at the moment.
-          </p>
+          <!-- Decorative Illustration -->
+          <div class="hidden sm:block relative">
+            <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Document stack -->
+              <rect x="20" y="8" width="60" height="50" rx="4" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/>
+              <rect x="25" y="4" width="60" height="50" rx="4" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/>
+              <rect x="30" y="0" width="60" height="50" rx="4" fill="white" stroke="#bbf7d0" stroke-width="1.5"/>
+              <!-- Document lines -->
+              <line x1="40" y1="14" x2="80" y2="14" stroke="#d1fae5" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="40" y1="22" x2="72" y2="22" stroke="#d1fae5" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="40" y1="30" x2="76" y2="30" stroke="#d1fae5" stroke-width="2.5" stroke-linecap="round"/>
+              <!-- Dollar circle -->
+              <circle cx="95" cy="55" r="20" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+              <text x="95" y="62" text-anchor="middle" fill="#16a34a" font-size="18" font-weight="bold">$</text>
+            </svg>
+          </div>
         </div>
-      </div>
 
-      <!-- Table -->
-      <div v-else class="overflow-x-auto rounded-lg border-2 border-primary overflow-hidden">
-        <table class="min-w-full table-auto border-collapse text-sm font-sans">
-          <!-- Header -->
-          <thead class="bg-primary">
-            <tr>
-              <th class="px-5 py-3 text-center text-xs font-semibold text-white uppercase tracking-widest">S#</th>
-              <th class="px-5 py-3 text-center text-xs font-semibold text-white uppercase tracking-widest">Number</th>
-              <th class="px-5 py-3 text-center text-xs font-semibold text-white uppercase tracking-widest">Date</th>
-              <th class="px-5 py-3 text-center text-xs font-semibold text-white uppercase tracking-widest">Design Name</th>
-              <th class="px-5 py-3 text-center text-xs font-semibold text-white uppercase tracking-widest">Price</th>
-              <th class="px-5 py-3 text-center text-xs font-semibold text-white uppercase tracking-widest">
-                <!-- Master checkbox -->
-                <input
-                  type="checkbox"
-                  :checked="allChecked"
-                  :indeterminate="someChecked && !allChecked"
-                  class="w-4 h-4 accent-white cursor-pointer"
-                  @change="toggleAll"
-                />
-              </th>
-              <th class="px-5 py-3 text-center text-xs font-semibold text-white uppercase tracking-widest">Price Status</th>
-            </tr>
-          </thead>
+        <!-- Invoice Table -->
+        <div class="overflow-x-auto rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
+          <table class="min-w-full table-auto border-collapse text-sm font-sans">
+            <!-- Header -->
+            <thead class="bg-white border-b border-slate-200">
+              <tr>
+                <th class="px-5 py-4 text-center text-xs font-bold text-charcoal/70 uppercase tracking-widest">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <Icon name="CirclePlus" class="w-3.5 h-3.5 text-primary/50" />
+                    <span>S#</span>
+                  </div>
+                </th>
+                <th class="px-5 py-4 text-center text-xs font-bold text-charcoal/70 uppercase tracking-widest">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <Icon name="FileText" class="w-3.5 h-3.5 text-primary/50" />
+                    <span>Number</span>
+                  </div>
+                </th>
+                <th class="px-5 py-4 text-center text-xs font-bold text-charcoal/70 uppercase tracking-widest">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <Icon name="Calendar" class="w-3.5 h-3.5 text-primary/50" />
+                    <span>Date</span>
+                  </div>
+                </th>
+                <th class="px-5 py-4 text-center text-xs font-bold text-charcoal/70 uppercase tracking-widest">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <Icon name="Tag" class="w-3.5 h-3.5 text-primary/50" />
+                    <span>Design Name</span>
+                  </div>
+                </th>
+                <th class="px-5 py-4 text-center text-xs font-bold text-charcoal/70 uppercase tracking-widest">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <Icon name="CircleDollarSign" class="w-3.5 h-3.5 text-primary/50" />
+                    <span>Price</span>
+                  </div>
+                </th>
+                <th class="px-5 py-4 text-center text-xs font-bold text-charcoal/70 uppercase tracking-widest">
+                  <!-- Master checkbox -->
+                  <input
+                    type="checkbox"
+                    :checked="allChecked"
+                    :indeterminate="someChecked && !allChecked"
+                    class="w-4 h-4 accent-primary cursor-pointer rounded"
+                    @change="toggleAll"
+                  />
+                </th>
+                <th class="px-5 py-4 text-center text-xs font-bold text-charcoal/70 uppercase tracking-widest">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <Icon name="ClipboardList" class="w-3.5 h-3.5 text-primary/50" />
+                    <span>Price Status</span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
 
-          <!-- Body -->
-          <tbody>
-            <tr
-              v-for="(item, index) in allItems"
-              :key="`${item.type}-${item.id}`"
-              class="bg-white border-b border-primary-light/30 last:border-b-0 hover:bg-primary-light/10 transition-colors duration-150"
-            >
-              <td class="px-5 py-4 text-center text-sm text-gray-500">{{ index + 1 }}</td>
-              <td class="px-5 py-4 text-center text-sm font-black text-secondary tracking-tight">
-                {{ item.type === 'order' ? 'OR' : 'VR' }}-{{ item.id }}
-              </td>
-              <td class="px-5 py-4 text-center text-xs text-gray-500">{{ formatDate(item.createdAt) }}</td>
-              <td class="px-5 py-4 text-center text-sm font-bold text-secondary">{{ item.name }}</td>
-              <td class="px-5 py-4 text-center text-sm font-black text-primary italic">
-                {{ item.price === '0.00' ? 'Free' : `$${Number(item.price).toFixed(2)}` }}
-              </td>
-              <td class="px-5 py-4 text-center">
-                <input
-                  type="checkbox"
-                  :checked="checkedIds.has(`${item.type}-${item.id}`)"
-                  class="w-4 h-4 accent-primary cursor-pointer"
-                  @change="toggleItem(item)"
-                />
-              </td>
-              <td class="px-5 py-4 text-center">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                  Payable
-                </span>
-              </td>
-            </tr>
+            <!-- Body -->
+            <tbody>
+              <tr
+                v-for="(item, index) in allItems"
+                :key="`${item.type}-${item.id}`"
+                class="bg-white border-b border-slate-100 last:border-b-0 hover:bg-primary/[0.02] transition-colors duration-150"
+              >
+                <!-- S# -->
+                <td class="px-5 py-4 text-center">
+                  <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold">
+                    {{ index + 1 }}
+                  </span>
+                </td>
+                <!-- Number -->
+                <td class="px-5 py-4 text-center text-sm font-black text-secondary tracking-tight">
+                  {{ item.type === 'order' ? 'OR' : 'VR' }}-{{ item.id }}
+                </td>
+                <!-- Date -->
+                <td class="px-5 py-4 text-center">
+                  <div class="text-sm text-charcoal/70">{{ formatDatePrimary(item.createdAt) }}</div>
+                  <div class="text-xs text-charcoal/40 mt-0.5">{{ formatDateSecondary(item.createdAt) }}</div>
+                </td>
+                <!-- Design Name -->
+                <td class="px-5 py-4 text-center text-sm font-bold text-secondary">{{ item.name }}</td>
+                <!-- Price -->
+                <td class="px-5 py-4 text-center text-sm font-black text-primary">
+                  {{ item.price === '0.00' ? 'Free' : `$${Number(item.price).toFixed(2)}` }}
+                </td>
+                <!-- Checkbox -->
+                <td class="px-5 py-4 text-center">
+                  <input
+                    type="checkbox"
+                    :checked="checkedIds.has(`${item.type}-${item.id}`)"
+                    class="w-4 h-4 accent-primary cursor-pointer rounded"
+                    @change="toggleItem(item)"
+                  />
+                </td>
+                <!-- Price Status -->
+                <td class="px-5 py-4 text-center">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    Payable
+                  </span>
+                </td>
+              </tr>
 
-            <!-- Total Row -->
-            <tr class="bg-slate-50 border-t-2 border-primary/20">
-              <td colspan="3" class="px-5 py-4"></td>
-              <td class="px-5 py-4 text-center text-sm font-black text-secondary uppercase tracking-wider">
-                Total Payable Amount
-              </td>
-              <td class="px-5 py-4 text-center text-base font-black text-primary italic">
-                ${{ selectedTotal.toFixed(2) }}
-              </td>
-              <td colspan="2" class="px-5 py-4"></td>
-            </tr>
-          </tbody>
-        </table>
+              <!-- Total Row -->
+              <tr class="bg-primary/[0.04] border-t border-slate-200">
+                <td colspan="3" class="px-5 py-4"></td>
+                <td class="px-5 py-4 text-center text-sm font-black text-secondary uppercase tracking-wider">
+                  Total Payable Amount
+                </td>
+                <td class="px-5 py-4 text-center text-base font-black text-primary">
+                  ${{ selectedTotal.toFixed(2) }}
+                </td>
+                <td colspan="2" class="px-5 py-4"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-        <!-- Generate Button Row -->
-        <div class="bg-white border-t border-primary/10 p-4 flex justify-center">
+        <!-- Footer CTA Section -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 shadow-sm">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <Icon name="FileText" class="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p class="text-sm font-bold text-secondary">Ready to proceed?</p>
+              <p class="text-xs text-charcoal/50 font-medium">Generate the invoice and continue with the payment process.</p>
+            </div>
+          </div>
           <button
             @click="generateInvoice"
             :disabled="creatingInvoice || checkedIds.size === 0"
-            class="px-10 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-lg uppercase tracking-widest text-sm flex items-center gap-3 shadow-lg shadow-emerald-600/20 transition-all hover:translate-y-[-1px] active:translate-y-[1px]"
+            class="px-8 py-3 bg-primary hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl text-sm flex items-center gap-2.5 shadow-lg shadow-primary/20 transition-all hover:translate-y-[-1px] active:translate-y-[1px] whitespace-nowrap"
           >
             <Icon v-if="creatingInvoice" name="RefreshCw" class="w-4 h-4 animate-spin" />
             <Icon v-else name="FileText" class="w-4 h-4" />
-            {{ creatingInvoice ? 'Generating...' : 'Generate Invoice for payment' }}
+            {{ creatingInvoice ? 'Generating...' : 'Generate Invoice for Payment' }}
           </button>
         </div>
-      </div>
+      </template>
     </div>
   </div>
 </template>
@@ -203,16 +293,23 @@ const generateInvoice = async () => {
   }
 };
 
-const formatDate = (dateString: string) => {
+// Date formatting — primary: "May 22, 2026", secondary: "03:32:24 AM"
+const formatDatePrimary = (dateString: string) => {
   if (!dateString) return 'N/A';
-  return new Date(dateString).toLocaleString('en-US', {
+  return new Date(dateString).toLocaleDateString('en-US', {
     year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+    month: 'short',
+    day: 'numeric',
+  });
+};
+
+const formatDateSecondary = (dateString: string) => {
+  if (!dateString) return '';
+  return new Date(dateString).toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
-    hour12: false,
+    hour12: true,
   });
 };
 </script>

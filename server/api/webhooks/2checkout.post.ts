@@ -36,11 +36,11 @@ export default defineEventHandler(async (event) => {
             } else {
                 try {
                     // Fetch the transaction to get the items
-                    const [transaction] = await db`
+                    const [transaction] = (await db`
             SELECT id, user_id as "userId", status, items
             FROM payment_transactions
             WHERE transaction_ref = ${transactionRef}
-          `;
+          `) as any[];
 
                     if (!transaction) {
                         console.error(`[2Checkout IPN] Transaction not found: ${transactionRef}`);
@@ -52,10 +52,15 @@ export default defineEventHandler(async (event) => {
                         const orderIds = items.filter(i => i.type === 'order').map(i => i.id);
                         const vectorIds = items.filter(i => i.type === 'vector').map(i => i.id);
 
-                        // Mark the transaction as paid
+                        // Mark the transaction as paid and capture 2CO payment metadata
                         await db`
               UPDATE payment_transactions
-              SET status = 'paid', updated_at = NOW()
+              SET status = 'paid',
+                  paid_at = NOW(),
+                  external_ref = ${body.REFNO || null},
+                  external_order_no = ${body.ORDERNO || null},
+                  payment_method = ${body.PAYMETHOD || null},
+                  updated_at = NOW()
               WHERE transaction_ref = ${transactionRef}
             `;
 

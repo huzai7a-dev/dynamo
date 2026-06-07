@@ -23,11 +23,11 @@ export default defineEventHandler(async (event) => {
         // without helper tools, but we can construct it or use specific syntax if the driver supports it.
         // Typically: WHERE id = ANY(${orderIds})
 
-        const dbOrders = await db`
+        const dbOrders = (await db`
       SELECT id, user_id as "userId", price, payment_status as "paymentStatus" 
       FROM orders 
       WHERE id = ANY(${orderIds})
-    `;
+    `) as any[];
 
         for (const order of dbOrders) {
             if (order.userId !== userId) {
@@ -47,11 +47,11 @@ export default defineEventHandler(async (event) => {
 
     // Validate Vectors
     if (vectorIds.length > 0) {
-        const dbVectors = await db`
+        const dbVectors = (await db`
       SELECT id, user_id as "userId", price, payment_status as "paymentStatus" 
       FROM vectors 
       WHERE id = ANY(${vectorIds})
-    `;
+    `) as any[];
 
         for (const vector of dbVectors) {
             if (vector.userId !== userId) {
@@ -72,7 +72,7 @@ export default defineEventHandler(async (event) => {
     const amountStr = totalAmount.toFixed(2);
     const itemsJson = JSON.stringify(body.items);
 
-    const [transaction] = await db`
+    const [transaction] = (await db`
     INSERT INTO payment_transactions (
       transaction_ref, 
       user_id, 
@@ -95,7 +95,7 @@ export default defineEventHandler(async (event) => {
       amount, 
       currency,
       items
-  `;
+  `) as any[];
 
     // Mark items as 'invoiced' so they no longer appear on the unpaid items page
     if (orderIds.length > 0) {

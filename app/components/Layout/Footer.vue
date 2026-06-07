@@ -91,7 +91,7 @@
             <li class="flex items-center">
               <Icon name="Phone" class="mr-2" />
               <a href="tel:+15551234567" class="text-gray-300 hover:text-secondary transition-colors">{{ CONTACT_NUMBER
-                }}</a>
+              }}</a>
             </li>
             <li class="flex items-center">
               <Icon name="Mail" class="mr-2" />
@@ -117,5 +117,7 @@
 </template>
 
 <script setup>
+import { CONTACT_NUMBER } from '~/constants';
+
 const currentYear = new Date().getFullYear()
 </script>

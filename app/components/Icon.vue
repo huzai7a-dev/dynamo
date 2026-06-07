@@ -110,6 +110,20 @@ const iconMap = {
   Copy: () => import('lucide-vue-next').then(m => m.Copy),
   Check: () => import('lucide-vue-next').then(m => m.Check),
   Paperclip: () => import('lucide-vue-next').then(m => m.Paperclip),
+  CirclePlus: () => import('lucide-vue-next').then(m => m.CirclePlus),
+  Tag: () => import('lucide-vue-next').then(m => m.Tag),
+  ClipboardList: () => import('lucide-vue-next').then(m => m.ClipboardList),
+  CircleDollarSign: () => import('lucide-vue-next').then(m => m.CircleDollarSign),
+  FilePlus: () => import('lucide-vue-next').then(m => m.FilePlus),
+  CheckSquare: () => import('lucide-vue-next').then(m => m.CheckSquare),
+  Square: () => import('lucide-vue-next').then(m => m.Square),
+  History: () => import('lucide-vue-next').then(m => m.History),
+  Download: () => import('lucide-vue-next').then(m => m.Download),
+  CheckCircle: () => import('lucide-vue-next').then(m => m.CheckCircle),
+  CreditCard: () => import('lucide-vue-next').then(m => m.CreditCard),
+  MoreVertical: () => import('lucide-vue-next').then(m => m.MoreVertical),
+  ArrowLeft: () => import('lucide-vue-next').then(m => m.ArrowLeft),
+  ChevronLeft: () => import('lucide-vue-next').then(m => m.ChevronLeft),
 }
 
 export type IconName = keyof typeof iconMap

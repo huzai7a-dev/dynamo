@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { orders, delivers, attachments, roles, users, vectors, quotes, orderDeliveries, vectorDeliveries, vectorAttachments, quoteAttachments } from "./schema";
+import { orders, delivers, attachments, roles, users, vectors, quotes, orderDeliveries, vectorDeliveries, vectorAttachments, quoteAttachments, paymentTransactions } from "./schema";
 
 export const deliversRelations = relations(delivers, ({one}) => ({
 	order: one(orders, {
@@ -37,6 +37,7 @@ export const usersRelations = relations(users, ({one, many}) => ({
 	vectors: many(vectors),
 	orders: many(orders),
 	quotes: many(quotes),
+	paymentTransactions: many(paymentTransactions),
 }));
 
 export const rolesRelations = relations(roles, ({many}) => ({
@@ -91,5 +92,12 @@ export const quoteAttachmentsRelations = relations(quoteAttachments, ({one}) => 
 	quote: one(quotes, {
 		fields: [quoteAttachments.quoteId],
 		references: [quotes.id]
+	}),
+}));
+
+export const paymentTransactionsRelations = relations(paymentTransactions, ({one}) => ({
+	user: one(users, {
+		fields: [paymentTransactions.userId],
+		references: [users.id]
 	}),
 }));

@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Fetch and verify the transaction belongs to this user
-    const [transaction] = await db`
+    const [transaction] = (await db`
     SELECT 
       id,
       transaction_ref as "transactionRef",
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
       items
     FROM payment_transactions
     WHERE transaction_ref = ${transactionRef} AND user_id = ${userId}
-  `;
+  `) as any[];
 
     if (!transaction) {
         throw createError({ statusCode: 404, message: 'Invoice not found' });

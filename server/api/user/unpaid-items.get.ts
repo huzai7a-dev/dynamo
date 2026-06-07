@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
 
   // Unified query combining Orders and Vectors into a single flat list
   // Excludes items that are already paid or currently on a pending invoice ('invoiced')
-  const allUnpaid = await db`
+  const allUnpaid = (await db`
     SELECT 
       'order' as type, 
       id, 
@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
       AND status = ${OrderStatus.DELIVERED}
       
     ORDER BY "createdAt" DESC
-  `;
+  `) as any[];
 
   // Calculate total amount on the server for UI convenience
   const totalAmount = allUnpaid.reduce((sum, item) => sum + Number(item.price || 0), 0);

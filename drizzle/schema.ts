@@ -11,16 +11,16 @@ export const userRole = pgEnum("user_role", ['admin', 'user', 'salesman'])
 export const delivers = pgTable("delivers", {
 	id: serial().primaryKey().notNull(),
 	orderId: integer("order_id").notNull(),
-	estimateAmount: numeric("estimate_amount", { precision: 10, scale: 2 }).notNull(),
+	estimateAmount: numeric("estimate_amount", { precision: 10, scale:  2 }).notNull(),
 	notes: text(),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
 }, (table) => [
 	foreignKey({
-		columns: [table.orderId],
-		foreignColumns: [orders.id],
-		name: "fk_delivers_order_id"
-	}).onUpdate("cascade").onDelete("cascade"),
+			columns: [table.orderId],
+			foreignColumns: [orders.id],
+			name: "fk_delivers_order_id"
+		}).onUpdate("cascade").onDelete("cascade"),
 ]);
 
 export const attachments = pgTable("attachments", {
@@ -37,10 +37,10 @@ export const attachments = pgTable("attachments", {
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	foreignKey({
-		columns: [table.orderId],
-		foreignColumns: [orders.id],
-		name: "attachments_order_id_fkey"
-	}).onDelete("cascade"),
+			columns: [table.orderId],
+			foreignColumns: [orders.id],
+			name: "attachments_order_id_fkey"
+		}).onDelete("cascade"),
 ]);
 
 export const roles = pgTable("roles", {
@@ -76,10 +76,10 @@ export const users = pgTable("users", {
 	salesMan: varchar("sales_man", { length: 50 }),
 }, (table) => [
 	foreignKey({
-		columns: [table.role],
-		foreignColumns: [roles.roleId],
-		name: "fk_role"
-	}),
+			columns: [table.role],
+			foreignColumns: [roles.roleId],
+			name: "fk_role"
+		}),
 	unique("users_user_name_key").on(table.userName),
 	unique("users_primary_email_key").on(table.primaryEmail),
 ]);
@@ -97,7 +97,7 @@ export const vectors = pgTable("vectors", {
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	status: varchar({ length: 50 }).default('pending').notNull(),
 	paymentStatus: varchar("payment_status", { length: 50 }).default('unpaid').notNull(),
-	price: numeric({ precision: 10, scale: 2 }).default('0').notNull(),
+	price: numeric({ precision: 10, scale:  2 }).default('0').notNull(),
 	requiredFormat: text("required_format").notNull(),
 	vectorType: varchar("vector_type", { length: 50 }),
 	metadata: jsonb(),
@@ -106,15 +106,15 @@ export const vectors = pgTable("vectors", {
 	isFromQuote: boolean("is_from_quote").default(false).notNull(),
 }, (table) => [
 	foreignKey({
-		columns: [table.userId],
-		foreignColumns: [users.id],
-		name: "vectors_user_id_fkey"
-	}).onUpdate("cascade").onDelete("restrict"),
+			columns: [table.userId],
+			foreignColumns: [users.id],
+			name: "vectors_user_id_fkey"
+		}).onUpdate("cascade").onDelete("restrict"),
 	foreignKey({
-		columns: [table.fromQuoteId],
-		foreignColumns: [quotes.id],
-		name: "fk_vectors_from_quote"
-	}).onDelete("set null"),
+			columns: [table.fromQuoteId],
+			foreignColumns: [quotes.id],
+			name: "fk_vectors_from_quote"
+		}).onDelete("set null"),
 ]);
 
 export const orders = pgTable("orders", {
@@ -122,8 +122,8 @@ export const orders = pgTable("orders", {
 	orderName: text("order_name").notNull(),
 	poNumber: text("po_number"),
 	requiredFormat: text("required_format").notNull(),
-	widthIn: numeric("width_in", { precision: 10, scale: 2 }),
-	heightIn: numeric("height_in", { precision: 10, scale: 2 }),
+	widthIn: numeric("width_in", { precision: 10, scale:  2 }),
+	heightIn: numeric("height_in", { precision: 10, scale:  2 }),
 	fabric: text().notNull(),
 	placement: text().notNull(),
 	numColors: integer("num_colors"),
@@ -136,7 +136,7 @@ export const orders = pgTable("orders", {
 	faceless: varchar({ length: 255 }).default(sql`NULL`),
 	userId: integer("user_id").default(12).notNull(),
 	paymentStatus: varchar("payment_status", { length: 50 }).default('pending').notNull(),
-	price: numeric({ precision: 10, scale: 2 }).default('0').notNull(),
+	price: numeric({ precision: 10, scale:  2 }).default('0').notNull(),
 	metadata: jsonb(),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	fromQuoteId: bigint("from_quote_id", { mode: "number" }),
@@ -144,15 +144,15 @@ export const orders = pgTable("orders", {
 	requiredStitch: varchar("required_stitch", { length: 50 }),
 }, (table) => [
 	foreignKey({
-		columns: [table.userId],
-		foreignColumns: [users.id],
-		name: "fk_user"
-	}),
+			columns: [table.userId],
+			foreignColumns: [users.id],
+			name: "fk_user"
+		}),
 	foreignKey({
-		columns: [table.fromQuoteId],
-		foreignColumns: [quotes.id],
-		name: "fk_orders_from_quote"
-	}).onDelete("set null"),
+			columns: [table.fromQuoteId],
+			foreignColumns: [quotes.id],
+			name: "fk_orders_from_quote"
+		}).onDelete("set null"),
 ]);
 
 export const orderDeliveries = pgTable("order_deliveries", {
@@ -160,24 +160,24 @@ export const orderDeliveries = pgTable("order_deliveries", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	orderId: bigint("order_id", { mode: "number" }).notNull(),
 	stitches: integer(),
-	price: numeric({ precision: 12, scale: 2 }),
-	discount: numeric({ precision: 12, scale: 2 }),
-	totalPrice: numeric("total_price", { precision: 12, scale: 2 }),
+	price: numeric({ precision: 12, scale:  2 }),
+	discount: numeric({ precision: 12, scale:  2 }),
+	totalPrice: numeric("total_price", { precision: 12, scale:  2 }),
 	isFree: boolean("is_free"),
-	height: numeric({ precision: 10, scale: 2 }),
-	width: numeric({ precision: 10, scale: 2 }),
+	height: numeric({ precision: 10, scale:  2 }),
+	width: numeric({ precision: 10, scale:  2 }),
 	comments: text(),
 	designerLevel: text("designer_level"),
-	assignPercentage: numeric("assign_percentage", { precision: 5, scale: 2 }),
+	assignPercentage: numeric("assign_percentage", { precision: 5, scale:  2 }),
 	priceCriteria: jsonb("price_criteria"),
 	customerRequirement: jsonb("customer_requirement"),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	foreignKey({
-		columns: [table.orderId],
-		foreignColumns: [orders.id],
-		name: "order_deliveries_order_id_fkey"
-	}).onDelete("cascade"),
+			columns: [table.orderId],
+			foreignColumns: [orders.id],
+			name: "order_deliveries_order_id_fkey"
+		}).onDelete("cascade"),
 ]);
 
 export const vectorDeliveries = pgTable("vector_deliveries", {
@@ -185,24 +185,24 @@ export const vectorDeliveries = pgTable("vector_deliveries", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	vectorId: bigint("vector_id", { mode: "number" }).notNull(),
 	stitches: integer(),
-	price: numeric({ precision: 12, scale: 2 }),
-	discount: numeric({ precision: 12, scale: 2 }),
-	totalPrice: numeric("total_price", { precision: 12, scale: 2 }),
+	price: numeric({ precision: 12, scale:  2 }),
+	discount: numeric({ precision: 12, scale:  2 }),
+	totalPrice: numeric("total_price", { precision: 12, scale:  2 }),
 	isFree: boolean("is_free"),
-	height: numeric({ precision: 10, scale: 2 }),
-	width: numeric({ precision: 10, scale: 2 }),
+	height: numeric({ precision: 10, scale:  2 }),
+	width: numeric({ precision: 10, scale:  2 }),
 	comments: text(),
 	designerLevel: text("designer_level"),
-	assignPercentage: numeric("assign_percentage", { precision: 5, scale: 2 }),
+	assignPercentage: numeric("assign_percentage", { precision: 5, scale:  2 }),
 	priceCriteria: jsonb("price_criteria"),
 	customerRequirement: jsonb("customer_requirement"),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	foreignKey({
-		columns: [table.vectorId],
-		foreignColumns: [vectors.id],
-		name: "vector_deliveries_vector_id_fkey"
-	}).onDelete("cascade"),
+			columns: [table.vectorId],
+			foreignColumns: [vectors.id],
+			name: "vector_deliveries_vector_id_fkey"
+		}).onDelete("cascade"),
 ]);
 
 export const vectorAttachments = pgTable("vector_attachments", {
@@ -219,10 +219,10 @@ export const vectorAttachments = pgTable("vector_attachments", {
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	foreignKey({
-		columns: [table.vectorId],
-		foreignColumns: [vectors.id],
-		name: "fk_vector_attachments_order"
-	}).onDelete("cascade"),
+			columns: [table.vectorId],
+			foreignColumns: [vectors.id],
+			name: "fk_vector_attachments_order"
+		}).onDelete("cascade"),
 ]);
 
 export const quotes = pgTable("quotes", {
@@ -233,7 +233,7 @@ export const quotes = pgTable("quotes", {
 	title: text().notNull(),
 	poNumber: text("po_number"),
 	instructions: text(),
-	estimatedPrice: numeric("estimated_price", { precision: 10, scale: 2 }).default('0'),
+	estimatedPrice: numeric("estimated_price", { precision: 10, scale:  2 }).default('0'),
 	quoteData: jsonb("quote_data").notNull(),
 	isConverted: boolean("is_converted").default(false).notNull(),
 	convertedAt: timestamp("converted_at", { withTimezone: true, mode: 'string' }),
@@ -242,10 +242,10 @@ export const quotes = pgTable("quotes", {
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	foreignKey({
-		columns: [table.userId],
-		foreignColumns: [users.id],
-		name: "fk_user"
-	}),
+			columns: [table.userId],
+			foreignColumns: [users.id],
+			name: "fk_user"
+		}),
 ]);
 
 export const quoteAttachments = pgTable("quote_attachments", {
@@ -263,28 +263,31 @@ export const quoteAttachments = pgTable("quote_attachments", {
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	foreignKey({
-		columns: [table.quoteId],
-		foreignColumns: [quotes.id],
-		name: "fk_quote_attachments_quote"
-	}).onDelete("cascade"),
+			columns: [table.quoteId],
+			foreignColumns: [quotes.id],
+			name: "fk_quote_attachments_quote"
+		}).onDelete("cascade"),
 ]);
 
 export const paymentTransactions = pgTable("payment_transactions", {
 	id: bigserial({ mode: "bigint" }).primaryKey().notNull(),
-	transactionRef: text("transaction_ref").notNull(), // Our internal reference
-	externalRef: text("external_ref"), // 2Checkout Order Reference
+	transactionRef: text("transaction_ref").notNull(),
+	externalRef: text("external_ref"),
+	externalOrderNo: varchar("external_order_no", { length: 50 }),
 	userId: integer("user_id").notNull(),
-	amount: numeric({ precision: 10, scale: 2 }).notNull(),
+	amount: numeric({ precision: 10, scale:  2 }).notNull(),
 	currency: varchar({ length: 3 }).default('USD').notNull(),
-	status: varchar({ length: 50 }).default('pending').notNull(), // pending, paid, failed, refunded
-	items: jsonb().notNull(), // [{ type: 'order' | 'vector', id: 123 }]
+	status: varchar({ length: 50 }).default('pending').notNull(),
+	paymentMethod: varchar("payment_method", { length: 50 }),
+	items: jsonb().notNull(),
+	paidAt: timestamp("paid_at", { withTimezone: true, mode: 'string' }),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	foreignKey({
-		columns: [table.userId],
-		foreignColumns: [users.id],
-		name: "fk_payment_transactions_user"
-	}),
+			columns: [table.userId],
+			foreignColumns: [users.id],
+			name: "fk_payment_transactions_user"
+		}),
 	unique("payment_transactions_transaction_ref_key").on(table.transactionRef),
 ]);

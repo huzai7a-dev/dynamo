@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Fetch the transaction and verify ownership
-    const [transaction] = await db`
+    const [transaction] = (await db`
     SELECT
       id,
       transaction_ref as "transactionRef",
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
       status
     FROM payment_transactions
     WHERE transaction_ref = ${transactionRef} AND user_id = ${userId}
-  `;
+  `) as any[];
 
     if (!transaction) {
         throw createError({ statusCode: 404, message: 'Invoice not found' });
@@ -32,14 +32,14 @@ export default defineEventHandler(async (event) => {
     }
 
     // Fetch user details for pre-filling the 2Checkout checkout page
-    const [user] = await db`
+    const [user] = (await db`
     SELECT
       primary_email as email,
       contact_name as "contactName",
       company_name as "companyName"
     FROM users
     WHERE id = ${userId}
-  `;
+  `) as any[];
 
     // ─── Build buy link parameters ────────────────────────────────────────────
     const merchantCode = config.twoCheckoutMerchantCode as string;
