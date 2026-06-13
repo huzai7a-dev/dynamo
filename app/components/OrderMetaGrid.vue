@@ -34,7 +34,7 @@ defineProps<{
     <KeyValue label="Required Format" :value="order.required_format?.toUpperCase()" />
     <KeyValue label="Fabric" :value="order.fabric" />
     <KeyValue label="Placement" :value="order.placement" />
-    <KeyValue label="# Colors" :value="order.num_colors?.toString()" />
+    <KeyValue label="Colors" :value="order.num_colors?.toString()" />
     <KeyValue label="Blending" :value="order.blending" />
     <KeyValue label="Rush" :value="order.rush" />
     <KeyValue label="Required Stitch" :value="order.required_stitch" />

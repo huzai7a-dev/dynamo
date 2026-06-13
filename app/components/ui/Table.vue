@@ -68,7 +68,7 @@
         <tr v-for="(row, index) in data" :key="index"
           class="bg-white border-b border-primary-light/30 last:border-b-0 cursor-pointer hover:bg-primary-light/10 transition-colors duration-150"
           @click="emit('rowClick', { row, index })">
-          <td v-for="column in columns" :key="column.key" class="px-5 py-4 text-sm text-gray-700 text-center">
+          <td v-for="column in columns" :key="column.key" class="px-5 py-4 text-xs text-gray-700 text-center">
             <!-- Slot for custom content in specific columns -->
             <template v-if="$slots[`column-${column.key}`]">
               <slot :name="`column-${column.key}`" :row="row" :column="column" :index="index" />

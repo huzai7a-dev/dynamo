@@ -67,7 +67,7 @@
         </UiTable>
 
         <!-- Modals -->
-        <QuoteDetailModal v-model="showDetailModal" :quoteId="selectedQuoteId" @refresh="emit('refresh')" />
+        <EntityDetailModal v-model="showDetailModal" type="quote" :entityId="selectedQuoteId" @refresh="emit('refresh')" />
         <QuoteRejectModal v-model="showRejectModal" :loading="rejecting" @confirm="handleRejectConfirm" />
       </div>
     </div>
@@ -88,7 +88,7 @@ import {
 import { QuoteStatus } from "~~/shared/types/enums";
 import QuoteActions from "./QuoteActions.vue";
 import QuoteRejectModal from "./QuoteRejectModal.vue";
-import QuoteDetailModal from "./QuoteDetailModal.vue";
+import EntityDetailModal from "./EntityDetailModal.vue";
 
 interface Props {
   title?: string;

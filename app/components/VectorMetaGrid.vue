@@ -11,7 +11,7 @@ defineProps<{
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
     <KeyValue label="PO Number" :value="vector.po_number" />
     <KeyValue label="Required Format" :value="vector.required_format?.toUpperCase()" />
-    <KeyValue label="# Colors" :value="vector.num_colors?.toString()" />
+    <KeyValue label="Colors" :value="vector.num_colors?.toString()" />
     <KeyValue label="Vector Type" :value="vector.vector_type" />
     <KeyValue label="Blending" :value="vector.blending" />
     <KeyValue label="Rush" :value="vector.rush" />

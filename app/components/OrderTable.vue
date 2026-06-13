@@ -68,7 +68,7 @@
         </UiTable>
 
         <!-- Order detail modal -->
-        <OrderDetailModal v-model="showDetailModal" :orderId="selectedOrderId" />
+        <EntityDetailModal v-model="showDetailModal" type="order" :entityId="selectedOrderId" />
 
         <!-- Delivery modal for table actions -->
         <DeliveryModal v-model="showDeliveryModal" :orderId="String(selectedOrderId)"
@@ -88,7 +88,7 @@ import { ref, computed } from "vue";
 import type { TableOrders, Pagination } from "#shared/types";
 import TableHeader from "./TableHeader.vue";
 import Icon from "./Icon.vue";
-import OrderDetailModal from "./OrderDetailModal.vue";
+import EntityDetailModal from "./EntityDetailModal.vue";
 import OrderActions from "./OrderActions.vue";
 import { ROLE } from "~~/shared/constants";
 import { OrderStatus } from "~~/shared/types/enums";

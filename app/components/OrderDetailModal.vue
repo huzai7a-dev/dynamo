@@ -3,7 +3,8 @@
     <div v-if="modelValue" class="fixed inset-0 z-50 flex items-start justify-center p-6">
       <div class="fixed inset-0 bg-black/40" @click="close"></div>
 
-      <div class="relative w-full max-w-5xl max-h-[90vh] overflow-auto rounded-2xl bg-white shadow-lg">
+      <div
+        class="relative w-full max-w-[calc(100%-3rem)] max-h-[calc(100%-3rem)] overflow-auto rounded-2xl bg-white shadow-lg">
         <div class="flex items-center justify-between border-b px-6 py-4">
           <h3 class="text-lg font-semibold text-secondary">Order Details</h3>
           <button class="p-2 rounded hover:bg-slate-100" @click="close">

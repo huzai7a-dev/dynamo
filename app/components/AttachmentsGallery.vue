@@ -7,12 +7,12 @@ defineProps<{
   noAttachmentsMessage?: string
 }>()
 
-const IMAGE_FORMATS = new Set(['jpg','jpeg','png','webp','gif','avif','bmp','tiff','svg'])
+const IMAGE_FORMATS = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif', 'bmp', 'tiff', 'svg'])
 const isImage = (a: any) => (a.resource_type || '').toLowerCase() === 'image' || IMAGE_FORMATS.has((a.format || '').toLowerCase())
 
 const humanBytes = (n?: number | null) => {
   if (!n || n <= 0) return '—'
-  const units = ['B','KB','MB','GB','TB']
+  const units = ['B', 'KB', 'MB', 'GB', 'TB']
   const i = Math.min(Math.floor(Math.log(n) / Math.log(1024)), units.length - 1)
   const val = n / Math.pow(1024, i)
   return `${val.toFixed(val >= 10 || i === 0 ? 0 : 1)} ${units[i]}`
@@ -32,10 +32,10 @@ const filenameFromUrl = (url: string) => {
 
 <template>
   <div>
-    <h2 class="mb-4 text-lg font-semibold text-secondary">{{ title || 'Attachments' }}</h2>
+    <h2 v-if="title" class="mb-4 text-lg font-semibold text-secondary">{{ title || 'Attachments' }}</h2>
 
     <div v-if="!attachments || attachments.length === 0"
-         class="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-charcoal/70">
+      class="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-charcoal/70">
       {{ noAttachmentsMessage || 'No attachments uploaded yet.' }}
     </div>
 

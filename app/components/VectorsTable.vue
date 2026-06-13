@@ -65,7 +65,7 @@
         </UiTable>
 
         <!-- Vector detail modal -->
-        <VectorDetailModal v-model="showDetailModal" :vectorId="String(selectedVectorId)" @refresh="emit('refresh')" />
+        <EntityDetailModal v-model="showDetailModal" type="vector" :entityId="String(selectedVectorId)" @refresh="emit('refresh')" />
 
         <!-- Delivery modal for quick deliver from table actions -->
         <DeliveryModal v-model="showDeliveryModal" :orderId="String(selectedVectorId)"
@@ -98,7 +98,7 @@ import {
 } from "~/utils/orderUtils";
 import Icon from "./Icon.vue";
 import OrderActions from "./OrderActions.vue";
-import VectorDetailModal from "./VectorDetailModal.vue";
+import EntityDetailModal from "./EntityDetailModal.vue";
 import DeliveryModal from "./DeliveryModal.vue";
 import { OrderStatus } from "~~/shared/types/enums";
 import { useRouter } from "vue-router";
