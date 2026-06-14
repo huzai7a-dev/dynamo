@@ -13,7 +13,7 @@ class VectorRepository {
         INSERT INTO vectors (
           vector_name, po_number, required_format,
           blending, rush, instructions, vector_type,
-          user_id, metadata
+          user_id, payment_status, status, metadata
         )
         VALUES (
           ${vectorData.vectorName},
@@ -24,6 +24,8 @@ class VectorRepository {
           ${vectorData.instructions},
           ${vectorData.vectorType},
           ${userId},
+          ${PaymentStatus.UNPAID},
+          ${OrderStatus.PENDING},
           ${metadata}
         )
         RETURNING id

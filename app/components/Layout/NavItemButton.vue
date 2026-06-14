@@ -118,9 +118,12 @@ const isOpen = ref(false);
 // Auto-open if a child route is currently active
 const isChildActive = computed(() => {
   if (!props.children) return false;
-  return props.children.some(child =>
-    router.currentRoute.value.path.startsWith(child.href)
-  );
+  return props.children.some(child => {
+    if (child.href.includes('?')) {
+      return router.currentRoute.value.fullPath.startsWith(child.href);
+    }
+    return router.currentRoute.value.path.startsWith(child.href);
+  });
 });
 
 // Initialize open state based on active child
@@ -133,6 +136,9 @@ const toggleOpen = () => {
 };
 
 const isExactActive = (path: string) => {
+  if (path.includes('?')) {
+    return router.currentRoute.value.fullPath === path;
+  }
   return router.currentRoute.value.path === path;
 };
 </script>

@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import Icon from "./Icon.vue";
 import EntityDetailBody from "./EntityDetailBody.vue";
 
@@ -61,8 +61,9 @@ const modelValue = computed(() => props.modelValue);
 const bodyRef = ref<InstanceType<typeof EntityDetailBody> | null>(null);
 
 // Trigger data fetch when modal opens
-watch(modelValue, (isOpen) => {
+watch(modelValue, async (isOpen) => {
   if (isOpen && props.entityId) {
+    await nextTick(); // wait for v-if to mount EntityDetailBody before calling refresh
     bodyRef.value?.refresh();
   }
 });

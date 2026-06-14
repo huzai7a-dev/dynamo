@@ -72,7 +72,15 @@ const SALESMAN_NAV_ITEMS = [
 
 export const CREATE_NAV_ITEMS = [
     { title: "Create Order", icon: "ShoppingCart", href: "/orders/create" },
-    { title: "Create Quote", icon: "Quote", href: "/quotes/create" },
+    {
+        title: "Create Quote",
+        icon: "Quote",
+        href: "/quotes/create",
+        children: [
+            { title: "Digitizing", icon: "ShoppingCart", href: "/quotes/create?type=order" },
+            { title: "Vector", icon: "PenTool", href: "/quotes/create?type=vector" },
+        ]
+    },
     { title: "Create Vector", icon: "PenTool", href: "/vectors/create" },
 ];
 const NAV_ITEMS = {

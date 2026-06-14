@@ -38,19 +38,19 @@
     </div>
 
     <table v-else :class="[
-      'min-w-full table-auto border-collapse text-sm font-sans',
+      'min-w-full table-auto border-collapse text-xs font-sans',
       loading ? 'opacity-40 pointer-events-none transition-opacity duration-300' : 'transition-opacity duration-300',
     ]">
       <!-- Table header -->
       <thead class="bg-primary sticky top-0 z-10">
         <tr>
           <th v-for="column in columns" :key="column.key"
-            class="px-5 py-3 text-center text-xs font-semibold text-white uppercase tracking-widest cursor-pointer select-none"
+            class="px-3 py-2 text-center text-xs font-semibold text-white uppercase tracking-wider cursor-pointer select-none whitespace-nowrap"
             @click="sortData(column.key)">
             <div class="flex items-center justify-center gap-1">
-              <Icon v-if="column.icon" :name="column.icon" class="w-3.5 h-3.5 text-white/70" />
+              <Icon v-if="column.icon" :name="column.icon" class="w-3 h-3 text-white/70" />
               <span>{{ column.label }}</span>
-              <svg v-if="sortBy === column.key" class="w-3 h-3 text-white/60"
+              <svg v-if="sortBy === column.key" class="w-2.5 h-2.5 text-white/60 shrink-0"
                 :class="sortOrder === 'asc' ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -68,7 +68,7 @@
         <tr v-for="(row, index) in data" :key="index"
           class="bg-white border-b border-primary-light/30 last:border-b-0 cursor-pointer hover:bg-primary-light/10 transition-colors duration-150"
           @click="emit('rowClick', { row, index })">
-          <td v-for="column in columns" :key="column.key" class="px-5 py-4 text-xs text-gray-700 text-center">
+          <td v-for="column in columns" :key="column.key" class="px-3 py-2.5 text-xs text-gray-700 text-center whitespace-nowrap">
             <!-- Slot for custom content in specific columns -->
             <template v-if="$slots[`column-${column.key}`]">
               <slot :name="`column-${column.key}`" :row="row" :column="column" :index="index" />

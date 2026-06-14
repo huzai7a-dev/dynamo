@@ -17,7 +17,8 @@
       <ul class="space-y-2">
         <li v-for="item in CREATE_NAV_ITEMS" :key="item?.href">
           <NavItemButton v-if="item" :to="item.href" :icon="item.icon" :label="item.title"
-            :active="isActive(item.href)" />
+            :active="isActive(item.href)"
+            :children="item.children?.map(c => ({ label: c.title, href: c.href, icon: c.icon }))" />
         </li>
       </ul>
 

@@ -20,10 +20,9 @@
 <script setup lang="ts">
 
 const router = useRouter();
-const { query } = useRoute();
+const route = useRoute();
 const toast = useToast();
-
-const dataSourceType = ref(query?.type || DataSource.ORDER);
+const dataSourceType = computed(() => route.query?.type || DataSource.ORDER);
 
 const handleSuccess = () => {
   toast.success('Quote created successfully!');
