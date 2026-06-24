@@ -20,7 +20,13 @@ class DashboardRepository {
             stats.orders = Number((await this.db`SELECT COUNT(*) FROM orders WHERE user_id = ${userId}` as any[])[0]?.count || 0);
             stats.quotes = Number((await this.db`SELECT COUNT(*) FROM quotes WHERE user_id = ${userId}` as any[])[0]?.count || 0);
             stats.vectors = Number((await this.db`SELECT COUNT(*) FROM vectors WHERE user_id = ${userId}` as any[])[0]?.count || 0);
-            // stats.amount = await this.db`SELECT SUM(amount) FROM orders WHERE user_id = ${userId}`;
+            stats.amount = Number((await this.db`
+                SELECT COALESCE(SUM(price), 0) AS total FROM (
+                    SELECT price FROM orders WHERE user_id = ${userId} AND payment_status = ${PaymentStatus.UNPAID}
+                    UNION ALL
+                    SELECT price FROM vectors WHERE user_id = ${userId} AND payment_status = ${PaymentStatus.UNPAID}
+                ) AS combined
+            ` as any[])[0]?.total || 0);
         }
         return stats;
     }
