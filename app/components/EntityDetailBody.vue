@@ -4,54 +4,107 @@
       <OrderDetailSkeleton />
     </div>
 
-    <UiErrorState v-else-if="error" :title="config.errorTitle" :message="config.errorMessage" :loading="pending"
-      :back-route="config.backRoute" :back-text="config.backText" @retry="refresh" />
+    <UiErrorState
+      v-else-if="error"
+      :title="config.errorTitle"
+      :message="config.errorMessage"
+      :loading="pending"
+      :back-route="config.backRoute"
+      :back-text="config.backText"
+      @retry="refresh"
+    />
 
     <div v-else-if="entity" class="min-h-[40vh]">
       <div class="p-8 space-y-8 bg-slate-50/50">
         <!-- Header card — same width/rounding/border as the sections below -->
-        <div class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
-          <OrderHeader :order_name="entityName" :po_number="entity.po_number" :status="entity.status"
-            :updated_at="entity.updated_at">
+        <div
+          class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm"
+        >
+          <OrderHeader
+            :order_name="entityName"
+            :po_number="entity.po_number"
+            :status="entity.status"
+            :updated_at="entity.updated_at"
+          >
             <template #actions>
               <!-- Order / Vector actions -->
-              <OrderActions v-if="type !== 'quote'" size="icon" :isAdmin="isAdmin" :status="entity.status"
-                @approve="handleApproveOrReject('approve')" @reject="handleApproveOrReject('reject')"
-                @deliver="showDeliveryModal = true" @cancel="handleApproveOrReject('cancel')" @edit="handleEdit" />
+              <OrderActions
+                v-if="type !== 'quote'"
+                size="default"
+                :isAdmin="isAdmin"
+                :status="entity.status"
+                @approve="handleApproveOrReject('approve')"
+                @reject="handleApproveOrReject('reject')"
+                @deliver="showDeliveryModal = true"
+                @cancel="handleApproveOrReject('cancel')"
+                @edit="handleEdit"
+              />
               <!-- Quote actions -->
-              <QuoteActions v-else size="default" :isAdmin="isAdmin" :status="entity.status" @accept="handleMoveToOrder"
-                @reject="showRejectModal = true" @proceed="handleQuoteStatus(QuoteStatus.PROCEED)" @edit="handleEdit"
-                @deliver="showDeliveryModal = true" />
+              <QuoteActions
+                v-else
+                size="default"
+                :isAdmin="isAdmin"
+                :status="entity.status"
+                @accept="handleMoveToOrder"
+                @reject="showRejectModal = true"
+                @proceed="handleQuoteStatus(QuoteStatus.PROCEED)"
+                @edit="handleEdit"
+                @deliver="showDeliveryModal = true"
+              />
             </template>
           </OrderHeader>
         </div>
 
-
         <!-- Rejection Reason (quote only) -->
-        <div v-if="type === 'quote' && entity.status === 'rejected' && deliveryDetails?.reject_reason"
-          class="rounded-2xl border border-red-200 bg-red-50 p-6 shadow-sm">
+        <div
+          v-if="
+            type === 'quote' &&
+            entity.status === 'rejected' &&
+            deliveryDetails?.reject_reason
+          "
+          class="rounded-2xl border border-red-200 bg-red-50 p-6 shadow-sm"
+        >
           <div class="flex items-start gap-3">
             <div class="p-2 bg-red-100 rounded-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="text-red-600">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="text-red-600"
+              >
                 <circle cx="12" cy="12" r="10" />
                 <path d="m15 9-6 6" />
                 <path d="m9 9 6 6" />
               </svg>
             </div>
             <div>
-              <h2 class="mb-1 text-lg font-semibold text-red-900">Quote Rejected</h2>
-              <p class="text-red-700 leading-relaxed">{{ deliveryDetails.reject_reason }}</p>
+              <h2 class="mb-1 text-lg font-semibold text-red-900">
+                Quote Rejected
+              </h2>
+              <p class="text-red-700 leading-relaxed">
+                {{ deliveryDetails.reject_reason }}
+              </p>
             </div>
           </div>
         </div>
 
         <!-- Section: Information (includes delivery fields when available) -->
-        <div class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
-          <div class="px-6 py-4 bg-primary/5 flex items-center gap-2 border-b border-slate-100">
+        <div
+          class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm"
+        >
+          <div
+            class="px-6 py-4 bg-primary/5 flex items-center gap-2 border-b border-slate-100"
+          >
             <Icon name="Info" :size="18" class="text-primary" />
-            <h2 class="text-sm font-bold text-primary uppercase tracking-wider">{{ config.infoHeading }}</h2>
+            <h2 class="text-sm font-bold text-primary uppercase tracking-wider">
+              {{ config.infoHeading }}
+            </h2>
           </div>
           <div class="p-6 space-y-6">
             <!-- Entity meta fields -->
@@ -62,31 +115,78 @@
             <!-- Delivery fields for Order / Vector -->
             <template v-if="type !== 'quote' && deliveryData">
               <div class="border-t border-slate-100 pt-4">
-                <p class="text-xs font-bold text-charcoal/50 uppercase tracking-wider mb-4">Delivery Information</p>
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  <OrderKeyValue label="Stitches" :value="(deliveryData as any).stitches?.toString()" />
-                  <OrderKeyValue label="Price"
-                    :value="(deliveryData as any).price ? `$${(deliveryData as any).price}` : undefined" />
-                  <OrderKeyValue v-if="(deliveryData as any).discount" label="Discount"
-                    :value="`$${(deliveryData as any).discount}`" />
-                  <OrderKeyValue v-if="(deliveryData as any).total_price" label="Total Price"
-                    :value="`$${(deliveryData as any).total_price}`" />
-                  <OrderKeyValue v-if="(deliveryData as any).is_free !== undefined" label="Free Order"
-                    :value="(deliveryData as any).is_free ? 'Yes' : 'No'" />
-                  <OrderKeyValue v-if="(deliveryData as any).designer_level" label="Designer Level"
-                    :value="(deliveryData as any).designer_level" />
-                  <OrderKeyValue v-if="(deliveryData as any).height" label="Height"
-                    :value="(deliveryData as any).height" />
-                  <OrderKeyValue v-if="(deliveryData as any).width" label="Width"
-                    :value="(deliveryData as any).width" />
-                  <OrderKeyValue v-if="(deliveryData as any).created_at" label="Delivered At"
-                    :value="new Date((deliveryData as any).created_at).toLocaleString()" />
+                <p
+                  class="text-xs font-bold text-charcoal/50 uppercase tracking-wider mb-4"
+                >
+                  Delivery Information
+                </p>
+                <div
+                  class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
+                >
+                  <OrderKeyValue
+                    label="Stitches"
+                    :value="(deliveryData as any).stitches?.toString()"
+                  />
+                  <OrderKeyValue
+                    label="Price"
+                    :value="
+                      (deliveryData as any).price
+                        ? `$${(deliveryData as any).price}`
+                        : undefined
+                    "
+                  />
+                  <OrderKeyValue
+                    v-if="(deliveryData as any).discount"
+                    label="Discount"
+                    :value="`$${(deliveryData as any).discount}`"
+                  />
+                  <OrderKeyValue
+                    v-if="(deliveryData as any).total_price"
+                    label="Total Price"
+                    :value="`$${(deliveryData as any).total_price}`"
+                  />
+                  <OrderKeyValue
+                    v-if="(deliveryData as any).is_free !== undefined"
+                    label="Free Order"
+                    :value="(deliveryData as any).is_free ? 'Yes' : 'No'"
+                  />
+                  <OrderKeyValue
+                    v-if="(deliveryData as any).designer_level"
+                    label="Designer Level"
+                    :value="(deliveryData as any).designer_level"
+                  />
+                  <OrderKeyValue
+                    v-if="(deliveryData as any).height"
+                    label="Height"
+                    :value="(deliveryData as any).height"
+                  />
+                  <OrderKeyValue
+                    v-if="(deliveryData as any).width"
+                    label="Width"
+                    :value="(deliveryData as any).width"
+                  />
+                  <OrderKeyValue
+                    v-if="(deliveryData as any).created_at"
+                    label="Delivered At"
+                    :value="
+                      new Date(
+                        (deliveryData as any).created_at,
+                      ).toLocaleString()
+                    "
+                  />
                 </div>
                 <!-- Comments -->
                 <div v-if="(deliveryData as any).comments" class="mt-4">
-                  <p class="text-xs font-medium text-charcoal/50 uppercase tracking-wider mb-2">Comments</p>
-                  <p class="text-sm text-secondary bg-gray-50 rounded-lg p-4 whitespace-pre-wrap">{{ (deliveryData as
-                    any).comments }}</p>
+                  <p
+                    class="text-xs font-medium text-charcoal/50 uppercase tracking-wider mb-2"
+                  >
+                    Comments
+                  </p>
+                  <p
+                    class="text-sm text-secondary bg-gray-50 rounded-lg p-4 whitespace-pre-wrap"
+                  >
+                    {{ (deliveryData as any).comments }}
+                  </p>
                 </div>
               </div>
             </template>
@@ -94,16 +194,34 @@
             <!-- Delivery fields for Quote -->
             <template v-if="type === 'quote' && deliveryDetails">
               <div class="border-t border-slate-100 pt-4">
-                <p class="text-xs font-bold text-charcoal/50 uppercase tracking-wider mb-4">Delivery Information</p>
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  <OrderKeyValue v-if="deliveryDetails.stitch_count" label="Stitch Count"
-                    :value="deliveryDetails.stitch_count" />
-                  <OrderKeyValue v-if="deliveryDetails.turn_around_time" label="Turn Around Time"
-                    :value="deliveryDetails.turn_around_time" />
+                <p
+                  class="text-xs font-bold text-charcoal/50 uppercase tracking-wider mb-4"
+                >
+                  Delivery Information
+                </p>
+                <div
+                  class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
+                >
+                  <OrderKeyValue
+                    v-if="deliveryDetails.stitch_count"
+                    label="Stitch Count"
+                    :value="deliveryDetails.stitch_count"
+                  />
+                  <OrderKeyValue
+                    v-if="deliveryDetails.turn_around_time"
+                    label="Turn Around Time"
+                    :value="deliveryDetails.turn_around_time"
+                  />
                 </div>
                 <div v-if="deliveryDetails.additional_query" class="mt-4">
-                  <p class="text-xs font-medium text-charcoal/50 uppercase tracking-wider mb-2">Additional Query</p>
-                  <p class="text-sm text-secondary bg-gray-50 rounded-lg p-4">{{ deliveryDetails.additional_query }}</p>
+                  <p
+                    class="text-xs font-medium text-charcoal/50 uppercase tracking-wider mb-2"
+                  >
+                    Additional Query
+                  </p>
+                  <p class="text-sm text-secondary bg-gray-50 rounded-lg p-4">
+                    {{ deliveryDetails.additional_query }}
+                  </p>
                 </div>
               </div>
             </template>
@@ -111,28 +229,63 @@
         </div>
 
         <!-- Section: Attachments -->
-        <div class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
-          <div class="px-6 py-4 bg-amber-50 flex items-center gap-2 border-b border-slate-100">
+        <div
+          class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm"
+        >
+          <div
+            class="px-6 py-4 bg-amber-50 flex items-center gap-2 border-b border-slate-100"
+          >
             <Icon name="Paperclip" :size="18" class="text-amber-600" />
-            <h2 class="text-sm font-bold text-amber-600 uppercase tracking-wider font-sans">Attachments</h2>
+            <h2
+              class="text-sm font-bold text-amber-600 uppercase tracking-wider font-sans"
+            >
+              Attachments
+            </h2>
           </div>
           <div class="p-6 space-y-6">
             <!-- Entity attachments -->
-            <AttachmentsGallery :noAttachmentsMessage="config.noAttachmentsMessage" :attachments="entityAttachments" />
+            <AttachmentsGallery
+              :noAttachmentsMessage="config.noAttachmentsMessage"
+              :attachments="entityAttachments"
+            />
 
             <!-- Delivery attachments (Order/Vector) -->
-            <template v-if="type !== 'quote' && (deliveryData as any)?.delivery_attachments?.length">
+            <template
+              v-if="
+                type !== 'quote' &&
+                (deliveryData as any)?.delivery_attachments?.length
+              "
+            >
               <div class="border-t border-slate-100 pt-4">
-                <p class="text-xs font-bold text-charcoal/50 uppercase tracking-wider mb-4">Delivery Attachments</p>
-                <AttachmentsGallery noAttachmentsMessage="" :attachments="(deliveryData as any).delivery_attachments" />
+                <p
+                  class="text-xs font-bold text-charcoal/50 uppercase tracking-wider mb-4"
+                >
+                  Delivery Attachments
+                </p>
+                <AttachmentsGallery
+                  noAttachmentsMessage=""
+                  :attachments="(deliveryData as any).delivery_attachments"
+                />
               </div>
             </template>
 
             <!-- Delivery attachments (Quote) -->
-            <template v-if="type === 'quote' && deliveryDetails?.delivery_attachments?.length">
+            <template
+              v-if="
+                type === 'quote' &&
+                deliveryDetails?.delivery_attachments?.length
+              "
+            >
               <div class="border-t border-slate-100 pt-4">
-                <p class="text-xs font-bold text-charcoal/50 uppercase tracking-wider mb-4">Delivery Attachments</p>
-                <AttachmentsGallery noAttachmentsMessage="" :attachments="deliveryDetails.delivery_attachments" />
+                <p
+                  class="text-xs font-bold text-charcoal/50 uppercase tracking-wider mb-4"
+                >
+                  Delivery Attachments
+                </p>
+                <AttachmentsGallery
+                  noAttachmentsMessage=""
+                  :attachments="deliveryDetails.delivery_attachments"
+                />
               </div>
             </template>
           </div>
@@ -141,21 +294,37 @@
     </div>
 
     <!-- Delivery modal: Order / Vector -->
-    <DeliveryModal v-if="type !== 'quote'" v-model="showDeliveryModal" :orderId="entityId ? String(entityId) : ''"
-      :orderDate="entity?.created_at || ''" @on:deliver="handleDeliveryComplete" />
+    <DeliveryModal
+      v-if="type !== 'quote'"
+      v-model="showDeliveryModal"
+      :orderId="entityId ? String(entityId) : ''"
+      :orderDate="entity?.created_at || ''"
+      :loading="delivering"
+      @on:deliver="handleDeliveryComplete"
+    />
 
     <!-- Delivery modal: Quote -->
-    <QuoteDeliveryModal v-if="type === 'quote' && entity" v-model="showDeliveryModal" :quoteId="String(entityId)"
+    <QuoteDeliveryModal
+      v-if="type === 'quote' && entity"
+      v-model="showDeliveryModal"
+      :quoteId="String(entityId)"
       :initialValues="{
         stitchCount: entity.quote_data?.stitch_count || '',
         turnAroundTime: entity.quote_data?.turn_around_time || '',
         price: entity.estimated_price || '',
-        additionalQuery: entity.quote_data?.additional_query || ''
-      }" @on:deliver="handleQuoteDeliver" />
+        additionalQuery: entity.quote_data?.additional_query || '',
+      }"
+      :loading="delivering"
+      @on:deliver="handleQuoteDeliver"
+    />
 
     <!-- Reject modal: Quote only -->
-    <QuoteRejectModal v-if="type === 'quote'" v-model="showRejectModal" :loading="rejecting"
-      @confirm="handleRejectConfirm" />
+    <QuoteRejectModal
+      v-if="type === 'quote'"
+      v-model="showRejectModal"
+      :loading="rejecting"
+      @confirm="handleRejectConfirm"
+    />
   </div>
 </template>
 
@@ -189,7 +358,7 @@ const props = withDefaults(
   {
     entityId: "",
     immediate: true,
-  }
+  },
 );
 
 const emit = defineEmits<{
@@ -205,7 +374,8 @@ const config = computed(() => {
       return {
         infoHeading: "Order Information",
         errorTitle: "Unable to Load Order",
-        errorMessage: "We couldn't load the order details. This might be due to a network issue or the order might not exist.",
+        errorMessage:
+          "We couldn't load the order details. This might be due to a network issue or the order might not exist.",
         backRoute: "/orders",
         backText: "Back to Orders",
         noAttachmentsMessage: "No order attachments uploaded.",
@@ -216,7 +386,8 @@ const config = computed(() => {
       return {
         infoHeading: "Vector Information",
         errorTitle: "Unable to Load Vector",
-        errorMessage: "We couldn't load the vector details. This might be due to a network issue or the vector might not exist.",
+        errorMessage:
+          "We couldn't load the vector details. This might be due to a network issue or the vector might not exist.",
         backRoute: "/vectors",
         backText: "Back to Vectors",
         noAttachmentsMessage: "No vector attachments uploaded.",
@@ -228,7 +399,8 @@ const config = computed(() => {
       return {
         infoHeading: "Quote Information",
         errorTitle: "Unable to Load Quote",
-        errorMessage: "We couldn't load the quote details. This might be due to a network issue or the quote might not exist.",
+        errorMessage:
+          "We couldn't load the quote details. This might be due to a network issue or the quote might not exist.",
         backRoute: "/quotes",
         backText: "Back to Quotes",
         noAttachmentsMessage: "No quote attachments uploaded.",
@@ -239,9 +411,14 @@ const config = computed(() => {
 });
 
 // ─── Data fetching ─────────────────────────────────────────────────────────
-const { data, pending, error, execute: fetchEntity } = useFetch<any>(
+const {
+  data,
+  pending,
+  error,
+  execute: fetchEntity,
+} = useFetch<any>(
   () => (entityId.value ? `${config.value.apiBase}/${entityId.value}` : ""),
-  { immediate: props.immediate, watch: [entityId] }
+  { immediate: props.immediate, watch: [entityId] },
 );
 
 // Derived early so the deliveryResp URL factory can safely reference it
@@ -250,10 +427,11 @@ const entity = computed(() => (data.value as any)?.data);
 const { data: deliveryResp, execute: fetchDelivery } = useFetch<any>(
   () => {
     if (!entityId.value) return "";
-    if (props.type === "quote" && entity.value?.status === QuoteStatus.PENDING) return "";
+    if (props.type === "quote" && entity.value?.status === QuoteStatus.PENDING)
+      return "";
     return `${config.value.deliveryBase}/${entityId.value}`;
   },
-  { immediate: props.immediate, watch: [entityId, data] }
+  { immediate: props.immediate, watch: [entityId, data] },
 );
 
 const refresh = () => {
@@ -283,7 +461,9 @@ const entityAttachments = computed(() => {
 // Order/Vector: deliveryResp.value is the delivery record directly
 const deliveryData = computed(() => deliveryResp.value);
 // Quote: deliveryResp.value is { message, data: {...} }
-const deliveryDetails = computed(() => (deliveryResp.value as any)?.data ?? deliveryResp.value);
+const deliveryDetails = computed(
+  () => (deliveryResp.value as any)?.data ?? deliveryResp.value,
+);
 
 // ─── Auth ──────────────────────────────────────────────────────────────────
 const { user } = useUserSession();
@@ -293,11 +473,14 @@ const isAdmin = computed(() => (user.value as any)?.role === ROLE.Admin);
 const showDeliveryModal = ref(false);
 const showRejectModal = ref(false);
 const rejecting = ref(false);
+const delivering = ref(false);
 const toast = useToast();
 const router = useRouter();
 
 // ─── Order / Vector actions ────────────────────────────────────────────────
-const handleApproveOrReject = async (action: "approve" | "reject" | "cancel") => {
+const handleApproveOrReject = async (
+  action: "approve" | "reject" | "cancel",
+) => {
   const statusMap: Record<string, OrderStatus> = {
     approve: OrderStatus.IN_PROGRESS,
     reject: OrderStatus.REJECTED,
@@ -309,7 +492,9 @@ const handleApproveOrReject = async (action: "approve" | "reject" | "cancel") =>
       method: "POST",
       body: { [apiIdKey]: entityId.value, status: statusMap[action] },
     });
-    toast.success(`${props.type.charAt(0).toUpperCase() + props.type.slice(1)} status updated successfully`);
+    toast.success(
+      `${props.type.charAt(0).toUpperCase() + props.type.slice(1)} status updated successfully`,
+    );
     refresh();
     emit("refresh");
   } catch (e) {
@@ -330,41 +515,57 @@ const handleEdit = () => {
 
 // Order/Vector delivery completed
 const handleDeliveryComplete = async (formData: any) => {
-  if (props.type === "vector") {
-    try {
-      const fd = new FormData();
-      fd.append("vectorId", String(entityId.value));
-      fd.append("stitches", formData.stitches);
-      fd.append("price", formData.price);
-      if (formData.discount) fd.append("discount", formData.discount);
-      if (formData.total_price) fd.append("total_price", formData.total_price);
-      if (formData.order_category) fd.append("order_category", formData.order_category);
-      if (formData.height) fd.append("height", formData.height);
-      if (formData.width) fd.append("width", formData.width);
-      if (formData.comments) fd.append("comments", formData.comments);
-      if (formData.designer_level) fd.append("designer_level", formData.designer_level);
-      if (formData.assign_percentage) fd.append("assign_percentage", formData.assign_percentage);
-      if (formData.minimum_price) fd.append("minimum_price", formData.minimum_price);
-      if (formData.maximum_price) fd.append("maximum_price", formData.maximum_price);
-      if (formData.thousand_stitches) fd.append("thousand_stitches", formData.thousand_stitches);
-      if (formData.normal_delivery) fd.append("normal_delivery", formData.normal_delivery);
-      if (formData.edit_or_change) fd.append("edit_or_change", formData.edit_or_change);
-      if (formData.edit_in_stitch_file) fd.append("edit_in_stitch_file", formData.edit_in_stitch_file);
-      (formData.attachments || []).forEach((f: File) => fd.append("attachments", f));
-      await $fetch("/api/vectors/deliver", { method: "POST", body: fd });
-      toast.success("Vector delivered successfully");
-      refresh();
-      emit("refresh");
-      showDeliveryModal.value = false;
-    } catch (e) {
-      console.error(e);
-      toast.error("Failed to complete delivery");
-    }
-  } else {
-    // Order: DeliveryModal handles its own POST internally, just refresh
+  delivering.value = true;
+  try {
+    const fd = new FormData();
+    fd.append(
+      props.type === "vector" ? "vectorId" : "orderId",
+      String(entityId.value),
+    );
+    fd.append("stitches", formData.stitches);
+    fd.append("price", formData.price);
+    if (formData.discount) fd.append("discount", formData.discount);
+    if (formData.total_price) fd.append("total_price", formData.total_price);
+    if (formData.order_category)
+      fd.append("order_category", formData.order_category);
+    if (formData.height) fd.append("height", formData.height);
+    if (formData.width) fd.append("width", formData.width);
+    if (formData.comments) fd.append("comments", formData.comments);
+    if (formData.designer_level)
+      fd.append("designer_level", formData.designer_level);
+    if (formData.assign_percentage)
+      fd.append("assign_percentage", formData.assign_percentage);
+    if (formData.minimum_price)
+      fd.append("minimum_price", formData.minimum_price);
+    if (formData.maximum_price)
+      fd.append("maximum_price", formData.maximum_price);
+    if (formData.thousand_stitches)
+      fd.append("thousand_stitches", formData.thousand_stitches);
+    if (formData.normal_delivery)
+      fd.append("normal_delivery", formData.normal_delivery);
+    if (formData.edit_or_change)
+      fd.append("edit_or_change", formData.edit_or_change);
+    if (formData.edit_in_stitch_file)
+      fd.append("edit_in_stitch_file", formData.edit_in_stitch_file);
+    (formData.attachments || []).forEach((f: File) =>
+      fd.append("attachments", f),
+    );
+
+    const endpoint =
+      props.type === "vector" ? "/api/vectors/deliver" : "/api/orders/deliver";
+    await $fetch(endpoint, { method: "POST", body: fd });
+
+    toast.success(
+      `${props.type === "vector" ? "Vector" : "Order"} delivered successfully`,
+    );
     refresh();
     emit("refresh");
     showDeliveryModal.value = false;
+  } catch (e) {
+    console.error(e);
+    toast.error(`Failed to deliver ${props.type}`);
+  } finally {
+    delivering.value = false;
   }
 };
 
@@ -373,7 +574,11 @@ const handleQuoteStatus = async (status: QuoteStatus) => {
   try {
     await $fetch("/api/quotes/status", {
       method: "POST",
-      body: { quoteId: entityId.value, status, dataSourceType: entity.value?.q_type },
+      body: {
+        quoteId: entityId.value,
+        status,
+        dataSourceType: entity.value?.q_type,
+      },
     });
     toast.success("Quote status updated successfully");
     refresh();
@@ -419,6 +624,7 @@ const handleRejectConfirm = async (reason: string) => {
 };
 
 const handleQuoteDeliver = async (form: any) => {
+  delivering.value = true;
   try {
     const fd = new FormData();
     fd.append("stitchCount", form.stitchCount);
@@ -428,7 +634,10 @@ const handleQuoteDeliver = async (form: any) => {
     if (form.attachments?.length) {
       form.attachments.forEach((file: File) => fd.append("attachments", file));
     }
-    await $fetch(`/api/quotes/deliver/${entityId.value}`, { method: "POST", body: fd });
+    await $fetch(`/api/quotes/deliver/${entityId.value}`, {
+      method: "POST",
+      body: fd,
+    });
     toast.success("Quote delivered successfully");
     showDeliveryModal.value = false;
     refresh();
@@ -436,6 +645,8 @@ const handleQuoteDeliver = async (form: any) => {
   } catch (err: any) {
     console.error(err);
     toast.error(err.statusMessage || "Failed to deliver quote");
+  } finally {
+    delivering.value = false;
   }
 };
 </script>

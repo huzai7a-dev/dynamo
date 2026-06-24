@@ -113,6 +113,7 @@ import Button from '~/components/ui/Button.vue';
 import InvoiceStatusBadge from '~/components/ui/InvoiceStatusBadge.vue';
 
 definePageMeta({
+    name: "Invoice",
     layout: "portal",
     middleware: ["auth"],
 });

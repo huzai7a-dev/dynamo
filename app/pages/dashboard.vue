@@ -16,6 +16,7 @@ const dashboard = {
 }
 
 definePageMeta({
+  name: "Dashboard",
   layout: "portal",
   // middleware: ["auth"],
 });

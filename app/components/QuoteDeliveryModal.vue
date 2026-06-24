@@ -91,16 +91,17 @@ interface Props {
     modelValue: boolean
     quoteId: string
     initialValues?: Partial<QuoteDeliveryFormData>
+    loading?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+    loading: false,
+})
 
 const emit = defineEmits<{
     'update:modelValue': [value: boolean]
     'on:deliver': [data: QuoteDeliveryFormData]
 }>()
-
-const loading = ref(false)
 
 const initialFormData: QuoteDeliveryFormData = {
     stitchCount: '',
@@ -117,16 +118,17 @@ const isOpen = computed({
     set: (value) => emit('update:modelValue', value)
 })
 
-watch(() => props.modelValue, (isOpen) => {
-    if (isOpen && props.initialValues) {
+watch(() => props.modelValue, (open) => {
+    if (open && props.initialValues) {
         formData.value = {
             ...initialFormData,
             ...props.initialValues,
             // Ensure we don't overwrite attachments with undefined if not passed
             attachments: []
         }
-    } else if (!isOpen) {
-        // Reset Logic handled in handleCancel/submit usually, but good to ensure
+    } else if (!open) {
+        // Reset whenever the modal closes (cancel, or parent closing on success)
+        formData.value = { ...initialFormData }
     }
 })
 
@@ -136,40 +138,12 @@ const isFormValid = computed(() => {
         parseFloat(formData.value.price) > 0
 })
 
-const handleSubmit = async () => {
-    if (!isFormValid.value) return
-
-    loading.value = true
-
-    try {
-        // Create FormData object
-        const deliveryFormData = new FormData()
-        deliveryFormData.append('stitchCount', formData.value.stitchCount)
-        deliveryFormData.append('turnAroundTime', formData.value.turnAroundTime)
-        deliveryFormData.append('price', formData.value.price)
-        deliveryFormData.append('additionalQuery', formData.value.additionalQuery)
-
-        // Append all files
-        formData.value.attachments.forEach((file, index) => {
-            deliveryFormData.append(`attachments[${index}]`, file)
-        })
-
-        await emit('on:deliver', formData.value)
-
-        // Reset form
-        formData.value = { ...initialFormData }
-
-        isOpen.value = false
-    } catch (error) {
-        console.error('Error submitting delivery:', error)
-    } finally {
-        loading.value = false
-    }
+const handleSubmit = () => {
+    if (!isFormValid.value || props.loading) return
+    emit('on:deliver', formData.value)
 }
 
 const handleCancel = () => {
-    // Reset form
-    formData.value = { ...initialFormData }
     isOpen.value = false
 }
 </script>

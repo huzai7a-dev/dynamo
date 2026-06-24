@@ -217,6 +217,7 @@ import { ref, computed, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
 definePageMeta({
+  name: "Invoices",
   layout: "portal",
   middleware: ["auth"],
 });

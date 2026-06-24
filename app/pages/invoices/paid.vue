@@ -272,6 +272,7 @@
 import { ref, computed, nextTick } from 'vue';
 
 definePageMeta({
+  name: "Paid Invoices",
   layout: "portal",
   middleware: ["auth"],
 });

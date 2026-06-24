@@ -9,32 +9,41 @@
       </div>
 
       <!-- Form -->
-      <OrderForm headerTitle="Send Quote" v-if="dataSourceType === DataSource.ORDER" endpoint="quotes"
-        @success="handleSuccess" @error="handleError" />
-      <VectorForm headerTitle="Send Quote" v-if="dataSourceType === DataSource.VECTOR" endpoint="quotes"
-        @success="handleSuccess" @error="handleError" />
+      <OrderForm
+        headerTitle="Send Quote"
+        v-if="dataSourceType === DataSource.ORDER"
+        endpoint="quotes"
+        @success="handleSuccess"
+        @error="handleError"
+      />
+      <VectorForm
+        headerTitle="Send Quote"
+        v-if="dataSourceType === DataSource.VECTOR"
+        endpoint="quotes"
+        @success="handleSuccess"
+        @error="handleError"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-
 const router = useRouter();
 const route = useRoute();
 const toast = useToast();
 const dataSourceType = computed(() => route.query?.type || DataSource.ORDER);
 
 const handleSuccess = () => {
-  toast.success('Quote created successfully!');
-  router.push('/quotes');
+  toast.success("Quote created successfully!");
+  router.push("/quotes");
 };
 
 const handleError = () => {
-  toast.error('Something went wrong. Please try again.');
+  toast.error("Something went wrong. Please try again.");
 };
 
 definePageMeta({
-  name: "Create Quote",
+  name: "Quote",
   layout: "portal",
   middleware: ["auth"],
 });

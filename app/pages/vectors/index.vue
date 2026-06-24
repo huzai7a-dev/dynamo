@@ -1,13 +1,25 @@
 <template>
   <div>
-    <VectorsTable @create-order="$router.push('/vectors/create')" :data="data?.data?.vectors ?? []" :pagination="{
-      currentPage: data?.data?.pagination.currentPage || 1,
-      totalPage: data?.data?.pagination.totalPage || 10,
-    }" :searchCustomerName="customerName" :searchOrderNumber="orderNumber" :searchOrderName="orderName"
-      :loading="pending" :error="!!error" @refresh="refresh" @update:searchOrderNumber="orderNumber = $event"
-      @update:searchOrderName="orderName = $event" @update:selectedDateRange="dateRange = $event"
-      @update:searchCustomerName="customerName = $event" @paginate="(nextPage) => (currentPage = nextPage)"
-      @row-click="$router.push(`/vectors/${$event.row.id}`)" />
+    <VectorsTable
+      @create-order="$router.push('/vectors/create')"
+      :data="data?.data?.vectors ?? []"
+      :pagination="{
+        currentPage: data?.data?.pagination.currentPage || 1,
+        totalPage: data?.data?.pagination.totalPage || 10,
+      }"
+      :searchCustomerName="customerName"
+      :searchOrderNumber="orderNumber"
+      :searchOrderName="orderName"
+      :loading="pending"
+      :error="!!error"
+      @refresh="refresh"
+      @update:searchOrderNumber="orderNumber = $event"
+      @update:searchOrderName="orderName = $event"
+      @update:selectedDateRange="dateRange = $event"
+      @update:searchCustomerName="customerName = $event"
+      @paginate="(nextPage) => (currentPage = nextPage)"
+      @row-click="$router.push(`/vectors/${$event.row.id}`)"
+    />
   </div>
 </template>
 
@@ -19,7 +31,7 @@ import type { IVector, Pagination, QueryParams } from "~~/shared/types";
 definePageMeta({
   layout: "portal",
   middleware: ["auth"],
-  name: "Vectors",
+  name: "Vector Records",
 });
 
 interface OrderResponse {

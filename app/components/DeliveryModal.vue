@@ -188,16 +188,17 @@ interface Props {
   modelValue: boolean
   orderId: string;
   orderDate: string,
+  loading?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  loading: false,
+})
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
   'on:deliver': [data: DeliveryFormData]
 }>()
-
-const loading = ref(false)
 
 const initialFormData: DeliveryFormData = {
   stitches: '',
@@ -243,28 +244,19 @@ const isFormValid = computed(() => {
     formData.value.attachments.length > 0
 })
 
-const handleSubmit = async () => {
-  if (!isFormValid.value) return
+// The actual delivery request happens in the parent (so the loading prop can
+// reflect the real in-flight request). The parent closes the modal by
+// setting v-model to false once delivery succeeds.
+watch(() => props.modelValue, (open) => {
+  if (!open) formData.value = initialFormData
+})
 
-  loading.value = true
-
-  try {
-    await emit('on:deliver', formData.value)
-
-    // Reset form
-    formData.value = initialFormData
-
-    isOpen.value = false
-  } catch (error) {
-    console.error('Error submitting delivery:', error)
-  } finally {
-    loading.value = false
-  }
+const handleSubmit = () => {
+  if (!isFormValid.value || props.loading) return
+  emit('on:deliver', formData.value)
 }
 
 const handleCancel = () => {
-  // Reset form
-  formData.value = initialFormData
   isOpen.value = false
 }
 </script>

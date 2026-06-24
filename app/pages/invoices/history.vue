@@ -315,6 +315,7 @@
 import { ref, computed, nextTick, onMounted, onBeforeUnmount } from 'vue';
 
 definePageMeta({
+  name: "Invoice History",
   layout: "portal",
   middleware: ["auth"],
 });

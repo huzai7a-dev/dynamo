@@ -10,6 +10,7 @@
 import { ref, computed } from 'vue';
 
 definePageMeta({
+    name: "Profiles",
     layout: "portal",
     middleware: ["auth"],
 });

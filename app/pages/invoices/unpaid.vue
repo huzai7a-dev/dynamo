@@ -466,6 +466,7 @@ import { ref, computed, nextTick } from 'vue';
 import { COMPANY, PAYMENT_INFO } from '~/constants';
 
 definePageMeta({
+  name: "Unpaid Invoices",
   layout: "portal",
   middleware: ["auth"],
 });

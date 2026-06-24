@@ -4,7 +4,7 @@ import {
   type QueryParams,
 } from "#shared/types";
 import { OrderStatus } from "#shared/types/enums";
-import OrderRepository from "../repositories/order.respository";
+import OrderRepository from "../repositories/order.repository";
 import OrderDeliveryRepository, { type OrderDeliveryData } from "../repositories/order-delivery.repository";
 import uploadService, { type UploadedAsset } from "./upload.service";
 import EmailService, { buildMailAttachments } from "./email.service";

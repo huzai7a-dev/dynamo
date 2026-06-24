@@ -66,7 +66,10 @@
           <td :colspan="columns.length" class="text-center py-10 text-gray-400 text-sm">No data available</td>
         </tr>
         <tr v-for="(row, index) in data" :key="index"
-          class="bg-white border-b border-primary-light/30 last:border-b-0 cursor-pointer hover:bg-primary-light/10 transition-colors duration-150"
+          :class="[
+            'bg-white border-b border-primary-light/30 last:border-b-0 transition-colors duration-150',
+            disableRowHover ? '' : 'cursor-pointer hover:bg-primary-light/10',
+          ]"
           @click="emit('rowClick', { row, index })">
           <td v-for="column in columns" :key="column.key" class="px-3 py-2.5 text-xs text-gray-700 text-center whitespace-nowrap">
             <!-- Slot for custom content in specific columns -->
@@ -145,6 +148,10 @@ const props = defineProps({
     default: 'asc'
   },
   infiniteScroll: {
+    type: Boolean,
+    default: false
+  },
+  disableRowHover: {
     type: Boolean,
     default: false
   }
