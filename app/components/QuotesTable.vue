@@ -87,9 +87,7 @@
           </template>
 
           <template #column-q_type="{ row }">
-            <span>{{
-              row.q_type === DataSource.ORDER ? "Digitizing" : "Vector"
-            }}</span>
+            <span>{{ row.q_type }}</span>
           </template>
 
           <template #column-edit="{ row }">

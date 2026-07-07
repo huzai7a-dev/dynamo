@@ -86,6 +86,7 @@
 
           <template #column-edit="{ row }">
             <button
+              v-if="(row as TableOrders).status !== OrderStatus.DELIVERED"
               class="p-2 rounded hover:bg-slate-100"
               title="Edit this order"
               @click.stop="handleEdit(row.id)"
@@ -133,6 +134,7 @@ import TableHeader from "./TableHeader.vue";
 import Icon from "./Icon.vue";
 import EntityDetailModal from "./EntityDetailModal.vue";
 import { ROLE } from "~~/shared/constants";
+import { OrderStatus } from "~~/shared/types/enums";
 import {
   getOrderStatusBadgeClass,
   getPaymentStatusBadgeClass,

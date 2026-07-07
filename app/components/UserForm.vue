@@ -9,7 +9,7 @@
     </div>
 
     <!-- Card -->
-    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-gray-100 px-8 py-8">
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-gray-100 px-8 py-8 h-auto overflow-y-auto">
       <form @submit.prevent="onSubmit" class="space-y-4 max-h-[calc(100vh-280px)] pb-2">
 
         <!-- Row 1: Username | Password -->

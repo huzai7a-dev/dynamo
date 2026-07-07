@@ -85,6 +85,7 @@
 
           <template #column-edit="{ row }">
             <button
+              v-if="(row as TableOrders).status !== OrderStatus.DELIVERED"
               class="p-2 rounded hover:bg-slate-100"
               title="Edit this vector"
               @click.stop="handleEdit(row.id)"
@@ -136,6 +137,7 @@ import type {
 } from "#shared/types";
 import TableHeader from "./TableHeader.vue";
 import { ROLE } from "~~/shared/constants";
+import { OrderStatus } from "~~/shared/types/enums";
 import {
   getOrderStatusBadgeClass,
   getPaymentStatusBadgeClass,

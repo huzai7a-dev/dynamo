@@ -73,6 +73,7 @@ const isIcon = computed(() => props.size === "icon");
         </button> -->
 
         <button
+          v-if="props.status !== OrderStatus.DELIVERED"
           class="text-xs px-2 py-1 rounded border border-charcoal/20 bg-white text-secondary"
           @click.stop="emit('edit')"
         >
@@ -121,6 +122,7 @@ const isIcon = computed(() => props.size === "icon");
       <!-- Icon Non-admin -->
       <template v-else>
         <button
+          v-if="props.status !== OrderStatus.DELIVERED"
           class="p-1.5 rounded-full bg-primary text-slate-600 hover:bg-slate-100 transition-colors"
           title="Edit"
           @click.stop="emit('edit')"
@@ -179,6 +181,7 @@ const isIcon = computed(() => props.size === "icon");
         </button>
 
         <button
+          v-if="props.status !== OrderStatus.DELIVERED"
           class="rounded-2xl border border-charcoal/20 bg-white px-4 py-2 font-medium text-secondary hover:bg-sold-light hover:bg-solid-light transition"
           @click="emit('edit')"
         >

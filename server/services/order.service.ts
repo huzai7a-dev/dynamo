@@ -217,11 +217,15 @@ class OrderService {
 
     // Check if user owns this order or is admin
     const order = await this.db`
-      SELECT user_id FROM orders WHERE id = ${orderId}
+      SELECT user_id, status FROM orders WHERE id = ${orderId}
     `;
 
     if (!order[0] || order[0].user_id !== parseInt(userId)) {
       throw new Error("Order not found or access denied");
+    }
+
+    if (order[0].status === OrderStatus.DELIVERED) {
+      throw new Error("Cannot edit an order that has already been delivered");
     }
 
     const attachmentsInput = (files || []).filter(

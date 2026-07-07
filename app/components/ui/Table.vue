@@ -45,17 +45,23 @@
       <thead class="bg-primary sticky top-0 z-10">
         <tr>
           <th v-for="column in columns" :key="column.key"
-            class="px-3 py-2 text-center text-xs font-semibold text-white uppercase tracking-wider cursor-pointer select-none whitespace-nowrap"
-            @click="sortData(column.key)">
-            <div class="flex items-center justify-center gap-1">
-              <Icon v-if="column.icon" :name="column.icon" class="w-3 h-3 text-white/70" />
-              <span>{{ column.label }}</span>
-              <svg v-if="sortBy === column.key" class="w-2.5 h-2.5 text-white/60 shrink-0"
-                :class="sortOrder === 'asc' ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
+            class="px-3 py-2 text-center text-xs font-semibold text-white uppercase tracking-wider select-none whitespace-nowrap"
+            :class="$slots[`header-${column.key}`] ? '' : 'cursor-pointer'"
+            @click="$slots[`header-${column.key}`] ? null : sortData(column.key)">
+            <template v-if="$slots[`header-${column.key}`]">
+              <slot :name="`header-${column.key}`" :column="column" />
+            </template>
+            <template v-else>
+              <div class="flex items-center justify-center gap-1">
+                <Icon v-if="column.icon" :name="column.icon" class="w-3 h-3 text-white/70" />
+                <span>{{ column.label }}</span>
+                <svg v-if="sortBy === column.key" class="w-2.5 h-2.5 text-white/60 shrink-0"
+                  :class="sortOrder === 'asc' ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </template>
           </th>
         </tr>
       </thead>
@@ -82,6 +88,11 @@
           </td>
         </tr>
       </tbody>
+
+      <!-- Footer slot (e.g. totals row) -->
+      <tfoot v-if="$slots.footer">
+        <slot name="footer" />
+      </tfoot>
     </table>
 
     <!-- Pagination -->

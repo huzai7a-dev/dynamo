@@ -176,6 +176,10 @@ class VectorService {
       throw new Error("Vector not found or access denied");
     }
 
+    if (vector.status === OrderStatus.DELIVERED) {
+      throw new Error("Cannot edit a vector that has already been delivered");
+    }
+
     // Handle new file uploads
     const attachmentsInput = (files || []).filter(
       (f: any) => f.fieldName === "attachments" || f.fieldName == null
