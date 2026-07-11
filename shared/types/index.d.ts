@@ -111,6 +111,7 @@ export interface Attachment {
   resource_type?: string | null
   format?: string | null
   bytes?: number | null
+  original_filename?: string | null
 }
 
 export interface OrderDelivery {

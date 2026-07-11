@@ -45,7 +45,7 @@ class VectorRepository {
           j->>'resourceType',
           NULLIF(j->>'format','')::text,
           NULLIF(j->>'bytes','')::bigint,
-          NULLIF(j->>'originalFilename','')::text,
+          'VR-' || (SELECT id FROM new_vector) || '-' || COALESCE(NULLIF(j->>'originalFilename',''), 'file'),
           'vector_attachments'
         FROM data
         RETURNING 1
@@ -118,7 +118,8 @@ class VectorRepository {
           'url', a.url,
           'resource_type', a.resource_type,
           'format', a.format,
-          'bytes', a.bytes
+          'bytes', a.bytes,
+          'original_filename', a.original_filename
         )
         ORDER BY a.created_at
       ) AS attachments

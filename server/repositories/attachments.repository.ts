@@ -46,7 +46,7 @@ class AttachmentsRepository {
             j->>'resourceType',
             NULLIF(j->>'format','')::text,
             NULLIF(j->>'bytes','')::bigint,
-            NULLIF(j->>'originalFilename','')::text,
+            'OR-' || ${orderId} || '-' || COALESCE(NULLIF(j->>'originalFilename',''), 'file'),
             ${fieldName}
           FROM data
           RETURNING 1
@@ -92,7 +92,7 @@ class AttachmentsRepository {
             j->>'resourceType',
             NULLIF(j->>'format','')::text,
             NULLIF(j->>'bytes','')::bigint,
-            NULLIF(j->>'originalFilename','')::text,
+            'VR-' || ${vectorId} || '-' || COALESCE(NULLIF(j->>'originalFilename',''), 'file'),
             'vector_attachments'
           FROM data
           RETURNING 1

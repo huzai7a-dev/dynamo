@@ -141,7 +141,7 @@ class OrderRepository {
             j->>'resourceType',
             NULLIF(j->>'format','')::text,
             NULLIF(j->>'bytes','')::bigint,
-            NULLIF(j->>'originalFilename','')::text,
+            'OR-' || (SELECT id FROM new_order) || '-' || COALESCE(NULLIF(j->>'originalFilename',''), 'file'),
             'order_attachments'
           FROM data
           RETURNING 1
