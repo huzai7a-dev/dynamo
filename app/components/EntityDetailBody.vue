@@ -250,12 +250,7 @@
             />
 
             <!-- Delivery attachments (Order/Vector) -->
-            <template
-              v-if="
-                type !== 'quote' &&
-                (deliveryData as any)?.delivery_attachments?.length
-              "
-            >
+            <template v-if="type !== 'quote' && deliveryAttachments.length">
               <div class="border-t border-slate-100 pt-4">
                 <p
                   class="text-xs font-bold text-charcoal/50 uppercase tracking-wider mb-4"
@@ -264,7 +259,7 @@
                 </p>
                 <AttachmentsGallery
                   noAttachmentsMessage=""
-                  :attachments="(deliveryData as any).delivery_attachments"
+                  :attachments="deliveryAttachments"
                 />
               </div>
             </template>
@@ -464,6 +459,16 @@ const deliveryData = computed(() => deliveryResp.value);
 const deliveryDetails = computed(
   () => (deliveryResp.value as any)?.data ?? deliveryResp.value,
 );
+
+// Order/Vector: prefer the delivery-record's attachments, but fall back to the
+// entity's own `delivery_attachments` (populated even without an order_deliveries/
+// vector_deliveries row — e.g. quote-converted orders/vectors that inherited
+// delivery attachments from the original quote).
+const deliveryAttachments = computed(() => {
+  const fromDelivery = (deliveryData.value as any)?.delivery_attachments;
+  if (fromDelivery?.length) return fromDelivery;
+  return entity.value?.delivery_attachments || [];
+});
 
 // ─── Auth ──────────────────────────────────────────────────────────────────
 const { user } = useUserSession();

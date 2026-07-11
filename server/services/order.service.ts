@@ -168,7 +168,8 @@ class OrderService {
     const order = await this.db`
       SELECT
         o.*,
-        COALESCE(att.attachments, '[]'::jsonb) AS order_attachments
+        COALESCE(att.attachments, '[]'::jsonb) AS order_attachments,
+        COALESCE(del_att.attachments, '[]'::jsonb) AS delivery_attachments
       FROM orders AS o
       LEFT JOIN LATERAL (
         SELECT jsonb_agg(
@@ -184,6 +185,20 @@ class OrderService {
         FROM attachments AS a
         WHERE a.order_id = o.id AND a.field_name = 'order_attachments'
       ) AS att ON TRUE
+      LEFT JOIN LATERAL (
+        SELECT jsonb_agg(
+                 jsonb_build_object(
+                   'url', a.url,
+                   'resource_type', a.resource_type,
+                   'format', a.format,
+                   'bytes', a.bytes,
+                   'original_filename', a.original_filename
+                 )
+                 ORDER BY a.created_at
+               ) AS attachments
+        FROM attachments AS a
+        WHERE a.order_id = o.id AND a.field_name = 'delivery_attachments'
+      ) AS del_att ON TRUE
       WHERE o.id = ${orderId}
       ${!isAdmin ? this.db`AND o.user_id = ${userId}` : this.db``}
     `;

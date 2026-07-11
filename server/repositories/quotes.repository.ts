@@ -193,7 +193,7 @@ class QuotesRepository {
       SELECT
         ${newOrderId}, url, public_id, resource_type, format, bytes,
         'OR-' || ${newOrderId} || '-' || regexp_replace(original_filename, '^QR-[0-9]+-', '') || '-' || original_filename,
-        field_name
+        CASE WHEN field_name = 'quotes_delivery_attachments' THEN 'delivery_attachments' ELSE 'order_attachments' END
       FROM public.quote_attachments
       WHERE quote_id = ${quoteId};
     `;
@@ -264,7 +264,7 @@ class QuotesRepository {
       SELECT
         ${newVectorId}, url, public_id, resource_type, format, bytes,
         'VR-' || ${newVectorId} || '-' || regexp_replace(original_filename, '^QR-[0-9]+-', '') || '-' || original_filename,
-        field_name
+        CASE WHEN field_name = 'quotes_delivery_attachments' THEN 'vector_delivery_attachments' ELSE 'vector_attachments' END
       FROM public.quote_attachments
       WHERE quote_id = ${quoteId};
     `;
@@ -332,7 +332,7 @@ class QuotesRepository {
             j->>'resourceType',
             NULLIF(j->>'format','')::text,
             NULLIF(j->>'bytes','')::bigint,
-            NULLIF(j->>'originalFilename','')::text,
+            'QR-' || ${quoteId} || '-' || COALESCE(NULLIF(j->>'originalFilename',''), 'file'),
             'quotes_delivery_attachments'
           FROM data
         `;

@@ -108,9 +108,10 @@ class VectorRepository {
 
   async getVectorDetails(id: number, isAdmin: boolean, userId: number) {
     const vector = await this.db`
-    SELECT 
+    SELECT
       v.*,
-      COALESCE(att.attachments, '[]'::jsonb) AS vector_attachments
+      COALESCE(att.attachments, '[]'::jsonb) AS vector_attachments,
+      COALESCE(del_att.attachments, '[]'::jsonb) AS delivery_attachments
     FROM vectors v
     LEFT JOIN LATERAL (
       SELECT jsonb_agg(
@@ -126,6 +127,20 @@ class VectorRepository {
     FROM vector_attachments AS a
     WHERE a.vector_id = v.id AND a.field_name = 'vector_attachments'
   ) AS att ON TRUE
+    LEFT JOIN LATERAL (
+      SELECT jsonb_agg(
+        jsonb_build_object(
+          'url', a.url,
+          'resource_type', a.resource_type,
+          'format', a.format,
+          'bytes', a.bytes,
+          'original_filename', a.original_filename
+        )
+        ORDER BY a.created_at
+      ) AS attachments
+    FROM vector_attachments AS a
+    WHERE a.vector_id = v.id AND a.field_name = 'vector_delivery_attachments'
+  ) AS del_att ON TRUE
    WHERE v.id = ${id}
    ${!isAdmin ? this.db`AND v.user_id = ${userId}` : this.db``}
   `;
