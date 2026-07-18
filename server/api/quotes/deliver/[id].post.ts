@@ -85,7 +85,7 @@ export default defineEventHandler(async (event) => {
         };
 
     } catch (error: any) {
-        console.error("Error in quote delivery endpoint:", error);
+        useLogger().error("Error in quote delivery endpoint:", error);
         throw createError({
             statusCode: 500,
             message: error.message || "Internal Server Error",

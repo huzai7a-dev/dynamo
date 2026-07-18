@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
       data: vectors,
     };
   } catch (error) {
-    console.log(error);
+    useLogger().error("Failed to fetch vectors:", error);
     return createError({
       statusCode: 400,
       data: JSON.stringify(error),

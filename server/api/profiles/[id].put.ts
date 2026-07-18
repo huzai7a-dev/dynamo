@@ -72,7 +72,7 @@ export default eventHandler(async (event) => {
 		};
 	} catch (err: any) {
 		// log full error server-side for debugging
-		console.error("profiles/:id PUT error:", err);
+		useLogger().error("profiles/:id PUT error:", err);
 
 		// if it's a createError thrown earlier, pass through status/message
 		const statusCode = err?.statusCode ?? err?.status ?? 500;

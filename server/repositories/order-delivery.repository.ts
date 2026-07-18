@@ -24,7 +24,7 @@ class OrderDeliveryRepository {
   }
 
   async createDelivery(deliveryData: OrderDeliveryData, attachments: UploadedAsset[] = []) {
-    console.log("🚀 ~ OrderDeliveryRepository ~ createDelivery ~ deliveryData:", deliveryData, attachments)
+    useLogger().info("Creating order delivery:", deliveryData, attachments)
     const rows = await this.db`
       WITH new_delivery AS (
         INSERT INTO order_deliveries (

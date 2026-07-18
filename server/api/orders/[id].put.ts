@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
       data: result,
     };
   } catch (error: any) {
-    console.error("Error updating order:", error);
+    useLogger().error("Error updating order:", error);
     
     if (error.statusCode) {
       throw error;

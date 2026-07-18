@@ -74,7 +74,7 @@ class AuthService {
                 'New Client Registration Notification',
                 generateAdminNotificationEmail(emailData, ip)
             ),
-        ]).catch((err) => console.error('Email notification failed:', err)));
+        ]).catch((err) => useLogger().error('Email notification failed:', err)));
 
         return {
             statusCode: 201,

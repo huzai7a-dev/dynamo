@@ -214,7 +214,7 @@ class QuotesRepository {
 
     } catch (error) {
       await this.db`ROLLBACK`;
-      console.error("Conversion failed:", error);
+      useLogger().error("Conversion failed:", error);
       throw error;
     }
   }
@@ -343,7 +343,7 @@ class QuotesRepository {
 
     } catch (error) {
       await this.db`ROLLBACK`;
-      console.error("Deliver quote failed:", error);
+      useLogger().error("Deliver quote failed:", error);
       throw error;
     }
   }

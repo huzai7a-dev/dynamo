@@ -10,14 +10,14 @@ export default eventHandler(async (event) => {
         const isAdmin = role === ROLE.Admin
         const order = await orderService.getOrderDetails(isAdmin, Number(orderId), Number(userId));
 
-        console.log(order, 'order details')
+        useLogger().info('Order details:', order)
         return {
             message: 'Order fetched successfully',
             data: order
         }
         
     } catch (error) {
-        console.log(error, 'error')
+        useLogger().error('Failed to fetch order details:', error)
         return createError({
             statusCode: 400,
             message: 'Server Error'

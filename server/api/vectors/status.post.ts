@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
       data: vector,
     };
   } catch (error) {
-    console.log(error);
+    useLogger().error("Failed to update vector status:", error);
     return createError({
       statusCode: 400,
       data: JSON.stringify(error),

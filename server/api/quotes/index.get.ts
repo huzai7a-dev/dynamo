@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
       data: quotes,
     };
   } catch (error) {
-    console.log(error);
+    useLogger().error("Failed to fetch quotes:", error);
     return createError({
       statusCode: 400,
       data: JSON.stringify(error),

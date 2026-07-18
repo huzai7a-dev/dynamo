@@ -29,7 +29,7 @@ export default eventHandler(async (event) => {
         }
 
     } catch (error) {
-        console.log(error, 'error')
+        useLogger().error("Failed to fetch users:", error)
         return createError({
             statusCode: 400,
             message: 'Server Error'

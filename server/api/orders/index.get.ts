@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
       data: orders,
     };
   } catch (error) {
-    console.log(error);
+    useLogger().error("Failed to fetch orders:", error);
     return createError({
       statusCode: 400,
       data: JSON.stringify(error),

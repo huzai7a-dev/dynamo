@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
       message: "Quote status updated successfully",
     };
   } catch (error) {
-    console.log(error);
+    useLogger().error("Failed to update quote status:", error);
     return createError({
       statusCode: 400,
       data: JSON.stringify(error),

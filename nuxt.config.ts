@@ -8,6 +8,9 @@ export default defineNuxtConfig({
   },
   nitro: {
     preset: 'vercel',
+    experimental: {
+      asyncContext: true,
+    },
   },
 
   devtools: { enabled: true },

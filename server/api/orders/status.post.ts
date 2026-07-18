@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
       data: order,
     };
   } catch (error) {
-    console.log(error);
+    useLogger().error("Failed to update order status:", error);
     return createError({
       statusCode: 400,
       data: JSON.stringify(error),

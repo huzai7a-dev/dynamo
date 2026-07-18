@@ -90,7 +90,7 @@ class UploadService {
         originalFilename: response.original_filename ?? null,
       }
     } catch (error: any) {
-      console.error('Cloudinary upload failed:', {
+      useLogger().error('Cloudinary upload failed:', {
         error: error.message,
         status: error.status,
         data: error.data,

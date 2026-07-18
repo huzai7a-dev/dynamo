@@ -52,7 +52,7 @@ class VectorService {
         EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, vectorName, adminHTML, mailAttachments),
       ]);
     } catch (err) {
-      console.error('Vector confirmation email failed:', err);
+      useLogger().error('Vector confirmation email failed:', err);
     }
   }
 
@@ -305,7 +305,7 @@ class VectorService {
         EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, subject, html, mailAttachments),
       ]);
     } catch (err) {
-      console.error('Vector delivery email failed:', err);
+      useLogger().error('Vector delivery email failed:', err);
     }
   }
 

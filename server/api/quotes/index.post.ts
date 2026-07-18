@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
             data: quote
         }
     } catch (error) {
-        console.log(error)
+        useLogger().error("Failed to create quote:", error)
         return createError({
             statusCode: 400,
             data: JSON.stringify(error),

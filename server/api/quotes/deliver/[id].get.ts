@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
         };
 
     } catch (error: any) {
-        console.error("Error fetching delivery details:", error);
+        useLogger().error("Error fetching delivery details:", error);
         throw createError({
             statusCode: error.statusCode || 500,
             message: error.message || "Internal Server Error"

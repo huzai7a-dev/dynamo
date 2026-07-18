@@ -7,7 +7,7 @@ export default eventHandler(async (event) => {
         return delivery;
         
     } catch (error) {
-        console.log(error, 'error')
+        useLogger().error("Failed to fetch vector delivery details:", error)
         return createError({
             statusCode: 400,
             message: 'Server Error'

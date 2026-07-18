@@ -37,9 +37,9 @@ class EmailService {
                 subject,
                 text,
             });
-            console.log('Email sent:', info.messageId);
+            useLogger().info('Email sent:', info.messageId);
         } catch (error) {
-            console.error('Error sending email:', error);
+            useLogger().error('Error sending email:', error);
         }
     }
 
@@ -52,9 +52,9 @@ class EmailService {
                 html,
                 attachments,
             });
-            console.log('Email sent:', info.messageId);
+            useLogger().info('Email sent:', info.messageId);
         } catch (error) {
-            console.error('Error sending email:', error);
+            useLogger().error('Error sending email:', error);
         }
     }
 }

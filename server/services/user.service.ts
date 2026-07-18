@@ -78,7 +78,7 @@ class UserService {
                     'Client Profile Update Notification',
                     generateProfileUpdateAdminEmail(u)
                 ),
-            ]).catch((err) => console.error('Profile-update email failed:', err)));
+            ]).catch((err) => useLogger().error('Profile-update email failed:', err)));
         }
 
         return u;

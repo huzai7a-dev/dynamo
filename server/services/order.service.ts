@@ -62,7 +62,7 @@ class OrderService {
         EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, orderName, adminHTML, mailAttachments),
       ]);
     } catch (err) {
-      console.error('Order confirmation email failed:', err);
+      useLogger().error('Order confirmation email failed:', err);
     }
   }
 
@@ -436,7 +436,7 @@ class OrderService {
         EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, subject, html, mailAttachments),
       ]);
     } catch (err) {
-      console.error('Delivery notification email failed:', err);
+      useLogger().error('Delivery notification email failed:', err);
     }
   }
 

@@ -64,7 +64,7 @@ class AttachmentsService {
         appended++;
       } catch (err) {
         // One broken/missing file shouldn't fail the whole zip — skip and log it.
-        console.error(`[AttachmentsService] Failed to fetch file for zip: ${file.url}`, err);
+        useLogger().error(`[AttachmentsService] Failed to fetch file for zip: ${file.url}`, err);
       }
     }
 

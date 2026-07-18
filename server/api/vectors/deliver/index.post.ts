@@ -70,7 +70,7 @@ export default defineEventHandler(async (event) => {
       data: deliver
     };
   } catch (error) {
-    console.log(error)
+    useLogger().error("Failed to deliver vector:", error)
     throw createError({
       statusCode: 500,
       statusMessage: "Failed to deliver vector",

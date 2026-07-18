@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
             data: order
         }
     } catch (error) {
-        console.log(error)
+        useLogger().error("Failed to create vector:", error)
         return createError({
             statusCode: 400,
             data: JSON.stringify(error),

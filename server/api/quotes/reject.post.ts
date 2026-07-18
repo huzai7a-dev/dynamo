@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
         await quotesRepository.rejectQuote(Number(quoteId), reason);
         return { success: true, message: "Quote rejected successfully" };
     } catch (error: any) {
-        console.error("Error rejecting quote:", error);
+        useLogger().error("Error rejecting quote:", error);
         throw createError({
             statusCode: 500,
             message: error.message || "Failed to reject quote"

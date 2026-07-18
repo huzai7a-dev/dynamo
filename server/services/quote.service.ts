@@ -47,7 +47,7 @@ class QuoteService {
                 EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, quoteName, adminHTML, mailAttachments),
             ]);
         } catch (err) {
-            console.error('Quote confirmation email failed:', err);
+            useLogger().error('Quote confirmation email failed:', err);
         }
     }
 

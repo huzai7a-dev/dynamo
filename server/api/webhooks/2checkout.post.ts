@@ -7,20 +7,20 @@ export default defineEventHandler(async (event) => {
     // 2Checkout sends IPN as application/x-www-form-urlencoded POST
     const body = await readBody(event);
 
-    console.log('[2Checkout IPN] Received:', JSON.stringify(body, null, 2));
+    useLogger().info('[2Checkout IPN] Received:', JSON.stringify(body, null, 2));
 
     // ─── 1. Verify signature using the Secret Key (NOT the Buy-Link Secret Word) ───
     const secretKey = config.twoCheckoutSecretKey as string;
 
     if (!validateIPNSignature(body, secretKey)) {
-        console.error('[2Checkout IPN] Signature validation failed');
+        useLogger().error('[2Checkout IPN] Signature validation failed');
         throw createError({ statusCode: 401, statusMessage: 'Invalid IPN Signature' });
     }
 
     // ─── 2. Skip test orders in production (allow in sandbox mode) ───────────
     const isSandbox = config.twoCheckoutSandbox === 'true';
     if (!isSandbox && body.TEST_ORDER === '1') {
-        console.log('[2Checkout IPN] Ignoring test order in production mode');
+        useLogger().info('[2Checkout IPN] Ignoring test order in production mode');
         // Still send read receipt
     } else {
         // ─── 3. Process only successful payment statuses ──────────────────────
@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
             const transactionRef = body.REFNOEXT;
 
             if (!transactionRef) {
-                console.error('[2Checkout IPN] REFNOEXT missing — cannot match transaction');
+                useLogger().error('[2Checkout IPN] REFNOEXT missing — cannot match transaction');
             } else {
                 try {
                     // Fetch the transaction to get the items
@@ -43,9 +43,9 @@ export default defineEventHandler(async (event) => {
           `) as any[];
 
                     if (!transaction) {
-                        console.error(`[2Checkout IPN] Transaction not found: ${transactionRef}`);
+                        useLogger().error(`[2Checkout IPN] Transaction not found: ${transactionRef}`);
                     } else if (transaction.status === 'paid') {
-                        console.log(`[2Checkout IPN] Transaction ${transactionRef} already marked paid, skipping`);
+                        useLogger().info(`[2Checkout IPN] Transaction ${transactionRef} already marked paid, skipping`);
                     } else {
                         // Parse items to update individual orders/vectors
                         const items = transaction.items as Array<{ type: 'order' | 'vector'; id: number }>;
@@ -82,11 +82,11 @@ export default defineEventHandler(async (event) => {
               `;
                         }
 
-                        console.log(`[2Checkout IPN] ✅ Transaction ${transactionRef} marked as PAID`);
-                        console.log(`[2Checkout IPN]    Orders: [${orderIds}]  Vectors: [${vectorIds}]`);
+                        useLogger().info(`[2Checkout IPN] ✅ Transaction ${transactionRef} marked as PAID`);
+                        useLogger().info(`[2Checkout IPN]    Orders: [${orderIds}]  Vectors: [${vectorIds}]`);
                     }
                 } catch (err) {
-                    console.error('[2Checkout IPN] DB update error:', err);
+                    useLogger().error('[2Checkout IPN] DB update error:', err);
                     // Do not throw — we still need to send the read receipt
                 }
             }
@@ -99,10 +99,10 @@ export default defineEventHandler(async (event) => {
           SET status = 'refunded', updated_at = NOW()
           WHERE transaction_ref = ${transactionRef}
         `;
-                console.log(`[2Checkout IPN] Transaction ${transactionRef} marked as REFUNDED`);
+                useLogger().info(`[2Checkout IPN] Transaction ${transactionRef} marked as REFUNDED`);
             }
         } else {
-            console.log(`[2Checkout IPN] Unhandled status: ${orderStatus} — no action taken`);
+            useLogger().info(`[2Checkout IPN] Unhandled status: ${orderStatus} — no action taken`);
         }
     }
 
