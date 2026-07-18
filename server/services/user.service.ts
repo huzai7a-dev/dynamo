@@ -67,7 +67,7 @@ class UserService {
 
         // Fire both emails in parallel — non-blocking
         if (u.primary_email) {
-            await Promise.all([
+            runInBackground(Promise.all([
                 EmailService.sendHtmlEmail(
                     u.primary_email,
                     'Your Profile Information Has Been Updated',
@@ -78,7 +78,7 @@ class UserService {
                     'Client Profile Update Notification',
                     generateProfileUpdateAdminEmail(u)
                 ),
-            ]).catch((err) => console.error('Profile-update email failed:', err));
+            ]).catch((err) => console.error('Profile-update email failed:', err)));
         }
 
         return u;

@@ -37,7 +37,7 @@ class OrderService {
 
     const result = await OrderRepository.createOrder(userId, fields, uploaded, { type: DataSource.ORDER });
 
-    await this.sendOrderConfirmationEmail(userId, result.orderId, fields, uploaded);
+    runInBackground(this.sendOrderConfirmationEmail(userId, result.orderId, fields, uploaded));
 
     return result;
   }
@@ -400,7 +400,7 @@ class OrderService {
     await OrderRepository.updateOrderStatus(parseInt(orderId), OrderStatus.DELIVERED);
 
     // Fire delivery notification emails — non-blocking
-    this.sendDeliveryEmail(parseInt(orderId), deliveryData, uploaded);
+    runInBackground(this.sendDeliveryEmail(parseInt(orderId), deliveryData, uploaded));
 
     return {
       deliveryId,

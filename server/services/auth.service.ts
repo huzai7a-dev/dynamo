@@ -63,22 +63,18 @@ class AuthService {
             }
         }
 
-        try {
-            await Promise.all([
-                EmailService.sendHtmlEmail(
-                    data!.primary_email,
-                    'Welcome to Dynamo Stitches! Your Account Has Been Created',
-                    generateWelcomeEmail(emailData, ip)
-                ),
-                EmailService.sendHtmlEmail(
-                    useRuntimeConfig().emailUser as string,
-                    'New Client Registration Notification',
-                    generateAdminNotificationEmail(emailData, ip)
-                ),
-            ]);
-        } catch (err) {
-            console.error('Email notification failed:', err);
-        }
+        runInBackground(Promise.all([
+            EmailService.sendHtmlEmail(
+                data!.primary_email,
+                'Welcome to Dynamo Stitches! Your Account Has Been Created',
+                generateWelcomeEmail(emailData, ip)
+            ),
+            EmailService.sendHtmlEmail(
+                useRuntimeConfig().emailUser as string,
+                'New Client Registration Notification',
+                generateAdminNotificationEmail(emailData, ip)
+            ),
+        ]).catch((err) => console.error('Email notification failed:', err)));
 
         return {
             statusCode: 201,

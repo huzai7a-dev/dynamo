@@ -6,7 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is the web app for **Dynamo Stitches** (dynamostitches.com), an embroidery digitizing / vector art / logo design business. It is a marketing site plus a client/admin/salesman portal for submitting and managing **orders** (digitizing), **vectors** (vector art), **quotes**, and **invoices**, with 2Checkout payment integration.
 
-Built with **Nuxt 4** (Vue 3, SSR, Nitro `vercel` preset), Postgres (Neon serverless), Drizzle (schema/migrations only), Cloudinary (file storage), Tailwind CSS, and `nuxt-auth-utils` (session auth).
+Note: "invoices" is not a distinct DB entity — invoice routes (`server/api/invoices/*`) read/write the `payment_transactions` table directly (see Architecture below).
+
+Built with **Nuxt 4** (`^4.0.1`, Vue 3, SSR, Nitro `vercel` preset), Postgres (Neon serverless), Drizzle (schema/migrations only), Cloudinary (file storage), Tailwind CSS, and `nuxt-auth-utils` (session auth). Other notable deps: `zod` + `vee-validate`/`@vee-validate/zod` (form validation), `chart.js`/`vue-chartjs` (dashboard charts), `archiver` (bulk attachment downloads), `@tawk.to/tawk-messenger-vue-3` (chat widget), `@nuxtjs/robots`/`@nuxtjs/sitemap` (SEO), `@nuxthub/core` (present but all features disabled in `nuxt.config.ts`).
 
 ## Commands
 
@@ -40,7 +42,7 @@ Required vars (see `.env`, not committed): `DATABASE_URL`, `NUXT_SESSION_PASSWOR
 ### Directory layout (Nuxt 4 conventions)
 
 - `app/` — client app: `pages/` (file-based routing), `components/`, `layouts/` (`default`, `auth`, `portal`), `middleware/`, `composables/`, `constants/`, `utils/`. Auto-imported by Nuxt.
-- `server/` — Nitro backend: `api/**/*.{get,post,put,delete}.ts` route handlers, `middleware/` (runs on every server request), `services/` (business logic), `repositories/` (data access), `templates/` (HTML email templates), `utils/` (server-only auto-imported helpers like `useDb`).
+- `server/` — Nitro backend: `api/**/*.{get,post,put,delete}.ts` route handlers grouped by domain (`orders/`, `vectors/`, `quotes/`, `invoices/`, `salesmen/`, `dashboard/`, `attachments/`, `profiles/`, `auth/`, `user/`, `webhooks/`), `middleware/` (runs on every server request), `services/` (business logic), `repositories/` (data access), `templates/` (HTML email templates), `utils/` (server-only auto-imported helpers like `useDb`).
 - `shared/` — code importable from **both** `app/` and `server/` (Nuxt 4 shared dir, import via `#shared/*` or `~~/shared/*`): Zod schemas (`validationSchema.ts`), enums/types (`types/enums.ts`, `types/index.d.ts`), cross-cutting constants (`constants.ts` — e.g. `ROLE`), and crypto/signature helpers for 2Checkout (`utils/index.ts`).
 - `drizzle/` — DB schema (generated via introspection) + SQL migrations. Not used as a runtime query layer.
 
@@ -51,6 +53,10 @@ Each domain (orders, vectors, quotes, invoices/payments, profiles, salesmen) fol
 1. **Route handler** (`server/api/.../*.ts`) — thin `defineEventHandler`. Reads `event.context.user` (populated by `server/middleware/auth.ts` from the session on every request), parses input (`readValidatedBody` with a Zod schema, or `parseMultipart` from `server/utils/multiplart.ts` for file uploads), calls the service, wraps errors in `createError`.
 2. **Service** (`server/services/*.service.ts`) — business rules, orchestration (e.g. upload files then create record then send email), exported as a singleton instance (`export default new XService()`).
 3. **Repository** (`server/repositories/*.ts`) — actual data access, also singleton instances.
+
+**Exception:** `server/api/invoices/*.ts` routes skip the service/repository layers entirely and query `payment_transactions` directly with `useDb()` inline in the route handler — there is no `invoice.service.ts` or `invoice.repository.ts`. Follow this pattern only if extending invoices; new domains should still follow the Service -> Repository layering.
+
+Delivery-flow logic for orders/vectors lives in dedicated repositories (`server/repositories/order-delivery.repository.ts`, `vector-delivery.repository.ts`), separate from `order.repository.ts`/`vector.repository.ts`. Quote-to-order/vector conversion (including carrying over delivery attachments) lives in `server/repositories/quotes.repository.ts`. Dashboard/stats aggregation lives in `server/services/dashboard.service.ts` + `server/repositories/dashboard.repository.ts`. Salesman-specific queries (client lists, salesman stats) live in `server/services/salesman.service.ts` + `server/repositories/users.repository.ts`.
 
 **Important:** despite Drizzle being configured, the runtime DB client is the **Neon serverless tagged-template client** (`useDb()` in [server/utils/db.ts](server/utils/db.ts)), used directly as `` await this.db`SELECT ...` `` for parameterized queries, or `db.query(sqlString, values)` when building dynamic `WHERE`/pagination clauses with manual `$1, $2...` placeholders (see `getOrdersWithFilters` in [server/repositories/order.respository.ts](server/repositories/order.respository.ts)). Drizzle's schema/types are not imported by services or repositories. When adding new queries, follow this raw-SQL-via-template-tag pattern rather than introducing the Drizzle query builder.
 
@@ -65,9 +71,13 @@ Each domain (orders, vectors, quotes, invoices/payments, profiles, salesmen) fol
 
 ### Domain model
 
-Core entities (see [drizzle/schema.ts](drizzle/schema.ts)): `users`, `orders`, `vectors`, `quotes`, plus per-entity `*_attachments` (uploaded files) and `*_deliveries`/`order_deliveries`/`vector_deliveries` (admin delivery records with pricing breakdown). `quotes` can convert into an `order` or `vector` (`quoteType` enum `order|vector`, tracked via `fromQuoteId`/`isFromQuote` on the target table and `isConverted`/`targetId` on the quote). Payments are tracked in `payment_transactions`, keyed by `transaction_ref`, holding a JSON `items` array of `{type: 'order'|'vector', id}` so a single checkout can pay for multiple orders/vectors at once.
+Core entities (see [drizzle/schema.ts](drizzle/schema.ts)): `users`, `roles`, `orders`, `vectors`, `quotes`, `order_deliveries`, `vector_deliveries` (admin delivery records with pricing breakdown), `payment_transactions`. Note `delers` is legacy/unused schema — not queried anywhere in `server/repositories` or `server/services`.
 
-Status enums live in `shared/types/enums.ts`: `OrderStatus` (`pending -> processing -> delivered`, or `rejected`/`cancelled`), `QuoteStatus` (`pending -> approved/rejected -> converted`, or `quoted`), `PaymentStatus` (`paid`/`payable`). Status transition rules are enforced in the service layer (e.g. `OrderService.updateOrderStatus` / `QuoteService.updateQuoteStatus`), not in the DB — admins and regular users are allowed disjoint sets of target statuses.
+Attachments are **not** split one table per entity: orders and quotes share the generic `attachments` table (`orderId`/`quoteId` columns), while `vector_attachments` and `quote_attachments` are separate tables. Within `attachments`, regular upload vs. delivery attachments are distinguished by a `field_name` column (e.g. `'delivery_attachments'`, `'vector_delivery_attachments'`, `'quotes_delivery_attachments'`) rather than a separate table/column — the `delivery_attachments` field seen on order/vector/quote objects (`shared/types/index.d.ts`) is a JSON array computed via SQL aggregation filtered on `field_name`, not a stored column. Each `Attachment` also carries an `original_filename` field; stored filenames are entity-prefixed (e.g. `OR-<orderId>-...`, `VR-<vectorId>-...`), and quote-to-order/vector conversion rewrites the `QR-` prefix accordingly (`server/repositories/quotes.repository.ts`).
+
+`quotes` can convert into an `order` or `vector` (`quoteType` enum `order|vector`, tracked via `fromQuoteId`/`isFromQuote` on the target table and `isConverted`/`targetId` on the quote). Payments are tracked in `payment_transactions`, keyed by `transaction_ref`, holding a JSON `items` array of `{type: 'order'|'vector', id}` so a single checkout can pay for multiple orders/vectors at once. "Invoices" are not a separate table — invoice API routes read/write `payment_transactions` directly.
+
+Status enums live in `shared/types/enums.ts`: `OrderStatus` (`pending -> processing -> delivered`, or `rejected`/`cancelled`), `QuoteStatus` (`pending -> approved/rejected -> converted`, or `quoted`), `PaymentStatus` (`paid`/`payable` — note the enum member is named `UNPAID` but its string value is `'payable'`). Vectors reuse `OrderStatus`, not a separate `VectorStatus`. Status transition rules are enforced in the service layer (e.g. `OrderService.updateOrderStatus` / `QuoteService.updateQuoteStatus`), not in the DB — admins and regular users are allowed disjoint sets of target statuses. Once an order/vector reaches `DELIVERED`, further edits are rejected (`OrderService`/`VectorService`, checked before update).
 
 ### Payments (2Checkout)
 
@@ -80,3 +90,5 @@ Multipart form bodies are parsed by `server/utils/multiplart.ts` (`parseMultipar
 ### Emails
 
 Transactional emails are built from HTML template functions in `server/templates/*.email.ts` and sent via `server/services/email.service.ts` (nodemailer). Services typically fire client + admin notification emails in parallel with `Promise.all`, and email failures are caught/logged rather than failing the calling request.
+
+All email dispatch across services is fire-and-forget via `runInBackground()` (`server/utils/background.ts`, auto-imported) rather than `await`ed — call sites just do `runInBackground(this.sendXEmail(...))` and return immediately. This exists because Nitro's `vercel` preset builds plain Vercel Node.js serverless functions, which freeze the execution environment right after the HTTP response is flushed; a bare un-awaited promise (or Nitro's own `event.waitUntil`, which is a no-op on this preset) would get killed mid-SMTP-handshake. `runInBackground` wraps the promise with `waitUntil` from the **`@vercel/functions`** package, which extends the serverless function's lifetime via Vercel's real request-context API until the promise settles, without blocking the response. Locally this is a no-op passthrough (dev server never freezes, so the promise just runs normally). When adding a new email-sending call site, follow this pattern — do not `await` the send, and do not call `sendEmail`/`sendHtmlEmail` bare without `runInBackground`.

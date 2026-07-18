@@ -27,7 +27,7 @@ class VectorService {
 
     const vectorId = row.vectorId as number;
 
-    await this.sendVectorConfirmationEmail(userId, vectorId, fields, uploaded);
+    runInBackground(this.sendVectorConfirmationEmail(userId, vectorId, fields, uploaded));
 
     return { vectorId };
   }
@@ -269,7 +269,7 @@ class VectorService {
     const { deliveryId } = await VectorDeliveryRepository.createDelivery(deliveryData, uploaded);
     await VectorRepository.updateVectorStatus(parseInt(vectorId), OrderStatus.DELIVERED);
 
-    await this.sendVectorDeliveryEmail(parseInt(vectorId), deliveryData, uploaded);
+    runInBackground(this.sendVectorDeliveryEmail(parseInt(vectorId), deliveryData, uploaded));
 
     return {
       deliveryId,

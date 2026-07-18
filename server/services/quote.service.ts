@@ -23,7 +23,7 @@ class QuoteService {
             });
         }
         const quote = await quotesRepository.createQuote(userId, fields, uploaded);
-        await this.sendQuoteConfirmationEmail(userId, quote.quote_id, fields, uploaded);
+        runInBackground(this.sendQuoteConfirmationEmail(userId, quote.quote_id, fields, uploaded));
         return quote;
     }
 
