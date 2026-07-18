@@ -20,8 +20,5 @@ export enum DataSource {
 
 export enum QuoteStatus {
     PENDING = 'pending',
-    ACCEPTED = 'approved',
-    REJECTED = 'rejected',
     PROCEED = 'converted',
-    QUOTED = 'quoted',
 }

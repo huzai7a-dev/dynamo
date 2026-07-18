@@ -135,28 +135,7 @@ class QuoteService {
         return quote;
     }
 
-    async updateQuoteStatus(isAdmin: boolean, quoteId: number, status: QuoteStatus) {
-        const AdminActions = [QuoteStatus.ACCEPTED, QuoteStatus.REJECTED]
-        const UserActions = [QuoteStatus.PROCEED]
-
-        if (!isAdmin) {
-            if (!UserActions.includes(status)) {
-                throw new Error("You are not authorized to update this quote status");
-            }
-        }
-
-        if (isAdmin) {
-            if (!AdminActions.includes(status)) {
-                throw new Error("You are not authorized to update this quote status");
-            }
-        }
-
-        return await quotesRepository.updateQuoteStatus(quoteId, status);
-    }
-
-
-
-    async moveQuote(quoteId: number, fields: { price: number, additionalNotes: string }, dataSourceType: DataSource) {
+    async moveQuote(quoteId: number, dataSourceType: DataSource) {
         if (dataSourceType === DataSource.ORDER) {
             return await quotesRepository.moveToOrder(quoteId);
         }

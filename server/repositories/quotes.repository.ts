@@ -133,14 +133,6 @@ class QuotesRepository {
     return (quote as any[])[0] || null;
   }
 
-  async updateQuoteStatus(quoteId: number, status: QuoteStatus) {
-    await this.db`
-      UPDATE quotes
-      SET status = ${status}
-      WHERE id = ${quoteId}
-    `;
-  }
-
   async moveToOrder(quoteId: number) {
     // 1. First, fetch the quote to get the data we need to map
     const quote = await this.getQuoteDetails(true, quoteId, 0);
@@ -172,7 +164,7 @@ class QuotesRepository {
         ${width === '' || width === undefined || width === null ? null : width},
         ${height === '' || height === undefined || height === null ? null : height},
         ${quote.quote_data.requiredFormat},
-        ${quote.estimatedPrice || 0}, 
+        ${quote.estimated_price || 0},
         ${quote.quote_data.rush},
         ${quote.quote_data.blending},
         ${numColors === '' || numColors === undefined || numColors === null ? null : numColors},
@@ -288,86 +280,14 @@ class QuotesRepository {
       throw error;
     }
   }
-  async deliverQuote(quoteId: number, deliveryData: {
-    price: number,
-    stitchCount: number | string,
-    turnAroundTime: string,
-    additionalQuery: string
-  }, attachments: UploadedAsset[]) {
-    try {
-      // Start Transaction
-      await this.db`BEGIN`;
 
-      // 1. Update Quote Data
-      // We merge existing quote_data with new fields using || operator for jsonb
-      await this.db`
-        UPDATE quotes
-        SET 
-          estimated_price = ${deliveryData.price},
-          status = ${QuoteStatus.QUOTED},
-          quote_data = quote_data || ${JSON.stringify({
-        stitch_count: deliveryData.stitchCount,
-        turn_around_time: deliveryData.turnAroundTime,
-        additional_query: deliveryData.additionalQuery
-      })}::jsonb,
-          updated_at = NOW()
-        WHERE id = ${quoteId}
-      `;
-
-      // 2. Insert Attachments
-      if (attachments.length > 0) {
-        const attachmentsJson = JSON.stringify(attachments);
-
-        await this.db`
-          WITH data AS (
-            SELECT jsonb_array_elements(${attachmentsJson}::jsonb) AS j
-          )
-          INSERT INTO quote_attachments (
-            quote_id, url, public_id, resource_type, format, bytes, original_filename, field_name
-          )
-          SELECT
-            ${quoteId},
-            j->>'url',
-            j->>'publicId',
-            j->>'resourceType',
-            NULLIF(j->>'format','')::text,
-            NULLIF(j->>'bytes','')::bigint,
-            'QR-' || ${quoteId} || '-' || COALESCE(NULLIF(j->>'originalFilename',''), 'file'),
-            'quotes_delivery_attachments'
-          FROM data
-        `;
-      }
-
-      await this.db`COMMIT`;
-      return { success: true };
-
-    } catch (error) {
-      await this.db`ROLLBACK`;
-      useLogger().error("Deliver quote failed:", error);
-      throw error;
-    }
-  }
-
-  async rejectQuote(quoteId: number, reason: string) {
-    await this.db`
-      UPDATE quotes
-      SET 
-        status = ${QuoteStatus.REJECTED},
-        quote_data = quote_data || ${JSON.stringify({ reject_reason: reason })}::jsonb,
-        updated_at = NOW()
-      WHERE id = ${quoteId}
-    `;
-  }
-
+  // Retained for AttachmentsService's "Download Files" zip feature — legacy
+  // quotes delivered before the deliver-quote step was removed may still have
+  // quotes_delivery_attachments rows worth downloading.
   async getDeliveryDetails(quoteId: number) {
     const quote = await this.db`
       SELECT
         q.id,
-        q.estimated_price,
-        q.quote_data->>'stitch_count' as stitch_count,
-        q.quote_data->>'turn_around_time' as turn_around_time,
-        q.quote_data->>'additional_query' as additional_query,
-        q.quote_data->>'reject_reason' as reject_reason,
         COALESCE(att.attachments, '[]'::jsonb) AS delivery_attachments
       FROM quotes AS q
       LEFT JOIN LATERAL (

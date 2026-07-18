@@ -46,52 +46,10 @@
                 :isAdmin="isAdmin"
                 :status="entity.status"
                 @accept="handleMoveToOrder"
-                @reject="showRejectModal = true"
-                @proceed="handleQuoteStatus(QuoteStatus.PROCEED)"
                 @edit="handleEdit"
-                @deliver="showDeliveryModal = true"
               />
             </template>
           </OrderHeader>
-        </div>
-
-        <!-- Rejection Reason (quote only) -->
-        <div
-          v-if="
-            type === 'quote' &&
-            entity.status === 'rejected' &&
-            deliveryDetails?.reject_reason
-          "
-          class="rounded-2xl border border-red-200 bg-red-50 p-6 shadow-sm"
-        >
-          <div class="flex items-start gap-3">
-            <div class="p-2 bg-red-100 rounded-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="text-red-600"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path d="m15 9-6 6" />
-                <path d="m9 9 6 6" />
-              </svg>
-            </div>
-            <div>
-              <h2 class="mb-1 text-lg font-semibold text-red-900">
-                Quote Rejected
-              </h2>
-              <p class="text-red-700 leading-relaxed">
-                {{ deliveryDetails.reject_reason }}
-              </p>
-            </div>
-          </div>
         </div>
 
         <!-- Section: Information (includes delivery fields when available) -->
@@ -191,40 +149,6 @@
               </div>
             </template>
 
-            <!-- Delivery fields for Quote -->
-            <template v-if="type === 'quote' && deliveryDetails">
-              <div class="border-t border-slate-100 pt-4">
-                <p
-                  class="text-xs font-bold text-charcoal/50 uppercase tracking-wider mb-4"
-                >
-                  Delivery Information
-                </p>
-                <div
-                  class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
-                >
-                  <OrderKeyValue
-                    v-if="deliveryDetails.stitch_count"
-                    label="Stitch Count"
-                    :value="deliveryDetails.stitch_count"
-                  />
-                  <OrderKeyValue
-                    v-if="deliveryDetails.turn_around_time"
-                    label="Turn Around Time"
-                    :value="deliveryDetails.turn_around_time"
-                  />
-                </div>
-                <div v-if="deliveryDetails.additional_query" class="mt-4">
-                  <p
-                    class="text-xs font-medium text-charcoal/50 uppercase tracking-wider mb-2"
-                  >
-                    Additional Query
-                  </p>
-                  <p class="text-sm text-secondary bg-gray-50 rounded-lg p-4">
-                    {{ deliveryDetails.additional_query }}
-                  </p>
-                </div>
-              </div>
-            </template>
           </div>
         </div>
 
@@ -263,26 +187,6 @@
                 />
               </div>
             </template>
-
-            <!-- Delivery attachments (Quote) -->
-            <template
-              v-if="
-                type === 'quote' &&
-                deliveryDetails?.delivery_attachments?.length
-              "
-            >
-              <div class="border-t border-slate-100 pt-4">
-                <p
-                  class="text-xs font-bold text-charcoal/50 uppercase tracking-wider mb-4"
-                >
-                  Delivery Attachments
-                </p>
-                <AttachmentsGallery
-                  noAttachmentsMessage=""
-                  :attachments="deliveryDetails.delivery_attachments"
-                />
-              </div>
-            </template>
           </div>
         </div>
       </div>
@@ -298,28 +202,6 @@
       @on:deliver="handleDeliveryComplete"
     />
 
-    <!-- Delivery modal: Quote -->
-    <QuoteDeliveryModal
-      v-if="type === 'quote' && entity"
-      v-model="showDeliveryModal"
-      :quoteId="String(entityId)"
-      :initialValues="{
-        stitchCount: entity.quote_data?.stitch_count || '',
-        turnAroundTime: entity.quote_data?.turn_around_time || '',
-        price: entity.estimated_price || '',
-        additionalQuery: entity.quote_data?.additional_query || '',
-      }"
-      :loading="delivering"
-      @on:deliver="handleQuoteDeliver"
-    />
-
-    <!-- Reject modal: Quote only -->
-    <QuoteRejectModal
-      v-if="type === 'quote'"
-      v-model="showRejectModal"
-      :loading="rejecting"
-      @confirm="handleRejectConfirm"
-    />
   </div>
 </template>
 
@@ -334,11 +216,9 @@ import AttachmentsGallery from "./AttachmentsGallery.vue";
 import OrderActions from "./OrderActions.vue";
 import QuoteActions from "./QuoteActions.vue";
 import DeliveryModal from "./DeliveryModal.vue";
-import QuoteDeliveryModal from "./QuoteDeliveryModal.vue";
-import QuoteRejectModal from "./QuoteRejectModal.vue";
 import OrderDetailSkeleton from "./skeletons/OrderDetailSkeleton.vue";
 import { ROLE } from "~~/shared/constants";
-import { OrderStatus, QuoteStatus } from "~~/shared/types/enums";
+import { OrderStatus } from "~~/shared/types/enums";
 
 type EntityType = "order" | "vector" | "quote";
 
@@ -400,7 +280,7 @@ const config = computed(() => {
         backText: "Back to Quotes",
         noAttachmentsMessage: "No quote attachments uploaded.",
         apiBase: "/api/quotes",
-        deliveryBase: "/api/quotes/deliver",
+        deliveryBase: "",
       };
   }
 });
@@ -421,9 +301,7 @@ const entity = computed(() => (data.value as any)?.data);
 
 const { data: deliveryResp, execute: fetchDelivery } = useFetch<any>(
   () => {
-    if (!entityId.value) return "";
-    if (props.type === "quote" && entity.value?.status === QuoteStatus.PENDING)
-      return "";
+    if (!entityId.value || props.type === "quote") return "";
     return `${config.value.deliveryBase}/${entityId.value}`;
   },
   { immediate: props.immediate, watch: [entityId, data] },
@@ -455,10 +333,6 @@ const entityAttachments = computed(() => {
 
 // Order/Vector: deliveryResp.value is the delivery record directly
 const deliveryData = computed(() => deliveryResp.value);
-// Quote: deliveryResp.value is { message, data: {...} }
-const deliveryDetails = computed(
-  () => (deliveryResp.value as any)?.data ?? deliveryResp.value,
-);
 
 // Order/Vector: prefer the delivery-record's attachments, but fall back to the
 // entity's own `delivery_attachments` (populated even without an order_deliveries/
@@ -476,8 +350,6 @@ const isAdmin = computed(() => (user.value as any)?.role === ROLE.Admin);
 
 // ─── Action modal state ────────────────────────────────────────────────────
 const showDeliveryModal = ref(false);
-const showRejectModal = ref(false);
-const rejecting = ref(false);
 const delivering = ref(false);
 const toast = useToast();
 const router = useRouter();
@@ -575,25 +447,6 @@ const handleDeliveryComplete = async (formData: any) => {
 };
 
 // ─── Quote-specific actions ────────────────────────────────────────────────
-const handleQuoteStatus = async (status: QuoteStatus) => {
-  try {
-    await $fetch("/api/quotes/status", {
-      method: "POST",
-      body: {
-        quoteId: entityId.value,
-        status,
-        dataSourceType: entity.value?.q_type,
-      },
-    });
-    toast.success("Quote status updated successfully");
-    refresh();
-    emit("refresh");
-  } catch (e) {
-    console.error(e);
-    toast.error("Failed to update quote status");
-  }
-};
-
 const handleMoveToOrder = async () => {
   try {
     await $fetch("/api/quotes/move-to-order", {
@@ -606,52 +459,6 @@ const handleMoveToOrder = async () => {
   } catch (e) {
     console.error(e);
     toast.error("Failed to move quote to order");
-  }
-};
-
-const handleRejectConfirm = async (reason: string) => {
-  try {
-    rejecting.value = true;
-    await $fetch("/api/quotes/reject", {
-      method: "POST",
-      body: { quoteId: entityId.value, reason },
-    });
-    toast.success("Quote rejected successfully");
-    showRejectModal.value = false;
-    refresh();
-    emit("refresh");
-  } catch (err: any) {
-    console.error(err);
-    toast.error(err.message || "Failed to reject quote");
-  } finally {
-    rejecting.value = false;
-  }
-};
-
-const handleQuoteDeliver = async (form: any) => {
-  delivering.value = true;
-  try {
-    const fd = new FormData();
-    fd.append("stitchCount", form.stitchCount);
-    fd.append("turnAroundTime", form.turnAroundTime);
-    fd.append("price", form.price);
-    fd.append("additionalQuery", form.additionalQuery);
-    if (form.attachments?.length) {
-      form.attachments.forEach((file: File) => fd.append("attachments", file));
-    }
-    await $fetch(`/api/quotes/deliver/${entityId.value}`, {
-      method: "POST",
-      body: fd,
-    });
-    toast.success("Quote delivered successfully");
-    showDeliveryModal.value = false;
-    refresh();
-    emit("refresh");
-  } catch (err: any) {
-    console.error(err);
-    toast.error(err.statusMessage || "Failed to deliver quote");
-  } finally {
-    delivering.value = false;
   }
 };
 </script>

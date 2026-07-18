@@ -127,7 +127,6 @@ const dashboardConfig: DataGroup[] = [
         type: DataSource.QUOTE,
         options: [
             { id: 'q1', label: "Today's Quotes", action: 'fetchToday', type: DataSource.QUOTE },
-            { id: 'q2', label: 'Ready Quotes', action: 'fetchReady', type: DataSource.QUOTE },
             { id: 'q3', label: 'All Quotes', action: 'fetchAll', type: DataSource.QUOTE },
             { id: 'q4', label: 'Convert to Order', action: 'convert', type: DataSource.QUOTE },
         ]
