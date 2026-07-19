@@ -1,11 +1,12 @@
 import type { QuoteFieldsRequest, QuoteFilesRequest, QueryParams } from "~~/shared/types";
 import type { UploadedAsset } from "./upload.service";
 import uploadService from "./upload.service";
-import { DataSource } from "~~/shared/types/enums";
+import { DataSource, EmailAccount } from "~~/shared/types/enums";
 import quotesRepository from "../repositories/quotes.repository";
 import UserService from "./user.service";
 import EmailService, { buildMailAttachments } from "./email.service";
 import { generateQuoteConfirmationEmail } from "../templates/quote-confirmation.email";
+import { getEmailUser } from "../utils/email";
 
 class QuoteService {
 
@@ -44,7 +45,8 @@ class QuoteService {
 
             await Promise.all([
                 EmailService.sendHtmlEmail(user.primary_email, subject, clientHTML, mailAttachments),
-                EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, quoteName, adminHTML, mailAttachments),
+                EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ADMIN_ACC), quoteName, adminHTML, mailAttachments),
+                EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ORDER_ACC), quoteName, adminHTML, mailAttachments)
             ]);
         } catch (err) {
             useLogger().error('Quote confirmation email failed:', err);

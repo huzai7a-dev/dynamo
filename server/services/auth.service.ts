@@ -7,6 +7,8 @@ import type { z } from 'zod';
 import EmailService from "./email.service";
 import { generateWelcomeEmail } from "../templates/welcome.email";
 import { generateAdminNotificationEmail } from "../templates/admin-notification.email";
+import { getEmailUser } from "../utils/email";
+import { EmailAccount } from "#shared/types/enums";
 
 class AuthService {
     private static validateUser(requestBody: IUser) {
@@ -70,7 +72,7 @@ class AuthService {
                 generateWelcomeEmail(emailData, ip)
             ),
             EmailService.sendHtmlEmail(
-                useRuntimeConfig().emailUser as string,
+                getEmailUser(EmailAccount.ADMIN_ACC),
                 'New Client Registration Notification',
                 generateAdminNotificationEmail(emailData, ip)
             ),

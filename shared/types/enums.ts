@@ -22,3 +22,9 @@ export enum QuoteStatus {
     PENDING = 'pending',
     PROCEED = 'converted',
 }
+
+export enum EmailAccount {
+    ADMIN_ACC = 'ADMIN_ACC',
+    ORDER_ACC = 'ORDER_ACC',
+    ACCOUNTS_ACC = 'ACCOUNTS_ACC',
+}

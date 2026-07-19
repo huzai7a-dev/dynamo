@@ -1,5 +1,6 @@
-import transporter from "../utils/email";
+import { getTransporter, getEmailUser } from "../utils/email";
 import type { UploadedAsset } from "./upload.service";
+import { EmailAccount } from "#shared/types/enums";
 
 export interface EmailAttachment {
     filename: string;
@@ -27,12 +28,10 @@ export function buildMailAttachments(uploaded: UploadedAsset[], fallbackPrefix =
 }
 
 class EmailService {
-    private config = useRuntimeConfig();
-
-    async sendEmail(to: string, subject: string, text: string) {
+    async sendEmail(to: string, subject: string, text: string, account: EmailAccount = EmailAccount.ADMIN_ACC) {
         try {
-            const info = await transporter.sendMail({
-                from: `"Dynamo Stitches" <${this.config.emailUser}>`,
+            const info = await getTransporter(account).sendMail({
+                from: `"Dynamo Stitches" <${getEmailUser(account)}>`,
                 to,
                 subject,
                 text,
@@ -43,10 +42,10 @@ class EmailService {
         }
     }
 
-    async sendHtmlEmail(to: string, subject: string, html: string, attachments?: EmailAttachment[]) {
+    async sendHtmlEmail(to: string, subject: string, html: string, attachments?: EmailAttachment[], account: EmailAccount = EmailAccount.ADMIN_ACC) {
         try {
-            const info = await transporter.sendMail({
-                from: `"Dynamo Stitches" <${this.config.emailUser}>`,
+            const info = await getTransporter(account).sendMail({
+                from: `"Dynamo Stitches" <${getEmailUser(account)}>`,
                 to,
                 subject,
                 html,

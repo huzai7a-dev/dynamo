@@ -4,6 +4,8 @@ import { ROLE } from "~~/shared/constants";
 import EmailService from "./email.service";
 import { generateProfileUpdateEmail } from "../templates/profile-update.email";
 import { generateProfileUpdateAdminEmail } from "../templates/profile-update-admin.email";
+import { getEmailUser } from "../utils/email";
+import { EmailAccount } from "~~/shared/types/enums";
 
 class UserService {
     // constructor no longer needs useDb
@@ -74,7 +76,7 @@ class UserService {
                     generateProfileUpdateEmail(u)
                 ),
                 EmailService.sendHtmlEmail(
-                    useRuntimeConfig().emailUser as string,
+                    getEmailUser(EmailAccount.ADMIN_ACC),
                     'Client Profile Update Notification',
                     generateProfileUpdateAdminEmail(u)
                 ),

@@ -7,6 +7,8 @@ import EmailService, { buildMailAttachments } from "./email.service";
 import UserService from "./user.service";
 import { generateVectorConfirmationEmail } from "../templates/vector-confirmation.email";
 import { generateVectorDeliveryEmail } from "../templates/vector-delivery.email";
+import { getEmailUser } from "../utils/email";
+import { EmailAccount } from "~~/shared/types/enums";
 
 class VectorService {
 
@@ -49,7 +51,8 @@ class VectorService {
 
       await Promise.all([
         EmailService.sendHtmlEmail(user.primary_email, subject, clientHTML, mailAttachments),
-        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, vectorName, adminHTML, mailAttachments),
+        EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ACCOUNTS_ACC), vectorName, adminHTML, mailAttachments),
+        EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ORDER_ACC), vectorName, adminHTML, mailAttachments)
       ]);
     } catch (err) {
       useLogger().error('Vector confirmation email failed:', err);
@@ -302,7 +305,8 @@ class VectorService {
 
       await Promise.all([
         EmailService.sendHtmlEmail(user.primary_email, subject, html, mailAttachments),
-        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, subject, html, mailAttachments),
+        EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ADMIN_ACC), subject, html, mailAttachments),
+        EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ORDER_ACC), subject, html, mailAttachments),
       ]);
     } catch (err) {
       useLogger().error('Vector delivery email failed:', err);

@@ -3,7 +3,7 @@ import {
   type OrderFilesRequest,
   type QueryParams,
 } from "#shared/types";
-import { OrderStatus } from "#shared/types/enums";
+import { OrderStatus, EmailAccount } from "#shared/types/enums";
 import OrderRepository from "../repositories/order.repository";
 import OrderDeliveryRepository, { type OrderDeliveryData } from "../repositories/order-delivery.repository";
 import uploadService, { type UploadedAsset } from "./upload.service";
@@ -11,6 +11,7 @@ import EmailService, { buildMailAttachments } from "./email.service";
 import UserService from "./user.service";
 import { generateOrderConfirmationEmail } from "../templates/order-confirmation.email";
 import { generateOrderDeliveryEmail } from "../templates/order-delivery.email";
+import { getEmailUser } from "../utils/email";
 
 class OrderService {
   db: any;
@@ -59,7 +60,8 @@ class OrderService {
 
       await Promise.all([
         EmailService.sendHtmlEmail(user.primary_email, subject, clientHTML, mailAttachments),
-        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, orderName, adminHTML, mailAttachments),
+        EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ADMIN_ACC), orderName, adminHTML, mailAttachments),
+        EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ORDER_ACC), orderName, adminHTML, mailAttachments),
       ]);
     } catch (err) {
       useLogger().error('Order confirmation email failed:', err);
@@ -433,7 +435,8 @@ class OrderService {
 
       await Promise.all([
         EmailService.sendHtmlEmail(user.primary_email, subject, html, mailAttachments),
-        EmailService.sendHtmlEmail(useRuntimeConfig().emailUser as string, subject, html, mailAttachments),
+        EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ADMIN_ACC), subject, html, mailAttachments),
+        EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ORDER_ACC), subject, html, mailAttachments),
       ]);
     } catch (err) {
       useLogger().error('Delivery notification email failed:', err);
