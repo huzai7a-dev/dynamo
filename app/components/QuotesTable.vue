@@ -66,13 +66,22 @@
             {{ `QR-${row.id}` }}
           </template>
 
-          <template #column-status="{ row }">
+          <template #column-convert="{ row }">
             <span
-              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
-              :class="getOrderStatusBadgeClass((row as TableOrders).status)"
+              v-if="((row as TableOrders).status as unknown as QuoteStatus) === QuoteStatus.PROCEED"
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-green-50 text-green-700 border-green-200"
             >
-              {{ formatOrderStatus((row as TableOrders).status) }}
+              Converted
             </span>
+            <button
+              v-else
+              class="text-xs px-2 py-1 rounded bg-primary text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Convert this quote"
+              :disabled="convertingIds.has(row.id)"
+              @click.stop="handleConvertQuote(row.id, row.original_q_type)"
+            >
+              {{ convertingIds.has(row.id) ? "Converting" : "Convert" }}
+            </button>
           </template>
 
           <template #column-payment_status="{ row }">
@@ -138,10 +147,9 @@ import { ref } from "vue";
 import type { TableOrders, Pagination } from "#shared/types";
 import TableHeader from "./TableHeader.vue";
 import { ROLE } from "~~/shared/constants";
+import { QuoteStatus } from "~~/shared/types/enums";
 import {
-  getOrderStatusBadgeClass,
   getPaymentStatusBadgeClass,
-  formatOrderStatus,
   formatPaymentStatus,
 } from "~/utils/orderUtils";
 import { downloadBlob } from "~/utils/download";
@@ -210,7 +218,7 @@ const columns = computed(() => [
   { label: "Quote Type", key: "q_type" },
   ...(isAdmin.value ? [{ label: "Customer Name", key: "customer_name" }] : []),
   { label: "Price", key: "price" },
-  { label: "Quote Status", key: "status" },
+  { label: "Convert", key: "convert" },
   { label: "Date", key: "created_at" },
   { label: "Edit", key: "edit" },
   { label: "Download Files", key: "download_files" },
@@ -239,6 +247,24 @@ const handleDownloadFiles = async (id: string | number) => {
     downloadBlob(blob, `quote-${id}-files.zip`);
   } catch (err: any) {
     toast.error(err?.data?.statusMessage || "Failed to download files");
+  }
+};
+
+const convertingIds = ref<Set<string | number>>(new Set());
+
+const handleConvertQuote = async (id: string | number, dataSourceType: any) => {
+  convertingIds.value.add(id);
+  try {
+    await $fetch("/api/quotes/move-to-order", {
+      method: "POST",
+      body: { quoteId: id, dataSourceType },
+    });
+    toast.success("Quote moved to order successfully");
+    emit("refresh");
+  } catch (err: any) {
+    toast.error(err?.data?.statusMessage || "Failed to convert quote");
+  } finally {
+    convertingIds.value.delete(id);
   }
 };
 </script>

@@ -152,6 +152,16 @@ class VectorRepository {
     return vector[0];
   }
 
+  async cancelVector(vectorId: number) {
+    const vector = await this.db`
+      UPDATE vectors
+      SET status = ${OrderStatus.CANCELLED}, payment_status = ${PaymentStatus.NOT_REQUIRED}
+      WHERE id = ${Number(vectorId)} AND status = ${OrderStatus.PENDING}
+      RETURNING *
+    `;
+    return vector[0];
+  }
+
   async updateVectorFields(vectorId: number, fields: VectorFieldsRequest, files: VectorFilesRequest, existingAttachments: string[]) {
     const vector = await this.db`UPDATE vectors SET
       vector_name = ${fields.vectorName},

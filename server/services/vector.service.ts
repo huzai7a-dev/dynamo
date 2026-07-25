@@ -51,7 +51,7 @@ class VectorService {
 
       await Promise.all([
         EmailService.sendHtmlEmail(user.primary_email, subject, clientHTML, mailAttachments),
-        EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ACCOUNTS_ACC), vectorName, adminHTML, mailAttachments),
+        EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ADMIN_ACC), vectorName, adminHTML, mailAttachments),
         EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ORDER_ACC), vectorName, adminHTML, mailAttachments)
       ]);
     } catch (err) {
@@ -165,6 +165,14 @@ class VectorService {
 
     if (!isAdmin && !UserActions.includes(status)) {
       throw new Error("User can only update the status to CANCELLED")
+    }
+
+    if (status === OrderStatus.CANCELLED) {
+      const vector = await VectorRepository.cancelVector(vectorId);
+      if (!vector) {
+        throw new Error("Vector can't be cancelled now");
+      }
+      return vector;
     }
 
     const vector = await VectorRepository.updateVectorStatus(vectorId, status)

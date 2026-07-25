@@ -18,6 +18,7 @@ export function getPaymentStatusBadgeClass(status: PaymentStatus | undefined): s
   const statusMap: Record<PaymentStatus, string> = {
     paid: "bg-emerald-100 text-emerald-800 border-emerald-200",
     payable: "bg-red-100 text-red-800 border-red-200",
+    not_required: "bg-gray-100 text-gray-800 border-gray-200",
   };
 
   return status && status in statusMap
@@ -37,5 +38,8 @@ export function formatOrderStatus(status: OrderStatus | undefined): string {
 export function formatPaymentStatus(status: PaymentStatus | undefined): string {
   if (!status) return "UNKNOWN";
 
-  return status.charAt(0).toUpperCase() + status.slice(1);
+  return status
+    .split('_')
+    .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }

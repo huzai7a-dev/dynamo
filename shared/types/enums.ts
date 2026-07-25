@@ -8,7 +8,8 @@ export enum OrderStatus {
 
 export enum PaymentStatus {
     PAID = 'paid',
-    UNPAID = 'payable'
+    UNPAID = 'payable',
+    NOT_REQUIRED = 'not_required'
 }
 
 export enum DataSource {

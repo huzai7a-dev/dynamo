@@ -3,7 +3,7 @@ import {
   type OrderFilesRequest,
   type QueryParams,
 } from "#shared/types";
-import { OrderStatus, EmailAccount } from "#shared/types/enums";
+import { OrderStatus, EmailAccount, PaymentStatus } from "#shared/types/enums";
 import OrderRepository from "../repositories/order.repository";
 import OrderDeliveryRepository, { type OrderDeliveryData } from "../repositories/order-delivery.repository";
 import uploadService, { type UploadedAsset } from "./upload.service";
@@ -217,6 +217,19 @@ class OrderService {
 
     if (!isAdmin && !UserActions.includes(status)) {
       throw new Error("User can only update status to cancelled");
+    }
+
+    if (status === OrderStatus.CANCELLED) {
+      const order = await this.db`
+        UPDATE orders
+        SET status = ${status}, payment_status = ${PaymentStatus.NOT_REQUIRED}
+        WHERE id = ${orderId} AND status = ${OrderStatus.PENDING}
+        RETURNING *
+      `;
+      if (!order[0]) {
+        throw new Error("Order can't be cancelled now");
+      }
+      return order[0];
     }
 
     const order = await this.db`UPDATE orders SET status = ${status} WHERE id = ${orderId} RETURNING *`;
