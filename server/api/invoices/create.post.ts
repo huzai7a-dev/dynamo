@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
             if (order.userId !== userId) {
                 throw createError({ statusCode: 403, message: 'Unauthorized access to order' });
             }
-            if (order.paymentStatus === 'paid') {
+            if (order.paymentStatus === PaymentStatus.PAID) {
                 throw createError({ statusCode: 400, message: `Order #${order.id} is already paid` });
             }
             totalAmount += Number(order.price || 0);
@@ -57,7 +57,7 @@ export default defineEventHandler(async (event) => {
             if (vector.userId !== userId) {
                 throw createError({ statusCode: 403, message: 'Unauthorized access to vector' });
             }
-            if (vector.paymentStatus === 'paid') {
+            if (vector.paymentStatus === PaymentStatus.PAID) {
                 throw createError({ statusCode: 400, message: `Vector #${vector.id} is already paid` });
             }
             totalAmount += Number(vector.price || 0);
@@ -96,23 +96,6 @@ export default defineEventHandler(async (event) => {
       currency,
       items
   `) as any[];
-
-    // Mark items as 'invoiced' so they no longer appear on the unpaid items page
-    if (orderIds.length > 0) {
-        await db`
-      UPDATE orders 
-      SET payment_status = 'invoiced', updated_at = NOW()
-      WHERE id = ANY(${orderIds}) AND user_id = ${userId}
-    `;
-    }
-
-    if (vectorIds.length > 0) {
-        await db`
-      UPDATE vectors 
-      SET payment_status = 'invoiced', updated_at = NOW()
-      WHERE id = ANY(${vectorIds}) AND user_id = ${userId}
-    `;
-    }
 
     return transaction;
 });

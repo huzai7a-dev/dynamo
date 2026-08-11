@@ -7,9 +7,10 @@ export enum OrderStatus {
 }
 
 export enum PaymentStatus {
+    PENDING = 'pending',
+    PAYABLE = 'payable',
     PAID = 'paid',
-    UNPAID = 'payable',
-    NOT_REQUIRED = 'not_required'
+    NOT_REQUIRED = 'not_required',
 }
 
 export enum DataSource {

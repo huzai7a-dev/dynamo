@@ -1,4 +1,4 @@
-import { OrderStatus } from "#shared/types/enums";
+import { OrderStatus, PaymentStatus } from "#shared/types/enums";
 
 export default defineEventHandler(async (event) => {
   const session = await requireUserSession(event);
@@ -6,36 +6,36 @@ export default defineEventHandler(async (event) => {
   const db = useDb();
 
   // Unified query combining Orders and Vectors into a single flat list
-  // Excludes items that are already paid or currently on a pending invoice ('invoiced')
+  // Only delivered items sitting at 'payable' are actually due for payment
   const allUnpaid = (await db`
-    SELECT 
-      'order' as type, 
-      id, 
-      order_name as name, 
+    SELECT
+      'order' as type,
+      id,
+      order_name as name,
       po_number as "poNumber",
-      price, 
+      price,
       created_at as "createdAt",
       is_from_quote as "isFromQuote"
-    FROM orders 
-    WHERE user_id = ${userId} 
-      AND payment_status NOT IN ('paid', 'invoiced')
+    FROM orders
+    WHERE user_id = ${userId}
+      AND payment_status = ${PaymentStatus.PAYABLE}
       AND status = ${OrderStatus.DELIVERED}
-    
+
     UNION ALL
-    
-    SELECT 
-      'vector' as type, 
-      id, 
-      vector_name as name, 
+
+    SELECT
+      'vector' as type,
+      id,
+      vector_name as name,
       po_number as "poNumber",
-      price, 
+      price,
       created_at as "createdAt",
       is_from_quote as "isFromQuote"
-    FROM vectors 
-    WHERE user_id = ${userId} 
-      AND payment_status NOT IN ('paid', 'invoiced')
+    FROM vectors
+    WHERE user_id = ${userId}
+      AND payment_status = ${PaymentStatus.PAYABLE}
       AND status = ${OrderStatus.DELIVERED}
-      
+
     ORDER BY "createdAt" DESC
   `) as any[];
 

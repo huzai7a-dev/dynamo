@@ -121,7 +121,7 @@ class OrderRepository {
             ${fields?.instructions || null},
             ${fields?.faceless || null},
             ${userId},
-            ${PaymentStatus.UNPAID},
+            ${PaymentStatus.PENDING},
             ${OrderStatus.PENDING},
             ${metadata}
           )
@@ -154,7 +154,30 @@ class OrderRepository {
   }
 
   async updateOrderStatus(orderId: number, status: OrderStatus | QuoteStatus) {
-    await this.db`UPDATE orders SET status = ${status} WHERE id = ${orderId}`;
+    if (status === OrderStatus.DELIVERED) {
+      const order = await this.db`
+        UPDATE orders
+        SET status = ${status},
+            payment_status = CASE WHEN payment_status = ${PaymentStatus.PAID} THEN payment_status ELSE ${PaymentStatus.PAYABLE} END
+        WHERE id = ${orderId}
+        RETURNING *
+      `;
+      return (order as any[])[0];
+    }
+
+    if (status === OrderStatus.REJECTED) {
+      const order = await this.db`
+        UPDATE orders
+        SET status = ${status},
+            payment_status = CASE WHEN payment_status = ${PaymentStatus.PAID} THEN payment_status ELSE ${PaymentStatus.NOT_REQUIRED} END
+        WHERE id = ${orderId}
+        RETURNING *
+      `;
+      return (order as any[])[0];
+    }
+
+    const order = await this.db`UPDATE orders SET status = ${status} WHERE id = ${orderId} RETURNING *`;
+    return (order as any[])[0];
   }
 
   // async moveToOrder(quoteId: number, fields?: { price: number, additionalNotes: string }) {

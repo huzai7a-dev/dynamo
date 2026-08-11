@@ -49,6 +49,7 @@ class UserService {
             "invoice_email",
             "reference",
             "sales_man",
+            "platform",
             "secondary_email",
             "state",
             "website",

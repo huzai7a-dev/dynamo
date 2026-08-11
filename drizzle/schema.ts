@@ -1,7 +1,8 @@
-import { pgTable, foreignKey, serial, integer, numeric, text, timestamp, bigint, unique, varchar, bigserial, jsonb, boolean, pgEnum } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, serial, integer, numeric, text, timestamp, bigint, unique, varchar, jsonb, boolean, bigserial, pgEnum } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 export const blending = pgEnum("blending", ['No', 'Yes'])
+export const paymentStatus = pgEnum("payment_status", ['pending', 'payable', 'paid', 'not_required'])
 export const quoteStatus = pgEnum("quote_status", ['pending', 'approved', 'rejected', 'converted', 'quoted'])
 export const quoteType = pgEnum("quote_type", ['order', 'vector'])
 export const rushFlag = pgEnum("rush_flag", ['No', 'Yes'])
@@ -50,6 +51,77 @@ export const roles = pgTable("roles", {
 	unique("roles_role_name_key").on(table.roleName),
 ]);
 
+export const orders = pgTable("orders", {
+	id: integer().primaryKey().generatedAlwaysAsIdentity({ name: "orders_id_seq", startWith: 1, increment: 1, minValue: 1, maxValue: 2147483647, cache: 1 }),
+	orderName: text("order_name").notNull(),
+	poNumber: text("po_number"),
+	requiredFormat: text("required_format").notNull(),
+	widthIn: numeric("width_in", { precision: 10, scale:  2 }),
+	heightIn: numeric("height_in", { precision: 10, scale:  2 }),
+	fabric: text().notNull(),
+	placement: text().notNull(),
+	numColors: integer("num_colors"),
+	blending: blending().default('No').notNull(),
+	rush: rushFlag().default('No').notNull(),
+	instructions: text(),
+	status: text().default('pending').notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	faceless: varchar({ length: 255 }).default(sql`NULL`),
+	userId: integer("user_id").default(12).notNull(),
+	paymentStatus: paymentStatus("payment_status").default('pending').notNull(),
+	price: numeric({ precision: 10, scale:  2 }).default('0').notNull(),
+	metadata: jsonb(),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	fromQuoteId: bigint("from_quote_id", { mode: "number" }),
+	isFromQuote: boolean("is_from_quote").default(false).notNull(),
+	requiredStitch: varchar("required_stitch", { length: 50 }),
+}, (table) => [
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [users.id],
+			name: "fk_user"
+		}),
+	foreignKey({
+			columns: [table.fromQuoteId],
+			foreignColumns: [quotes.id],
+			name: "fk_orders_from_quote"
+		}).onDelete("set null"),
+]);
+
+export const vectors = pgTable("vectors", {
+	id: bigserial({ mode: "bigint" }).primaryKey().notNull(),
+	userId: integer("user_id").notNull(),
+	vectorName: text("vector_name").notNull(),
+	poNumber: text("po_number"),
+	blending: blending().notNull(),
+	rush: rushFlag().notNull(),
+	numColors: integer("num_colors"),
+	instructions: text(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	status: varchar({ length: 50 }).default('pending').notNull(),
+	paymentStatus: paymentStatus("payment_status").default('pending').notNull(),
+	price: numeric({ precision: 10, scale:  2 }).default('0').notNull(),
+	requiredFormat: text("required_format").notNull(),
+	vectorType: varchar("vector_type", { length: 50 }),
+	metadata: jsonb(),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	fromQuoteId: bigint("from_quote_id", { mode: "number" }),
+	isFromQuote: boolean("is_from_quote").default(false).notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [users.id],
+			name: "vectors_user_id_fkey"
+		}).onUpdate("cascade").onDelete("restrict"),
+	foreignKey({
+			columns: [table.fromQuoteId],
+			foreignColumns: [quotes.id],
+			name: "fk_vectors_from_quote"
+		}).onDelete("set null"),
+]);
+
 export const users = pgTable("users", {
 	id: serial().primaryKey().notNull(),
 	userName: varchar("user_name", { length: 100 }).notNull(),
@@ -74,6 +146,7 @@ export const users = pgTable("users", {
 	role: integer().default(2).notNull(),
 	refrenence: varchar({ length: 50 }),
 	salesMan: varchar("sales_man", { length: 50 }),
+	platform: varchar({ length: 50 }),
 }, (table) => [
 	foreignKey({
 			columns: [table.role],
@@ -82,77 +155,6 @@ export const users = pgTable("users", {
 		}),
 	unique("users_user_name_key").on(table.userName),
 	unique("users_primary_email_key").on(table.primaryEmail),
-]);
-
-export const vectors = pgTable("vectors", {
-	id: bigserial({ mode: "bigint" }).primaryKey().notNull(),
-	userId: integer("user_id").notNull(),
-	vectorName: text("vector_name").notNull(),
-	poNumber: text("po_number"),
-	blending: blending().notNull(),
-	rush: rushFlag().notNull(),
-	numColors: integer("num_colors"),
-	instructions: text(),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	status: varchar({ length: 50 }).default('pending').notNull(),
-	paymentStatus: varchar("payment_status", { length: 50 }).default('unpaid').notNull(),
-	price: numeric({ precision: 10, scale:  2 }).default('0').notNull(),
-	requiredFormat: text("required_format").notNull(),
-	vectorType: varchar("vector_type", { length: 50 }),
-	metadata: jsonb(),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	fromQuoteId: bigint("from_quote_id", { mode: "number" }),
-	isFromQuote: boolean("is_from_quote").default(false).notNull(),
-}, (table) => [
-	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "vectors_user_id_fkey"
-		}).onUpdate("cascade").onDelete("restrict"),
-	foreignKey({
-			columns: [table.fromQuoteId],
-			foreignColumns: [quotes.id],
-			name: "fk_vectors_from_quote"
-		}).onDelete("set null"),
-]);
-
-export const orders = pgTable("orders", {
-	id: integer().primaryKey().generatedAlwaysAsIdentity({ name: "orders_id_seq", startWith: 1, increment: 1, minValue: 1, maxValue: 2147483647, cache: 1 }),
-	orderName: text("order_name").notNull(),
-	poNumber: text("po_number"),
-	requiredFormat: text("required_format").notNull(),
-	widthIn: numeric("width_in", { precision: 10, scale:  2 }),
-	heightIn: numeric("height_in", { precision: 10, scale:  2 }),
-	fabric: text().notNull(),
-	placement: text().notNull(),
-	numColors: integer("num_colors"),
-	blending: blending().default('No').notNull(),
-	rush: rushFlag().default('No').notNull(),
-	instructions: text(),
-	status: text().default('pending').notNull(),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	faceless: varchar({ length: 255 }).default(sql`NULL`),
-	userId: integer("user_id").default(12).notNull(),
-	paymentStatus: varchar("payment_status", { length: 50 }).default('pending').notNull(),
-	price: numeric({ precision: 10, scale:  2 }).default('0').notNull(),
-	metadata: jsonb(),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	fromQuoteId: bigint("from_quote_id", { mode: "number" }),
-	isFromQuote: boolean("is_from_quote").default(false).notNull(),
-	requiredStitch: varchar("required_stitch", { length: 50 }),
-}, (table) => [
-	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "fk_user"
-		}),
-	foreignKey({
-			columns: [table.fromQuoteId],
-			foreignColumns: [quotes.id],
-			name: "fk_orders_from_quote"
-		}).onDelete("set null"),
 ]);
 
 export const orderDeliveries = pgTable("order_deliveries", {
@@ -273,16 +275,16 @@ export const paymentTransactions = pgTable("payment_transactions", {
 	id: bigserial({ mode: "bigint" }).primaryKey().notNull(),
 	transactionRef: text("transaction_ref").notNull(),
 	externalRef: text("external_ref"),
-	externalOrderNo: varchar("external_order_no", { length: 50 }),
 	userId: integer("user_id").notNull(),
 	amount: numeric({ precision: 10, scale:  2 }).notNull(),
 	currency: varchar({ length: 3 }).default('USD').notNull(),
 	status: varchar({ length: 50 }).default('pending').notNull(),
-	paymentMethod: varchar("payment_method", { length: 50 }),
 	items: jsonb().notNull(),
-	paidAt: timestamp("paid_at", { withTimezone: true, mode: 'string' }),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	externalOrderNo: varchar("external_order_no", { length: 50 }),
+	paymentMethod: varchar("payment_method", { length: 50 }),
+	paidAt: timestamp("paid_at", { withTimezone: true, mode: 'string' }),
 }, (table) => [
 	foreignKey({
 			columns: [table.userId],

@@ -69,7 +69,7 @@ class OrderDeliveryRepository {
           j->>'resourceType',
           NULLIF(j->>'format','')::text,
           NULLIF(j->>'bytes','')::bigint,
-          NULLIF(j->>'originalFilename','')::text,
+          'OR-' || ${deliveryData.order_id} || '-' || COALESCE(NULLIF(j->>'originalFilename',''), 'file'),
           'delivery_attachments'
         FROM data
         RETURNING 1

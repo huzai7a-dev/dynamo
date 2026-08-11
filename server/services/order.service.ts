@@ -232,8 +232,7 @@ class OrderService {
       return order[0];
     }
 
-    const order = await this.db`UPDATE orders SET status = ${status} WHERE id = ${orderId} RETURNING *`;
-    return order[0];
+    return OrderRepository.updateOrderStatus(orderId, status);
   }
 
   // ... existing code ...
@@ -434,7 +433,7 @@ class OrderService {
       const user = await UserService.getUserById(String(order.user_id));
       if (!user?.primary_email) return;
 
-      const subject = `Your Order is Ready ${order.order_name} - #${orderId}`;
+      const subject = `Your Order is Ready ${order.order_name} - ${orderId}`;
       const html = generateOrderDeliveryEmail({
         orderId,
         orderName: order.order_name,

@@ -68,7 +68,7 @@ class VectorDeliveryRepository {
           j->>'resourceType',
           NULLIF(j->>'format','')::text,
           NULLIF(j->>'bytes','')::bigint,
-          NULLIF(j->>'originalFilename','')::text,
+          'VR-' || ${deliveryData.vector_id} || '-' || COALESCE(NULLIF(j->>'originalFilename',''), 'file'),
           'vector_delivery_attachments'
         FROM data
         RETURNING 1

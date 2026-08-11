@@ -17,7 +17,7 @@ function fmt(value: any, unit = ""): string {
 function buildCombinedRows(vector: Record<string, any>, delivery: Record<string, any>): string {
     const rows: { label: string; value: string; section?: string }[] = [
         // Vector Info
-        { label: "Vector ID", value: `#${vector.id}`, section: "Vector" },
+        { label: "Vector ID", value: `${vector.id}`, section: "Vector" },
         { label: "Vector Name", value: fmt(vector.vector_name), section: "Vector" },
         { label: "PO Number", value: fmt(vector.po_number), section: "Vector" },
         { label: "Format", value: fmt(vector.required_format), section: "Vector" },

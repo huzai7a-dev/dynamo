@@ -68,7 +68,7 @@ export default defineEventHandler(async (event) => {
                         if (orderIds.length > 0) {
                             await db`
                 UPDATE orders
-                SET payment_status = 'paid', updated_at = NOW()
+                SET payment_status = ${PaymentStatus.PAID}, updated_at = NOW()
                 WHERE id = ANY(${orderIds}) AND user_id = ${transaction.userId}
               `;
                         }
@@ -77,7 +77,7 @@ export default defineEventHandler(async (event) => {
                         if (vectorIds.length > 0) {
                             await db`
                 UPDATE vectors
-                SET payment_status = 'paid', updated_at = NOW()
+                SET payment_status = ${PaymentStatus.PAID}, updated_at = NOW()
                 WHERE id = ANY(${vectorIds}) AND user_id = ${transaction.userId}
               `;
                         }

@@ -127,6 +127,8 @@
                     <ProfileField label="Reference" :value="profile.reference" />
                     <ProfileField v-if="profile.reference === 'Salesman' && profile.sales_man" label="Salesman"
                         :value="profile.sales_man_name || profile.sales_man" />
+                    <ProfileField v-if="profile.reference === 'Salesman' && profile.platform" label="Platform"
+                        :value="profile.platform" />
                     <div class="group flex items-center justify-between">
                         <ProfileField label="Website" :value="profile.website" />
                         <button v-if="profile.website" @click="copyToClipboard(profile.website)"
@@ -167,6 +169,7 @@ const props = defineProps<{
         reference?: string;
         sales_man?: string;
         sales_man_name?: string | null;
+        platform?: string;
         website?: string;
     };
 }>();

@@ -16,6 +16,7 @@ export function getOrderStatusBadgeClass(status: OrderStatus | undefined): strin
 
 export function getPaymentStatusBadgeClass(status: PaymentStatus | undefined): string {
   const statusMap: Record<PaymentStatus, string> = {
+    pending: "bg-slate-100 text-slate-800 border-slate-200",
     paid: "bg-emerald-100 text-emerald-800 border-emerald-200",
     payable: "bg-red-100 text-red-800 border-red-200",
     not_required: "bg-gray-100 text-gray-800 border-gray-200",

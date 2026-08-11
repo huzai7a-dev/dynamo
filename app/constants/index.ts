@@ -87,6 +87,19 @@ export const stitchOptions = [
   { label: 'Motif Stitch (different patterns)', value: 'Motif Stitch (different patterns)' }
 ]
 
+export const platformOptions = [
+  { label: 'Email', value: 'Email' },
+  { label: 'Instagram', value: 'Instagram' },
+  { label: 'Facebook', value: 'Facebook' },
+  { label: 'Tiktok', value: 'Tiktok' },
+  { label: 'Twitter (X)', value: 'Twitter (X)' },
+  { label: 'Threads', value: 'Threads' },
+  { label: 'Etsy', value: 'Etsy' },
+  { label: 'WhatsApp', value: 'WhatsApp' },
+  { label: 'LinkedIn', value: 'LinkedIn' },
+  { label: 'Reddit', value: 'Reddit' },
+]
+
 export const COMPANY = {
   name: 'Dynamo Stitches',
   tagline: 'EMBROIDERY. DIGITIZING. EXCELLENCE.',

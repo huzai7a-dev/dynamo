@@ -31,11 +31,11 @@
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-sm text-charcoal/70">Payment</span>
-                <span class="text-sm font-medium" :class="order?.payment_status === 'paid'
-                    ? 'text-emerald-700'
-                    : 'text-amber-700'
-                  ">
-                  {{ order?.payment_status === "paid" ? "Paid" : "Pending" }}
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
+                  :class="getPaymentStatusBadgeClass(order?.payment_status)"
+                >
+                  {{ formatPaymentStatus(order?.payment_status) }}
                 </span>
               </div>
               <div class="flex items-center justify-between">

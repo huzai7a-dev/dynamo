@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { orders, delivers, attachments, roles, users, vectors, quotes, orderDeliveries, vectorDeliveries, vectorAttachments, quoteAttachments, paymentTransactions } from "./schema";
+import { orders, delivers, attachments, users, quotes, vectors, roles, orderDeliveries, vectorDeliveries, vectorAttachments, quoteAttachments, paymentTransactions } from "./schema";
 
 export const deliversRelations = relations(delivers, ({one}) => ({
 	order: one(orders, {
@@ -30,18 +30,24 @@ export const attachmentsRelations = relations(attachments, ({one}) => ({
 }));
 
 export const usersRelations = relations(users, ({one, many}) => ({
+	orders: many(orders),
+	vectors: many(vectors),
 	role: one(roles, {
 		fields: [users.role],
 		references: [roles.roleId]
 	}),
-	vectors: many(vectors),
-	orders: many(orders),
 	quotes: many(quotes),
 	paymentTransactions: many(paymentTransactions),
 }));
 
-export const rolesRelations = relations(roles, ({many}) => ({
-	users: many(users),
+export const quotesRelations = relations(quotes, ({one, many}) => ({
+	orders: many(orders),
+	vectors: many(vectors),
+	user: one(users, {
+		fields: [quotes.userId],
+		references: [users.id]
+	}),
+	quoteAttachments: many(quoteAttachments),
 }));
 
 export const vectorsRelations = relations(vectors, ({one, many}) => ({
@@ -57,14 +63,8 @@ export const vectorsRelations = relations(vectors, ({one, many}) => ({
 	vectorAttachments: many(vectorAttachments),
 }));
 
-export const quotesRelations = relations(quotes, ({one, many}) => ({
-	vectors: many(vectors),
-	orders: many(orders),
-	user: one(users, {
-		fields: [quotes.userId],
-		references: [users.id]
-	}),
-	quoteAttachments: many(quoteAttachments),
+export const rolesRelations = relations(roles, ({many}) => ({
+	users: many(users),
 }));
 
 export const orderDeliveriesRelations = relations(orderDeliveries, ({one}) => ({

@@ -24,7 +24,7 @@ class VectorRepository {
           ${vectorData.instructions},
           ${vectorData.vectorType},
           ${userId},
-          ${PaymentStatus.UNPAID},
+          ${PaymentStatus.PENDING},
           ${OrderStatus.PENDING},
           ${metadata}
         )
@@ -148,6 +148,28 @@ class VectorRepository {
   }
 
   async updateVectorStatus(vectorId: number, status: OrderStatus | QuoteStatus) {
+    if (status === OrderStatus.DELIVERED) {
+      const vector = await this.db`
+        UPDATE vectors
+        SET status = ${status},
+            payment_status = CASE WHEN payment_status = ${PaymentStatus.PAID} THEN payment_status ELSE ${PaymentStatus.PAYABLE} END
+        WHERE id = ${Number(vectorId)}
+        RETURNING *
+      `;
+      return vector[0];
+    }
+
+    if (status === OrderStatus.REJECTED) {
+      const vector = await this.db`
+        UPDATE vectors
+        SET status = ${status},
+            payment_status = CASE WHEN payment_status = ${PaymentStatus.PAID} THEN payment_status ELSE ${PaymentStatus.NOT_REQUIRED} END
+        WHERE id = ${Number(vectorId)}
+        RETURNING *
+      `;
+      return vector[0];
+    }
+
     const vector = await this.db`UPDATE vectors SET status = ${status} WHERE id = ${Number(vectorId)} RETURNING *`;
     return vector[0];
   }

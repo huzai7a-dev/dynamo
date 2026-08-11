@@ -49,6 +49,12 @@ const filenameFromUrl = (url: string) => {
 
 const displayName = (a: Attachment) => a.original_filename || filenameFromUrl(a.url);
 
+const fileType = (a: Attachment) => {
+  if (a.format) return a.format;
+  const ext = displayName(a).split(".").pop();
+  return ext && ext.length <= 5 ? ext : isImage(a) ? "img" : "file";
+};
+
 const downloadingUrl = ref<string | null>(null);
 
 const handleDownload = async (a: Attachment) => {
@@ -124,7 +130,7 @@ const handleDownload = async (a: Attachment) => {
               </svg>
             </div>
             <div class="text-[9px] uppercase font-bold text-charcoal/70">
-              {{ a.format || "file" }}
+              {{ fileType(a) }}
             </div>
           </div>
         </div>
@@ -141,7 +147,7 @@ const handleDownload = async (a: Attachment) => {
             <span
               class="rounded bg-slate-100 px-1 py-0.5 uppercase font-medium"
             >
-              {{ a.format || (isImage(a) ? "img" : "file") }}
+              {{ fileType(a) }}
             </span>
             <span class="truncate">{{ humanBytes(a.bytes) }}</span>
           </div>

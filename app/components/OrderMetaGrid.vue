@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { OrderKeyValue as KeyValue } from "#components";
+import type { PaymentStatus } from "#shared/types/enums";
 
 defineProps<{
   order: {
@@ -14,7 +15,7 @@ defineProps<{
     blending: string;
     rush: string;
     required_stitch: string;
-    payment_status: string;
+    payment_status: PaymentStatus;
     price: string;
     faceless: boolean | null;
     is_free: boolean;

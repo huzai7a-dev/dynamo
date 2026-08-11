@@ -299,7 +299,7 @@ class VectorService {
       const user = await UserService.getUserById(String(vectorRow.user_id));
       if (!user?.primary_email) return;
 
-      const subject = `Your Vector is Ready ${vectorRow.vector_name} - #${vectorId}`;
+      const subject = `Your Vector is Ready ${vectorRow.vector_name} - ${vectorId}`;
       const html = generateVectorDeliveryEmail({
         vectorId,
         vectorName: vectorRow.vector_name,

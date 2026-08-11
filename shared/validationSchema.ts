@@ -86,6 +86,11 @@ const RegisterSchema = z.object({
     .optional()
     .describe("Salesman"),
 
+  platform: z
+    .string()
+    .optional()
+    .describe("Platform"),
+
   website: z
     .string()
     .url("Invalid URL")

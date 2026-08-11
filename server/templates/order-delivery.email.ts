@@ -17,7 +17,7 @@ function fmt(value: any, unit = ""): string {
 function buildCombinedRows(order: Record<string, any>, delivery: Record<string, any>): string {
     const rows: { label: string; value: string; section?: string }[] = [
         // Order Info
-        { label: "Order ID", value: `#${order.id}`, section: "Order" },
+        { label: "Order ID", value: `${order.id}`, section: "Order" },
         { label: "Order Name", value: fmt(order.order_name), section: "Order" },
         { label: "PO Number", value: fmt(order.po_number), section: "Order" },
         { label: "Format", value: fmt(order.required_format), section: "Order" },

@@ -81,13 +81,17 @@ class UploadService {
         }
       )
 
+      const extFromFilename = item.filename?.includes('.')
+        ? item.filename.split('.').pop() ?? null
+        : null
+
       return {
         url: response.secure_url,
         publicId: response.public_id,
         resourceType: (response.resource_type as 'image' | 'video' | 'raw') ?? 'raw',
-        format: response.format ?? null,
+        format: response.format ?? extFromFilename ?? null,
         bytes: response.bytes ?? null,
-        originalFilename: response.original_filename ?? null,
+        originalFilename: item.filename ?? response.original_filename ?? null,
       }
     } catch (error: any) {
       useLogger().error('Cloudinary upload failed:', {
