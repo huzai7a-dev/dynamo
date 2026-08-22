@@ -66,12 +66,18 @@
           </div>
           <div class="p-6 space-y-6">
             <!-- Entity meta fields -->
-            <OrderMetaGrid v-if="type === 'order'" :order="entity" />
-            <VectorMetaGrid v-else-if="type === 'vector'" :vector="entity" />
+            <OrderMetaGrid
+              v-if="type === 'order'"
+              :order="{ ...entity, ...deliveryData }"
+            />
+            <VectorMetaGrid
+              v-else-if="type === 'vector'"
+              :vector="{ ...entity, ...deliveryData }"
+            />
             <QuoteMetaGrid v-else :quote="entity" />
 
             <!-- Delivery fields for Order / Vector -->
-            <template v-if="type !== 'quote' && deliveryData">
+            <!-- <template v-if="type !== 'quote' && deliveryData">
               <div class="border-t border-slate-100 pt-4">
                 <p
                   class="text-xs font-bold text-charcoal/50 uppercase tracking-wider mb-4"
@@ -133,7 +139,6 @@
                     "
                   />
                 </div>
-                <!-- Comments -->
                 <div v-if="(deliveryData as any).comments" class="mt-4">
                   <p
                     class="text-xs font-medium text-charcoal/50 uppercase tracking-wider mb-2"
@@ -147,8 +152,7 @@
                   </p>
                 </div>
               </div>
-            </template>
-
+            </template> -->
           </div>
         </div>
 
@@ -201,7 +205,6 @@
       :loading="delivering"
       @on:deliver="handleDeliveryComplete"
     />
-
   </div>
 </template>
 

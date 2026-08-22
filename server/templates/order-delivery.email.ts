@@ -15,6 +15,7 @@ function fmt(value: any, unit = ""): string {
 }
 
 function buildCombinedRows(order: Record<string, any>, delivery: Record<string, any>): string {
+    
     const rows: { label: string; value: string; section?: string }[] = [
         // Order Info
         { label: "Order ID", value: `${order.id}`, section: "Order" },
@@ -36,6 +37,7 @@ function buildCombinedRows(order: Record<string, any>, delivery: Record<string, 
         { label: "Price", value: delivery.is_free ? "Free" : fmt(delivery.price, " USD"), section: "Delivery" },
         { label: "Discount", value: fmt(delivery.discount, " USD"), section: "Delivery" },
         { label: "Total Price", value: delivery.is_free ? "Free" : fmt(delivery.total_price, " USD"), section: "Delivery" },
+        { label: "Order Category", value: delivery.is_free ? "Free" : "Paid", section: "Delivery" },
         { label: "Comments", value: fmt(delivery.comments), section: "Delivery" },
     ];
 
@@ -91,7 +93,7 @@ function buildCombinedRows(order: Record<string, any>, delivery: Record<string, 
 }
 
 export function generateOrderDeliveryEmail(data: DeliveryEmailData): string {
-    const { orderId, orderName, user, order, delivery, deliveryAttachments } = data;
+    const { orderId, orderName, user, order, delivery } = data;
     const displayName = user.contact_name || user.user_name || "Valued Customer";
     const combinedRows = buildCombinedRows(order, delivery);
     const year = new Date().getFullYear();
@@ -152,7 +154,7 @@ export function generateOrderDeliveryEmail(data: DeliveryEmailData): string {
                                 color: rgba(255,255,255,0.90);
                                 font-family: 'Inter', Arial, sans-serif;
                                 font-weight: 500;
-                            ">${orderName} &nbsp;·&nbsp; #${orderId}</p>
+                            ">${orderName} &nbsp;·&nbsp; ${orderId}</p>
                         </td>
                     </tr>
 

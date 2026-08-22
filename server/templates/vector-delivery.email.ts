@@ -147,7 +147,7 @@ export function generateVectorDeliveryEmail(data: VectorDeliveryEmailData): stri
                                 color: rgba(255,255,255,0.90);
                                 font-family: 'Inter', Arial, sans-serif;
                                 font-weight: 500;
-                            ">${vectorName} &nbsp;·&nbsp; #${vectorId}</p>
+                            ">${vectorName} &nbsp;·&nbsp; ${vectorId}</p>
                         </td>
                     </tr>
 
