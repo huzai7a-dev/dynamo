@@ -2,7 +2,6 @@ import orderService from "~~/server/services/order.service";
 import { ROLE } from "~~/shared/constants";
 
 export default eventHandler(async (event) => {
-            debugger
     try {
         const { role, id: userId } = event.context.user;
         const orderId = getRouterParam(event, 'id');

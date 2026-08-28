@@ -50,10 +50,10 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    if (!fields.stitches || !fields.price) {
+    if (!fields.stitches) {
       return createError({
         statusCode: 400,
-        statusMessage: 'Stitches and price are required'
+        statusMessage: 'Stitches is required'
       });
     }
 

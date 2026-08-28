@@ -65,6 +65,7 @@
               type="number"
               step="0.01"
               min="0"
+              :disabled="formData.order_category === 'free'"
               required
             />
             <UiInput
@@ -74,6 +75,7 @@
               type="number"
               step="0.01"
               min="0"
+              :disabled="formData.order_category === 'free'"
             />
             <UiInput
               v-model="formData.total_price"
@@ -340,11 +342,21 @@ watch(
   { immediate: true },
 );
 
+// Clear price/discount when order is marked free (fields are disabled in that case)
+watch(
+  () => formData.value.order_category,
+  (category) => {
+    if (category === "free") {
+      formData.value.price = "";
+      formData.value.discount = "";
+    }
+  },
+);
+
 const isFormValid = computed(() => {
-  return (
-    parseFloat(formData.value.price) > 0 &&
-    formData.value.attachments.length > 0
-  );
+  if (formData.value.attachments.length === 0) return false;
+  if (formData.value.order_category === "free") return true;
+  return parseFloat(formData.value.price) > 0;
 });
 
 // The actual delivery request happens in the parent (so the loading prop can
