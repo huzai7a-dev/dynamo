@@ -101,6 +101,52 @@ class AttachmentsRepository {
       `;
         return rows;
     }
+
+    async updateExistingQuoteAttachments(quoteId: number, existingAttachments: string[]) {
+        if (existingAttachments.length > 0) {
+            const placeholders = existingAttachments.map((_, index) => `$${index + 2}`).join(', ');
+            const query = `
+      DELETE FROM quote_attachments
+      WHERE quote_id = $1
+      AND field_name = 'quote_attachments'
+      AND url NOT IN (${placeholders})
+    `;
+            await this.db.query(query, [quoteId, ...existingAttachments]);
+        } else {
+            await this.db`
+      DELETE FROM quote_attachments
+      WHERE quote_id = ${quoteId}
+      AND field_name = 'quote_attachments'
+    `;
+        }
+    }
+
+    async addNewQuoteAttachments(quoteId: number, newAttachments: any[]) {
+        if (!newAttachments.length) return;
+        const rows = await this.db`
+        WITH data AS (
+          SELECT jsonb_array_elements(${JSON.stringify(newAttachments)}::jsonb) AS j
+        ),
+        ins AS (
+          INSERT INTO quote_attachments (
+            quote_id, url, public_id, resource_type, format, bytes, original_filename, field_name
+          )
+          SELECT
+            ${quoteId},
+            j->>'url',
+            j->>'publicId',
+            j->>'resourceType',
+            NULLIF(j->>'format','')::text,
+            NULLIF(j->>'bytes','')::bigint,
+            'QR-' || ${quoteId} || '-' || COALESCE(NULLIF(j->>'originalFilename',''), 'file'),
+            'quote_attachments'
+          FROM data
+          RETURNING 1
+        )
+        SELECT 1;
+      `;
+        return rows;
+    }
 }
 
 export default new AttachmentsRepository();

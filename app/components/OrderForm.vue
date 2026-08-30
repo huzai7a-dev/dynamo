@@ -341,6 +341,7 @@ watch(
         orderName: newOrderData.order_name || "",
         poNumber: newOrderData.po_number || "",
         requiredFormat: newOrderData.required_format || "",
+        requiredStitch: newOrderData.required_stitch?.toString() || "",
         width: newOrderData.width_in || "",
         height: newOrderData.height_in || "",
         fabric: newOrderData.fabric || "",
@@ -349,9 +350,7 @@ watch(
         blending: (newOrderData.blending || "No") as "No" | "Yes" | "Not Sure",
         rush: (newOrderData.rush || "No") as "No" | "Yes",
         instructions: newOrderData.instructions || "",
-        faceless: newOrderData.faceless
-          ? ("with-outline" as const)
-          : ("without-outline" as const),
+        faceless: (newOrderData.faceless as "with-outline" | "without-outline" | undefined) || undefined,
         attachments: [],
       };
       setValues(initialValues);

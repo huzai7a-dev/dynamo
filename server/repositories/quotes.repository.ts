@@ -62,6 +62,26 @@ class QuotesRepository {
     return (result as any)[0];
   }
 
+  async findById(quoteId: number) {
+    const rows = await this.db`SELECT * FROM quotes WHERE id = ${quoteId}`;
+    return (rows as any[])[0] || null;
+  }
+
+  async updateQuoteFields(quoteId: number, fields: QuoteFieldsRequest) {
+    const quote = await this.db`
+      UPDATE quotes SET
+        title = ${fields.title},
+        po_number = ${fields?.poNumber || null},
+        instructions = ${fields?.instructions || null},
+        estimated_price = ${fields.estimatedPrice},
+        quote_data = ${JSON.stringify(fields.quoteData)},
+        updated_at = NOW()
+      WHERE id = ${quoteId}
+      RETURNING *
+    `;
+    return (quote as any[])[0];
+  }
+
   async getTotalPageCount(whereClause: string, values: any[], limit: number) {
     const countQuery = `SELECT COUNT(*) FROM quotes q ${whereClause}`;
     const countRows = await this.db.query(countQuery, values);

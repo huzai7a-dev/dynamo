@@ -312,66 +312,6 @@
           </p>
         </div>
 
-        <!-- Payment Information -->
-        <div style="background: #f1f3f4; border-radius: 6px; padding: 20px 24px; margin-bottom: 16px">
-          <p style="margin: 0 0 14px; font-size: 13px; font-weight: 800; color: #003438">Payment Information:</p>
-          <table style="width: 100%; font-size: 12px">
-            <tbody>
-              <tr>
-                <td style="width: 40%; vertical-align: top; border-right: 1px solid #dbe0e2; padding-right: 15px">
-                  <div style="font-weight: 600; margin-bottom: 10px; color: #003438">We accept:</div>
-                  <div style="display: flex; gap: 8px">
-                    <div style="background: white; border: 1px solid #e2e8f0; padding: 4px; border-radius: 4px; font-size: 9px; font-weight: bold; color: #1d4ed8">VISA</div>
-                    <div style="background: white; border: 1px solid #e2e8f0; padding: 4px; border-radius: 4px; font-size: 9px; font-weight: bold; color: #dc2626">MC</div>
-                    <div style="background: white; border: 1px solid #e2e8f0; padding: 4px; border-radius: 4px; font-size: 9px; font-weight: bold; color: #2563eb">AMEX</div>
-                    <div style="background: white; border: 1px solid #e2e8f0; padding: 4px; border-radius: 4px; font-size: 9px; font-weight: bold; color: #0369a1">PayPal</div>
-                  </div>
-                </td>
-                <td style="width: 60%; vertical-align: top; padding-left: 15px">
-                  <table style="width: 100%; color: #374151; line-height: 1.6">
-                    <tbody>
-                      <tr>
-                        <td colspan="2" style="font-weight: 600; color: #003438; padding-bottom: 4px">Bank Transfer</td>
-                      </tr>
-                      <tr>
-                        <td style="font-weight: 600">Account Name:</td>
-                        <td>{{ PAYMENT_INFO.accountName }}</td>
-                      </tr>
-                      <tr>
-                        <td style="font-weight: 600">Bank Name:</td>
-                        <td>{{ PAYMENT_INFO.bankName }}</td>
-                      </tr>
-                      <tr>
-                        <td style="font-weight: 600">Account Number:</td>
-                        <td>{{ PAYMENT_INFO.accountNumber }}</td>
-                      </tr>
-                      <tr>
-                        <td style="font-weight: 600">Routing Number:</td>
-                        <td>{{ PAYMENT_INFO.routingNumber }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Thank You -->
-        <div style="text-align: center; margin-bottom: 16px">
-          <h2 style="margin: 0 0 5px 0; font-family: serif; font-style: italic; font-size: 32px; color: #003438">Thank you!</h2>
-          <p style="margin: 0; font-size: 11px; color: #669699; text-transform: uppercase; letter-spacing: 2px">WE APPRECIATE YOUR BUSINESS</p>
-        </div>
-
-        <!-- Footer -->
-        <div style="background: #003438; color: white; padding: 15px 20px; border-radius: 4px; display: flex; justify-content: space-between; font-size: 11px; border-bottom: 4px solid #0d6c73">
-          <div style="display: flex; gap: 20px">
-            <span>{{ COMPANY.website }}</span>
-            <span>{{ COMPANY.phone }}</span>
-            <span>{{ COMPANY.email }}</span>
-          </div>
-          <div style="text-align: right">{{ COMPANY.address }}</div>
-        </div>
       </div>
     </div>
   </div>
@@ -379,7 +319,7 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted, onBeforeUnmount } from 'vue';
-import { COMPANY, PAYMENT_INFO, BILL_FROM } from "~/constants";
+import { COMPANY, BILL_FROM } from "~/constants";
 
 definePageMeta({
   name: "Invoice History",
