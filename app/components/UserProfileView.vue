@@ -20,7 +20,7 @@
                     </div>
                 </div>
 
-                <button @click="$emit('edit')"
+                <button v-if="!readonly" @click="$emit('edit')"
                     class="flex items-center justify-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 shrink-0">
                     <Icon name="Pencil" :size="18" />
                     <span>Edit Profile</span>
@@ -172,6 +172,7 @@ const props = defineProps<{
         platform?: string;
         website?: string;
     };
+    readonly?: boolean;
 }>();
 
 defineEmits(['edit']);

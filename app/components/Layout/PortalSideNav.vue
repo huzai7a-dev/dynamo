@@ -1,41 +1,103 @@
 <template>
-  <div class="w-[300px] bg-primary border-r border-primary-dark flex flex-col h-full">
+  <div
+    class="w-[300px] bg-primary border-r border-primary-dark flex flex-col h-full"
+  >
     <!-- Header with logo -->
     <div class="py-3 px-6 border-b border-primary-dark/30 bg-primary-dark/20">
       <UiLogo class="text-xl text-white" />
     </div>
 
     <!-- Navigation -->
-    <nav v-if="navItems.length" class="flex-1 px-4 py-6 overflow-y-auto">
-      <NavItemButton to="/dashboard" icon="LayoutDashboard" label="Dashboard" :active="isActive('/dashboard')"
-        extra-classes="mb-4" />
+    <nav
+      v-if="user?.role !== ROLE.Admin && navItems.length"
+      class="flex-1 px-4 py-6 overflow-y-auto"
+    >
+      <NavItemButton
+        to="/dashboard"
+        icon="LayoutDashboard"
+        label="Dashboard"
+        :active="isActive('/dashboard')"
+        extra-classes="mb-4"
+      />
 
-      <p class="text-white/50 text-xs font-semibold uppercase tracking-wider mb-2">
+      <p
+        class="text-white/50 text-xs font-semibold uppercase tracking-wider mb-2"
+      >
         Actions
       </p>
 
       <ul class="space-y-2">
         <li v-for="item in CREATE_NAV_ITEMS" :key="item?.href">
-          <NavItemButton v-if="item" :to="item.href" :icon="item.icon" :label="item.title"
+          <NavItemButton
+            v-if="item"
+            :to="item.href"
+            :icon="item.icon"
+            :label="item.title"
             :active="isActive(item.href)"
-            :children="item.children?.map(c => ({ label: c.title, href: c.href, icon: c.icon }))" />
+            :children="
+              item.children?.map((c) => ({
+                label: c.title,
+                href: c.href,
+                icon: c.icon,
+              }))
+            "
+          />
         </li>
       </ul>
 
-      <p class="text-white/50 text-xs font-semibold uppercase tracking-wider mb-2 mt-4">
+      <p
+        class="text-white/50 text-xs font-semibold uppercase tracking-wider mb-2 mt-4"
+      >
         Records
       </p>
 
       <ul class="space-y-2">
         <li v-for="item in navItems" :key="item?.href">
-          <NavItemButton v-if="item" :to="item.href" :icon="item.icon" :label="item.title" :active="isActive(item.href)"
-            :children="item.children?.map(c => ({ label: c.title, href: c.href, icon: c.icon }))" />
+          <NavItemButton
+            v-if="item"
+            :to="item.href"
+            :icon="item.icon"
+            :label="item.title"
+            :active="isActive(item.href)"
+            :children="
+              item.children?.map((c) => ({
+                label: c.title,
+                href: c.href,
+                icon: c.icon,
+              }))
+            "
+          />
+        </li>
+      </ul>
+    </nav>
+    <nav
+      v-if="user?.role === ROLE.Admin && navItems.length"
+      class="flex-1 px-4 py-6 overflow-y-auto"
+    >
+      <ul class="space-y-2">
+        <li v-for="item in navItems" :key="item?.href">
+          <NavItemButton
+            v-if="item"
+            :to="item.href"
+            :icon="item.icon"
+            :label="item.title"
+            :active="isActive(item.href)"
+            :children="
+              item.children?.map((c) => ({
+                label: c.title,
+                href: c.href,
+                icon: c.icon,
+              }))
+            "
+          />
         </li>
       </ul>
     </nav>
 
     <!-- Footer with Translation -->
-    <div class="p-4 border-t border-primary-dark/30 bg-primary-dark/20 flex-shrink-0">
+    <div
+      class="p-4 border-t border-primary-dark/30 bg-primary-dark/20 flex-shrink-0"
+    >
       <GoogleTranslate />
     </div>
   </div>

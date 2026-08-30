@@ -36,7 +36,7 @@ const ALL_ITEMS: Record<string, NavItem> = {
         href: "/quotes",
     },
     PROFILES: {
-        title: "Profiles",
+        title: "Customer Profiles",
         icon: "User",
         href: "/profiles",
     },

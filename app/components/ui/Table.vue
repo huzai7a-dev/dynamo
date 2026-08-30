@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-x-auto relative rounded-lg border-2 border-primary overflow-hidden pb-2">
+  <div class="overflow-auto relative rounded-lg border-2 border-primary pb-2">
     <!-- Status States: Loading, Error, Empty -->
     <div v-if="loading && data.length === 0"
       class="min-h-[400px] flex flex-col items-center justify-center p-12 text-center animate-in fade-in duration-500">
