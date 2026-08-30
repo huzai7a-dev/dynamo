@@ -174,16 +174,14 @@
         >
           <!-- S# -->
           <template #column-sno="{ index }">
-            <span
-              class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold"
-            >
+            <span class="text-charcoal/70">
               {{ index + 1 }}
             </span>
           </template>
 
           <!-- Number -->
           <template #column-number="{ row }">
-            <span class="font-black text-secondary tracking-tight">
+            <span class="text-charcoal/70">
               {{ row.type === "order" ? "OR" : "VR" }}-{{ row.id }}
             </span>
           </template>
@@ -200,12 +198,12 @@
 
           <!-- Design Name -->
           <template #column-name="{ row }">
-            <span class="font-bold text-secondary">{{ row.name }}</span>
+            <span class="text-charcoal/70">{{ row.name }}</span>
           </template>
 
           <!-- Price -->
           <template #column-price="{ row }">
-            <span class="font-black text-primary">
+            <span class="text-charcoal/70">
               {{
                 row.price === "0.00"
                   ? "Free"
@@ -319,7 +317,7 @@ const { data, pending, error } = await useFetch<any>("/api/user/unpaid-items");
 const allItems = computed(() => data.value?.items || []);
 
 const invoiceColumns = [
-  { key: "sno", label: "S#", icon: "CirclePlus" },
+  { key: "sno", label: "SNO", icon: "CirclePlus" },
   { key: "number", label: "Number", icon: "FileText" },
   { key: "date", label: "Date", icon: "Calendar" },
   { key: "name", label: "Design Name", icon: "Tag" },

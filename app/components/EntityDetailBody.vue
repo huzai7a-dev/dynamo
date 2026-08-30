@@ -52,6 +52,18 @@
           </OrderHeader>
         </div>
 
+        <!-- Cancellation policy notice -->
+        <div
+          v-if="type !== 'quote' && entity.status === OrderStatus.PENDING"
+          class="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-4"
+        >
+          <Icon name="Info" :size="18" class="mt-0.5 shrink-0 text-blue-600" />
+          <p class="text-sm text-blue-800">
+            You may cancel your order while it is pending approval. Once the
+            order has been approved by the admin, it cannot be cancelled.
+          </p>
+        </div>
+
         <!-- Section: Information (includes delivery fields when available) -->
         <div
           class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm"

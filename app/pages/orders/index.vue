@@ -1,26 +1,24 @@
 <template>
-  <div>
-    <OrderTable
-      @create-order="$router.push('/orders/create')"
-      :data="data?.data?.orders ?? []"
-      :pagination="{
-        currentPage: data?.data?.pagination.currentPage || 1,
-        totalPage: data?.data?.pagination.totalPage || 10,
-      }"
-      :searchCustomerName="customerName"
-      :searchOrderNumber="orderNumber"
-      :searchOrderName="orderName"
-      :loading="pending"
-      :error="!!error"
-      @refresh="refresh"
-      @update:searchOrderNumber="orderNumber = $event"
-      @update:searchOrderName="orderName = $event"
-      @update:selectedDateRange="dateRange = $event"
-      @update:searchCustomerName="customerName = $event"
-      @paginate="(nextPage) => (currentPage = nextPage)"
-      @row-click="$router.push(`/orders/${$event.row.id}`)"
-    />
-  </div>
+  <OrderTable
+    @create-order="$router.push('/orders/create')"
+    :data="data?.data?.orders ?? []"
+    :pagination="{
+      currentPage: data?.data?.pagination.currentPage || 1,
+      totalPage: data?.data?.pagination.totalPage || 10,
+    }"
+    :searchCustomerName="customerName"
+    :searchOrderNumber="orderNumber"
+    :searchOrderName="orderName"
+    :loading="pending"
+    :error="!!error"
+    @refresh="refresh"
+    @update:searchOrderNumber="orderNumber = $event"
+    @update:searchOrderName="orderName = $event"
+    @update:selectedDateRange="dateRange = $event"
+    @update:searchCustomerName="customerName = $event"
+    @paginate="(nextPage) => (currentPage = nextPage)"
+    @row-click="$router.push(`/orders/${$event.row.id}`)"
+  />
 </template>
 
 <script setup lang="ts">

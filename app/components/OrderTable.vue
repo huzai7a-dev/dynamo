@@ -2,9 +2,7 @@
   <div class="space-y-6">
     <h3 v-if="title" class="text-2xl font-bold text-gray-900">{{ title }}</h3>
 
-    <div
-      class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
-    >
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
       <TableHeader
         description="Filter by order number, order name, and date range"
         firstPlaceholder="Search by order number"
@@ -63,10 +61,18 @@
             <span
               class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
               :class="
-                getPaymentStatusBadgeClass((row as TableOrders).payment_status)
+                getPaymentStatusBadgeClass(
+                  (row as TableOrders).payment_status,
+                  row.price,
+                )
               "
             >
-              {{ formatPaymentStatus((row as TableOrders).payment_status) }}
+              {{
+                formatPaymentStatus(
+                  (row as TableOrders).payment_status,
+                  row.price,
+                )
+              }}
             </span>
           </template>
 
@@ -86,12 +92,24 @@
 
           <template #column-edit="{ row }">
             <button
-              v-if="(row as TableOrders).status !== OrderStatus.DELIVERED"
-              class="p-2 rounded hover:bg-slate-100"
-              title="Edit this order"
+              class="p-2 rounded transition-colors disabled:cursor-not-allowed enabled:hover:bg-slate-100"
+              :disabled="(row as TableOrders).status === OrderStatus.DELIVERED"
+              :title="
+                (row as TableOrders).status === OrderStatus.DELIVERED
+                  ? 'Delivered orders cannot be edited'
+                  : 'Edit this order'
+              "
               @click.stop="handleEdit(row.id)"
             >
-              <Icon name="Pencil" class="w-5 h-5 text-slate-600" />
+              <Icon
+                name="Pencil"
+                class="w-5 h-5"
+                :class="
+                  (row as TableOrders).status === OrderStatus.DELIVERED
+                    ? 'text-slate-300'
+                    : 'text-slate-600'
+                "
+              />
             </button>
           </template>
 
@@ -177,7 +195,7 @@ const formateData = computed(() => {
   return props.data?.map((item) => ({
     ...item,
     created_at: formateDate(item.created_at),
-    price: item.price > 0 ? `$${item.price}` : "-",
+    price: item.price > 0 ? `$${item.price}` : "Free",
     ...(isAdmin.value
       ? {
           customer_name: (item as any).customer_name,
