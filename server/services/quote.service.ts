@@ -1,12 +1,22 @@
 import type { QuoteFieldsRequest, QuoteFilesRequest, QueryParams } from "~~/shared/types";
 import type { UploadedAsset } from "./upload.service";
 import uploadService from "./upload.service";
-import { DataSource, EmailAccount } from "~~/shared/types/enums";
+import { DataSource, EmailAccount, QuoteStatus } from "~~/shared/types/enums";
 import quotesRepository from "../repositories/quotes.repository";
+import AttachmentsRepository from "../repositories/attachments.repository";
 import UserService from "./user.service";
 import EmailService, { buildMailAttachments } from "./email.service";
 import { generateQuoteConfirmationEmail } from "../templates/quote-confirmation.email";
+import { generateQuoteUpdatedEmail } from "../templates/quote-updated.email";
 import { getEmailUser } from "../utils/email";
+import { diffFields, type FieldChange } from "../utils/diff";
+
+const QUOTE_FIELD_MAP = [
+    { key: "title", label: "Title" },
+    { key: "po_number", label: "PO Number" },
+    { key: "instructions", label: "Instructions" },
+    { key: "estimated_price", label: "Estimated Price" },
+];
 
 class QuoteService {
 
@@ -50,6 +60,69 @@ class QuoteService {
             ]);
         } catch (err) {
             useLogger().error('Quote confirmation email failed:', err);
+        }
+    }
+
+    async updateQuote(userId: string, quoteId: number, fields: QuoteFieldsRequest, files: QuoteFilesRequest, existingAttachments: string[]) {
+        const quote = await quotesRepository.findById(quoteId);
+        const isUserQuote = quote?.user_id !== userId;
+
+        if (!quote || isUserQuote) {
+            throw new Error("Quote not found or access denied");
+        }
+
+        if (quote.status === QuoteStatus.PROCEED) {
+            throw new Error("Cannot edit a quote that has already been converted");
+        }
+
+        const attachmentsInput = (files || []).filter(
+            (f: any) => f.fieldName === "attachments" || f.fieldName == null
+        );
+
+        let uploaded: UploadedAsset[] = [];
+        if (attachmentsInput.length) {
+            uploaded = await uploadService.uploadBuffers(attachmentsInput, {
+                folder: `${fields.dataSourceType || quote.q_type}s`,
+                tags: [fields.dataSourceType || quote.q_type],
+            });
+        }
+
+        // OrderForm/VectorForm don't expose an estimatedPrice input, so fall
+        // back to the existing value rather than nulling out the price.
+        const fieldsWithPrice = {
+            ...fields,
+            estimatedPrice: fields.estimatedPrice ?? quote.estimated_price,
+        };
+
+        const updatedQuote = await quotesRepository.updateQuoteFields(quoteId, fieldsWithPrice);
+        await AttachmentsRepository.updateExistingQuoteAttachments(quoteId, existingAttachments);
+        await AttachmentsRepository.addNewQuoteAttachments(quoteId, uploaded);
+
+        const changes = diffFields(quote, updatedQuote, QUOTE_FIELD_MAP);
+        if (changes.length > 0) {
+            runInBackground(this.sendQuoteUpdatedEmail(userId, quoteId, changes));
+        }
+
+        return updatedQuote;
+    }
+
+    private async sendQuoteUpdatedEmail(userId: string, quoteId: number, changes: FieldChange[]) {
+        try {
+            const user = await UserService.getUserById(userId);
+            if (!user?.primary_email) return;
+            const quote = await quotesRepository.findById(quoteId);
+            const quoteName = `${quote?.title}-QR-${quoteId}`;
+            const subject = `Quote Has Been Updated — ${quoteName}`;
+            const clientHTML = generateQuoteUpdatedEmail({ quoteId, changes, user, isAdmin: false, quoteName });
+            const adminHTML = generateQuoteUpdatedEmail({ quoteId, changes, user, isAdmin: true, quoteName });
+
+            await Promise.all([
+                EmailService.sendHtmlEmail(user.primary_email, subject, clientHTML),
+                EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ADMIN_ACC), quoteName, adminHTML),
+                EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ORDER_ACC), quoteName, adminHTML)
+            ]);
+        } catch (err) {
+            useLogger().error('Quote update email failed:', err);
         }
     }
 

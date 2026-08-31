@@ -14,7 +14,10 @@ export function getOrderStatusBadgeClass(status: OrderStatus | undefined): strin
     : "bg-gray-100 text-gray-800 border-gray-200";
 }
 
-export function getPaymentStatusBadgeClass(status: PaymentStatus | undefined): string {
+
+export function getPaymentStatusBadgeClass(status: PaymentStatus | undefined, price: string): string {
+  if (price === "Free") return "bg-blue-100 text-blue-800 border-blue-200";
+
   const statusMap: Record<PaymentStatus, string> = {
     pending: "bg-slate-100 text-slate-800 border-slate-200",
     paid: "bg-emerald-100 text-emerald-800 border-emerald-200",
@@ -36,7 +39,9 @@ export function formatOrderStatus(status: OrderStatus | undefined): string {
     .join(' ');
 }
 
-export function formatPaymentStatus(status: PaymentStatus | undefined): string {
+export function formatPaymentStatus(status: PaymentStatus | undefined, price: string): string {
+  console.log("formatPaymentStatus called with status:", status, "and price:", price);
+  if (price === "Free") return "Free";
   if (!status) return "UNKNOWN";
 
   return status

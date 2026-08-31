@@ -192,6 +192,7 @@ class VectorRepository {
       required_format = ${fields.requiredFormat},
       blending = ${fields.blending},
       rush = ${fields.rush},
+      vector_type = ${fields?.vectorType || null},
       instructions = ${fields?.instructions || null},
       updated_at = NOW()
     WHERE id = ${vectorId} RETURNING *`;

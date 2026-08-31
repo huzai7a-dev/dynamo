@@ -11,7 +11,25 @@ import EmailService, { buildMailAttachments } from "./email.service";
 import UserService from "./user.service";
 import { generateOrderConfirmationEmail } from "../templates/order-confirmation.email";
 import { generateOrderDeliveryEmail } from "../templates/order-delivery.email";
+import { generateOrderUpdatedEmail } from "../templates/order-updated.email";
 import { getEmailUser } from "../utils/email";
+import { diffFields } from "../utils/diff";
+
+const ORDER_FIELD_MAP = [
+  { key: "order_name", label: "Order Name" },
+  { key: "po_number", label: "PO Number" },
+  { key: "required_format", label: "Required Format" },
+  { key: "required_stitch", label: "Required Stitch" },
+  { key: "width_in", label: "Width (in)" },
+  { key: "height_in", label: "Height (in)" },
+  { key: "fabric", label: "Fabric" },
+  { key: "placement", label: "Placement" },
+  { key: "num_colors", label: "Number of Colors" },
+  { key: "blending", label: "Blending" },
+  { key: "rush", label: "Rush" },
+  { key: "instructions", label: "Instructions" },
+  { key: "faceless", label: "Faceless" },
+];
 
 class OrderService {
   db: any;
@@ -247,7 +265,7 @@ class OrderService {
 
     // Check if user owns this order or is admin
     const order = await this.db`
-      SELECT user_id, status FROM orders WHERE id = ${orderId}
+      SELECT * FROM orders WHERE id = ${orderId}
     `;
 
     if (!order[0] || order[0].user_id !== parseInt(userId)) {
@@ -287,6 +305,7 @@ class OrderService {
         order_name = ${fields.orderName},
         po_number = ${fields?.poNumber || null},
         required_format = ${fields.requiredFormat},
+        required_stitch = ${fields?.requiredStitch || null},
         width_in = ${widthNum},
         height_in = ${heightNum},
         fabric = ${fields.fabric},
@@ -346,7 +365,37 @@ class OrderService {
       `;
     }
 
+    const afterOrder = await this.getOrderRow(orderId);
+    const changes = diffFields(order[0], afterOrder, ORDER_FIELD_MAP);
+    if (changes.length > 0) {
+      runInBackground(this.sendOrderUpdatedEmail(userId, orderId, changes));
+    }
+
     return { orderId };
+  }
+
+  private async sendOrderUpdatedEmail(
+    userId: string,
+    orderId: number,
+    changes: import("../utils/diff").FieldChange[]
+  ) {
+    try {
+      const user = await UserService.getUserById(userId);
+      if (!user?.primary_email) return;
+      const order = await this.getOrderRow(orderId);
+      const orderName = `${order?.order_name}-OR-${orderId}`;
+      const subject = `Your Order Has Been Updated ${orderName}`;
+      const clientHTML = generateOrderUpdatedEmail({ orderId, changes, user, subject, isAdmin: false, orderName });
+      const adminHTML = generateOrderUpdatedEmail({ orderId, changes, user, subject, isAdmin: true, orderName });
+
+      await Promise.all([
+        EmailService.sendHtmlEmail(user.primary_email, subject, clientHTML),
+        EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ADMIN_ACC), orderName, adminHTML),
+        EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ORDER_ACC), orderName, adminHTML),
+      ]);
+    } catch (err) {
+      useLogger().error('Order update email failed:', err);
+    }
   }
 
   async deliverOrder(fields: any, files: any) {

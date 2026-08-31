@@ -7,8 +7,21 @@ import EmailService, { buildMailAttachments } from "./email.service";
 import UserService from "./user.service";
 import { generateVectorConfirmationEmail } from "../templates/vector-confirmation.email";
 import { generateVectorDeliveryEmail } from "../templates/vector-delivery.email";
+import { generateVectorUpdatedEmail } from "../templates/vector-updated.email";
 import { getEmailUser } from "../utils/email";
 import { EmailAccount } from "~~/shared/types/enums";
+import { diffFields, type FieldChange } from "../utils/diff";
+
+const VECTOR_FIELD_MAP = [
+  { key: "vector_name", label: "Vector Name" },
+  { key: "po_number", label: "PO Number" },
+  { key: "num_colors", label: "Number of Colors" },
+  { key: "required_format", label: "Required Format" },
+  { key: "blending", label: "Blending" },
+  { key: "rush", label: "Rush" },
+  { key: "vector_type", label: "Vector Type" },
+  { key: "instructions", label: "Instructions" },
+];
 
 class VectorService {
 
@@ -207,7 +220,33 @@ class VectorService {
     const updatedVector = await VectorRepository.updateVectorFields(vectorId, fields, files, existingAttachments);
     await AttachmentsRepository.updateExistingVectorAttachments(vectorId, existingAttachments);
     await AttachmentsRepository.addNewVectorAttachments(vectorId, uploaded);
+
+    const changes = diffFields(vector, updatedVector, VECTOR_FIELD_MAP);
+    if (changes.length > 0) {
+      runInBackground(this.sendVectorUpdatedEmail(userId, vectorId, changes));
+    }
+
     return updatedVector;
+  }
+
+  private async sendVectorUpdatedEmail(userId: string, vectorId: number, changes: FieldChange[]) {
+    try {
+      const user = await UserService.getUserById(userId);
+      if (!user?.primary_email) return;
+      const vectorRow = await VectorRepository.findById(vectorId);
+      const vectorName = `${vectorRow?.vector_name}-VR-${vectorId}`;
+      const subject = `Your Vector Has Been Updated ${vectorName}`;
+      const clientHTML = generateVectorUpdatedEmail({ vectorId, changes, user, subject, isAdmin: false, vectorName });
+      const adminHTML = generateVectorUpdatedEmail({ vectorId, changes, user, subject, isAdmin: true, vectorName });
+
+      await Promise.all([
+        EmailService.sendHtmlEmail(user.primary_email, subject, clientHTML),
+        EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ADMIN_ACC), vectorName, adminHTML),
+        EmailService.sendHtmlEmail(getEmailUser(EmailAccount.ORDER_ACC), vectorName, adminHTML),
+      ]);
+    } catch (err) {
+      useLogger().error('Vector update email failed:', err);
+    }
   }
 
   async deliverVector(fields: any, files: any) {

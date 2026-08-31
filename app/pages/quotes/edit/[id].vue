@@ -24,11 +24,11 @@
       <!-- Form -->
       <div v-else>
         <OrderForm headerTitle="Edit Quote" v-if="quote && !pending && dataSourceType === DataSource.ORDER"
-          :orderData="quote as any" :is-edit-mode="true" @success="() => handleSuccess(DataSource.ORDER)"
+          :orderData="formData as any" :is-edit-mode="true" endpoint="quotes" @success="() => handleSuccess(DataSource.ORDER)"
           @error="handleError" />
 
         <VectorForm headerTitle="Edit Quote" v-if="quote && !pending && dataSourceType === DataSource.VECTOR"
-          :vectorData="quote as any" :isEditMode="true" @success="() => handleSuccess(DataSource.VECTOR)"
+          :vectorData="formData as any" :isEditMode="true" endpoint="quotes" @success="() => handleSuccess(DataSource.VECTOR)"
           @error="handleError" />
       </div>
     </div>
@@ -56,6 +56,49 @@ const { data, pending, error, refresh } = useFetch<QuoteResponse>(
 );
 
 const quote = computed(() => data.value?.data);
+
+// The stored quote row (title/po_number/instructions/estimated_price + a
+// quote_data JSON blob of type-specific fields) doesn't match the column
+// names OrderForm/VectorForm expect from a real order/vector row — adapt it
+// so the edit forms pre-fill correctly.
+const formData = computed(() => {
+  const q = quote.value as any;
+  if (!q) return undefined;
+  const qd = q.quote_data || {};
+
+  if (dataSourceType.value === DataSource.ORDER) {
+    return {
+      id: q.id,
+      order_name: q.title,
+      po_number: q.po_number,
+      required_format: qd.requiredFormat,
+      required_stitch: qd.requiredStitch,
+      width_in: qd.width,
+      height_in: qd.height,
+      fabric: qd.fabric,
+      placement: qd.placement,
+      num_colors: qd.numColors,
+      blending: qd.blending,
+      rush: qd.rush,
+      faceless: qd.faceless,
+      instructions: q.instructions,
+      order_attachments: q.quote_attachments,
+    };
+  }
+
+  return {
+    id: q.id,
+    vector_name: q.title,
+    po_number: q.po_number,
+    required_format: qd.requiredFormat,
+    num_colors: qd.numColors,
+    blending: qd.blending,
+    rush: qd.rush,
+    vector_type: qd.vectorType,
+    instructions: q.instructions,
+    vector_attachments: q.quote_attachments,
+  };
+});
 
 const handleSuccess = (dataSourceType: DataSource) => {
   toast.success('Quote updated successfully!');

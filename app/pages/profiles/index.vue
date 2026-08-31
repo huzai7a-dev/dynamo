@@ -1,8 +1,8 @@
 <template>
     <div class="p-0 sm:p-6 max-w-full">
-        <ProfilesTable title="User Profiles" :data="profiles" :loading="pending" :error="!!error"
+        <ProfilesTable title="Customer Profiles" :data="profiles" :loading="pending" :error="!!error"
             v-model:searchUserName="searchUserName" v-model:searchEmail="searchEmail"
-            v-model:searchCompany="searchCompany" />
+            v-model:searchCompany="searchCompany" @view="(id) => navigateTo(`/profiles/${id}`)" />
     </div>
 </template>
 

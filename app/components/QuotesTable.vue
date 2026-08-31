@@ -2,9 +2,7 @@
   <div class="space-y-6">
     <h3 v-if="title" class="text-2xl font-bold text-gray-900">{{ title }}</h3>
 
-    <div
-      class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
-    >
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
       <TableHeader
         description="Filter by quote number, quote name, and date range"
         firstPlaceholder="Search by quote number"
@@ -68,7 +66,10 @@
 
           <template #column-convert="{ row }">
             <span
-              v-if="((row as TableOrders).status as unknown as QuoteStatus) === QuoteStatus.PROCEED"
+              v-if="
+                ((row as TableOrders).status as unknown as QuoteStatus) ===
+                QuoteStatus.PROCEED
+              "
               class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-green-50 text-green-700 border-green-200"
             >
               Converted

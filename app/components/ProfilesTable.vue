@@ -11,9 +11,15 @@
             <div class="p-6">
                 <div class="w-full overflow-x-auto custom-scrollbar">
                     <UiTable :data="formattedData" :columns="columns" :loading="props.loading" :error="props.error"
-                        :sortBy="props.sortBy" :sortOrder="props.sortOrder"
-                        @updateSort="(payload) => emit('sort', payload.sortBy, payload.sortOrder)"
-                        @rowClick="emit('rowClick', $event)">
+                        :sortBy="props.sortBy" :sortOrder="props.sortOrder" :disableRowHover="true"
+                        @updateSort="(payload) => emit('sort', payload.sortBy, payload.sortOrder)">
+
+                        <template #column-view="{ row }">
+                            <button class="p-2 rounded hover:bg-slate-100 transition-colors" title="View Profile"
+                                @click.stop="emit('view', row.id)">
+                                <Icon name="Eye" class="w-5 h-5 text-slate-600" />
+                            </button>
+                        </template>
 
                         <template #column-serial_number="{ index }">
                             <span class="text-primary font-semibold">{{ index + 1 }}</span>
@@ -45,6 +51,7 @@
 
 <script lang="ts" setup>
 import { computed, ref } from "vue";
+import Icon from "./Icon.vue";
 import ProfileFilter from "./ProfileFilter.vue";
 import { ROLE } from "~~/shared/constants";
 import { formateDate } from "~~/shared/utils";
@@ -76,7 +83,7 @@ const props = defineProps<Props>();
 
 const emit = defineEmits<{
     'sort': [sortBy: string, sortOrder: string];
-    'rowClick': [payload: { row: Profile, index: number }];
+    'view': [id: number];
     'update:searchUserName': [value: string];
     'update:searchEmail': [value: string];
     'update:searchCompany': [value: string];
@@ -93,15 +100,16 @@ const formattedData = computed(() => {
 });
 
 const columns = [
-    { label: "#", key: "serial_number" },
+    { label: "SNO", key: "serial_number" },
     { label: "ID", key: "id" },
     { label: "User Name", key: "user_name" },
-    { label: "Company", key: "company_name" },
+    { label: "Company Name", key: "company_name" },
     { label: "Contact Name", key: "contact_name" },
     { label: "Email", key: "primary_email" },
-    { label: "Phone", key: "phone_number" },
+    { label: "Phone Number", key: "phone_number" },
     { label: "Role", key: "role" },
     { label: "Joined At", key: "created_at" },
+    { label: "View", key: "view" },
 ];
 </script>
 

@@ -149,32 +149,23 @@
           :columns="paidInvoiceColumns"
           :disable-row-hover="true"
         >
-          <!-- #SR -->
+          <!-- SNO -->
           <template #column-sno="{ index }">
-            <span
-              class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold"
-            >
+            <span class="text-charcoal/70">
               {{ index + 1 }}
             </span>
           </template>
 
-          <!-- Invoice Number + Copy -->
+          <!-- Invoice Number -->
           <template #column-transactionRef="{ row }">
-            <div class="font-black text-secondary tracking-tight">
+            <div class="text-charcoal/70">
               {{ row.transactionRef?.replace(/^INV-/, "") }}
             </div>
-            <button
-              @click.stop="copyToClipboard(row.transactionRef)"
-              class="inline-flex items-center gap-1 text-xs text-primary hover:text-teal-700 font-medium mt-1 transition-colors"
-            >
-              <Icon name="Copy" class="w-3 h-3" />
-              {{ copiedRef === row.transactionRef ? "Copied!" : "Copy" }}
-            </button>
           </template>
 
           <!-- Price -->
           <template #column-amount="{ row }">
-            <span class="font-black text-primary"
+            <span class="text-charcoal/70"
               >${{ Number(row.amount).toFixed(2) }}</span
             >
           </template>
@@ -313,209 +304,177 @@
           color: #1e293b;
         "
       >
-        <!-- Simplified invoice PDF header -->
-        <table
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 16px">
+          <img
+            src="/images/full-logo.png"
+            alt="Logo"
+            style="height: 56px; width: auto; object-fit: contain; margin: 0 auto"
+          />
+          <p
+            style="
+              margin: 8px 0 0;
+              font-size: 10px;
+              font-weight: 700;
+              color: #669699;
+              letter-spacing: 2px;
+              text-transform: uppercase;
+            "
+          >
+            {{ COMPANY.tagline }}
+          </p>
+        </div>
+
+        <!-- Invoice # banner -->
+        <div
           style="
-            width: 100%;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+            display: flex;
+            margin-bottom: 16px;
+            border-radius: 6px;
+            overflow: hidden;
           "
         >
-          <tr>
-            <td style="width: 50%; vertical-align: middle">
-              <h1
-                style="
-                  margin: 0;
-                  font-size: 24px;
-                  color: #003438;
-                  text-transform: uppercase;
-                  letter-spacing: 1px;
-                "
-              >
-                INVOICE
-              </h1>
-            </td>
-            <td style="width: 50%; text-align: right; vertical-align: middle">
-              <table
-                style="
-                  width: auto;
-                  margin-left: auto;
-                  font-size: 14px;
-                  color: #334155;
-                "
-              >
-                <tr>
-                  <td
-                    style="
-                      padding-right: 15px;
-                      font-weight: bold;
-                      padding-bottom: 5px;
-                    "
-                  >
-                    Invoice #
-                  </td>
-                  <td
-                    style="
-                      font-weight: 800;
-                      color: #0f172a;
-                      padding-bottom: 5px;
-                    "
-                  >
-                    {{ pdfTx.transactionRef }}
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding-right: 15px; font-weight: bold">Status</td>
-                  <td style="color: #16a34a; font-weight: 800">PAID</td>
-                </tr>
-                <tr>
-                  <td style="padding-right: 15px; font-weight: bold">Amount</td>
-                  <td style="font-weight: 800; color: #0f172a">
-                    ${{ Number(pdfTx.amount).toFixed(2) }}
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
+          <div style="width: 10px; background: #f1f3f4"></div>
+          <div style="flex: 1; background: #0d6c73; padding: 16px 24px">
+            <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #ffffff">
+              Invoice # {{ pdfTx.transactionRef }}
+            </h2>
+          </div>
+        </div>
+
+        <!-- Bill From / Bill To -->
+        <div
+          style="
+            background: #f1f3f4;
+            border-radius: 6px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+          "
+        >
+          <table style="width: 100%">
+            <tbody>
+              <tr>
+                <td style="width: 50%; vertical-align: top; font-size: 13px; color: #374151; line-height: 1.8">
+                  <p style="margin: 0 0 4px; font-weight: 800; color: #0d6c73">Bill From:</p>
+                  <p style="margin: 0"><strong>Name:</strong> {{ BILL_FROM.name }}</p>
+                  <p style="margin: 0"><strong>E-mail:</strong> {{ BILL_FROM.email }}</p>
+                  <p style="margin: 0"><strong>Phone no:</strong> {{ BILL_FROM.phone }}</p>
+                  <p style="margin: 0"><strong>Address:</strong> {{ BILL_FROM.address }}</p>
+                  <p style="margin: 0"><strong>Tax ID:</strong> {{ BILL_FROM.taxId }}</p>
+                </td>
+                <td style="width: 50%; vertical-align: top; font-size: 13px; color: #374151; line-height: 1.8; padding-left: 24px">
+                  <template v-if="pdfUser">
+                    <p style="margin: 0 0 4px; font-weight: 800; color: #0d6c73">Bill To:</p>
+                    <p style="margin: 0"><strong>Name:</strong> {{ pdfUser.name }}</p>
+                    <p style="margin: 0"><strong>E-mail:</strong> {{ pdfUser.email }}</p>
+                    <p style="margin: 0"><strong>Company:</strong> {{ pdfUser.company }}</p>
+                    <p style="margin: 0"><strong>Date:</strong> {{ formatDateShort(pdfTx.createdAt) }}</p>
+                  </template>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <!-- Items Table -->
-        <table
-          style="width: 100%; border-collapse: collapse; margin-bottom: 20px"
+        <div
+          style="
+            background: #f1f3f4;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 16px;
+          "
         >
-          <thead>
-            <tr style="background: #003438; color: white">
-              <th
-                style="
-                  padding: 12px;
-                  text-align: center;
-                  font-size: 11px;
-                  text-transform: uppercase;
-                  letter-spacing: 1px;
-                "
+          <table style="width: 100%; border-collapse: collapse">
+            <thead>
+              <tr style="background: #0d6c73; color: white">
+                <th style="padding: 12px; text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; border-right: 1px solid rgba(255, 255, 255, 0.2)">
+                  #SR
+                </th>
+                <th style="padding: 12px; text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; border-right: 1px solid rgba(255, 255, 255, 0.2)">
+                  Design No
+                </th>
+                <th style="padding: 12px; text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; border-right: 1px solid rgba(255, 255, 255, 0.2)">
+                  Design Name
+                </th>
+                <th style="padding: 12px; text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; border-right: 1px solid rgba(255, 255, 255, 0.2)">
+                  PO Number
+                </th>
+                <th style="padding: 12px; text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; border-right: 1px solid rgba(255, 255, 255, 0.2)">
+                  Payment Status
+                </th>
+                <th style="padding: 12px; text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; border-right: 1px solid rgba(255, 255, 255, 0.2)">
+                  Received Date
+                </th>
+                <th style="padding: 12px; text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 1px">
+                  Price
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(item, idx) in pdfItems"
+                :key="idx"
+                :style="{ background: '#ffffff', borderBottom: '1px solid #e2e8f0' }"
               >
-                #SR
-              </th>
-              <th
-                style="
-                  padding: 12px;
-                  text-align: center;
-                  font-size: 11px;
-                  text-transform: uppercase;
-                  letter-spacing: 1px;
-                "
-              >
-                Design No
-              </th>
-              <th
-                style="
-                  padding: 12px;
-                  text-align: center;
-                  font-size: 11px;
-                  text-transform: uppercase;
-                  letter-spacing: 1px;
-                "
-              >
-                Design Name
-              </th>
-              <th
-                style="
-                  padding: 12px;
-                  text-align: center;
-                  font-size: 11px;
-                  text-transform: uppercase;
-                  letter-spacing: 1px;
-                "
-              >
-                Price
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(item, idx) in pdfItems"
-              :key="idx"
-              :style="{
-                background: idx % 2 === 0 ? '#f8fafc' : '#ffffff',
-                borderBottom: '1px solid #e2e8f0',
-              }"
-            >
-              <td
-                style="
-                  padding: 12px;
-                  text-align: center;
-                  font-size: 13px;
-                  color: #475569;
-                "
-              >
-                {{ idx + 1 }}
-              </td>
-              <td
-                style="
-                  padding: 12px;
-                  text-align: center;
-                  font-size: 13px;
-                  font-weight: 600;
-                  color: #0f172a;
-                "
-              >
-                {{ item.type === "order" ? "OR" : "VR" }}-{{ item.id }}
-              </td>
-              <td
-                style="
-                  padding: 12px;
-                  text-align: center;
-                  font-size: 13px;
-                  color: #475569;
-                "
-              >
-                {{ item.name }}
-              </td>
-              <td
-                style="
-                  padding: 12px;
-                  text-align: center;
-                  font-size: 13px;
-                  font-weight: bold;
-                  color: #0f172a;
-                "
-              >
-                ${{ Number(item.price || 0).toFixed(2) }}
-              </td>
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr>
-              <td
-                colspan="3"
-                style="
-                  background: #e2e8f0;
-                  padding: 12px;
-                  text-align: right;
-                  font-weight: 800;
-                  font-size: 14px;
-                  color: #003438;
-                  letter-spacing: 1px;
-                "
-              >
-                TOTAL
-              </td>
-              <td
-                style="
-                  background: #003438;
-                  padding: 12px;
-                  text-align: center;
-                  font-weight: 800;
-                  font-size: 14px;
-                  color: white;
-                "
-              >
-                ${{ Number(pdfTx.amount).toFixed(2) }}
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+                <td style="padding: 12px; text-align: center; font-size: 13px; color: #374151; border-right: 1px solid #e2e8f0">
+                  {{ idx + 1 }}
+                </td>
+                <td style="padding: 12px; text-align: center; font-size: 13px; font-weight: 600; color: #003438; border-right: 1px solid #e2e8f0">
+                  {{ item.type === "order" ? "OR" : "VR" }}-{{ item.id }}
+                </td>
+                <td style="padding: 12px; text-align: center; font-size: 13px; color: #374151; border-right: 1px solid #e2e8f0">
+                  {{ item.name }}
+                </td>
+                <td style="padding: 12px; text-align: center; font-size: 13px; color: #374151; border-right: 1px solid #e2e8f0">
+                  {{ item.poNumber || "-" }}
+                </td>
+                <td style="padding: 12px; text-align: center; font-size: 13px; color: #374151; border-right: 1px solid #e2e8f0">
+                  Paid
+                </td>
+                <td style="padding: 12px; text-align: center; font-size: 13px; color: #374151; border-right: 1px solid #e2e8f0">
+                  {{ formatDateShort(item.date) }}
+                </td>
+                <td style="padding: 12px; text-align: center; font-size: 13px; font-weight: bold; color: #0d6c73">
+                  ${{ Number(item.price || 0).toFixed(0) }}
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td
+                  colspan="6"
+                  style="background: #ffffff; padding: 12px; text-align: right; font-weight: 800; font-size: 14px; color: #003438; letter-spacing: 1px"
+                >
+                  Total
+                </td>
+                <td style="background: #ffffff; padding: 12px; text-align: center; font-weight: 800; font-size: 14px; color: #0d6c73">
+                  ${{ Number(pdfTx.amount).toFixed(0) }}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Note -->
+        <div
+          style="
+            background: #f1f3f4;
+            border-radius: 6px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+          "
+        >
+          <p style="margin: 0 0 8px; font-size: 13px; font-weight: 800; color: #003438">
+            Note:
+          </p>
+          <p style="margin: 0; font-size: 12px; color: #374151; line-height: 1.7">
+            If you have an outstanding balance: please pay it as soon as
+            possible to avoid service interruptions. Accounts delinquent for
+            over 7 days are subject to suspension and/or deletion.
+          </p>
+        </div>
+
       </div>
     </div>
   </div>
@@ -523,6 +482,7 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick } from "vue";
+import { COMPANY, BILL_FROM } from "~/constants";
 
 definePageMeta({
   name: "Paid Invoices",
@@ -546,32 +506,17 @@ const stats = computed(
 );
 
 const paidInvoiceColumns = [
-  { key: "sno", label: "#SR", icon: "CirclePlus" },
+  { key: "sno", label: "SNO", icon: "CirclePlus" },
   { key: "transactionRef", label: "Invoice Number", icon: "FileText" },
   { key: "amount", label: "Price", icon: "CircleDollarSign" },
   { key: "date", label: "Date", icon: "Calendar" },
   { key: "action", label: "Action", icon: "Settings" },
 ];
 
-// ── Copy to Clipboard ─────────────────────────────────────
-const copiedRef = ref<string | null>(null);
-
-const copyToClipboard = async (text: string) => {
-  try {
-    await navigator.clipboard.writeText(text);
-    copiedRef.value = text;
-    toast.success("Copied to clipboard!");
-    setTimeout(() => {
-      copiedRef.value = null;
-    }, 2000);
-  } catch {
-    toast.error("Failed to copy");
-  }
-};
-
 // ── PDF Download ──────────────────────────────────────────
 const pdfTx = ref<any>(null);
 const pdfItems = ref<any[]>([]);
+const pdfUser = ref<any>(null);
 
 const downloadPdf = async (tx: any) => {
   try {
@@ -579,6 +524,7 @@ const downloadPdf = async (tx: any) => {
     const detail = await $fetch<any>(`/api/invoices/${tx.transactionRef}`);
     pdfTx.value = { ...detail, ...tx };
     pdfItems.value = detail?.items || [];
+    pdfUser.value = detail?.user || null;
 
     await nextTick();
 
@@ -593,7 +539,9 @@ const downloadPdf = async (tx: any) => {
         <head>
           <title>Invoice ${tx.transactionRef}</title>
           <style>
+            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
             body { font-family: Arial, sans-serif; padding: 40px; }
+            @page { margin: 0; }
             @media print { body { padding: 20px; } }
           </style>
         </head>
@@ -626,5 +574,14 @@ const formatDateSecondary = (dateString: string | null) => {
     minute: "2-digit",
     hour12: true,
   });
+};
+
+const formatDateShort = (dateString: string | null) => {
+  if (!dateString) return "N/A";
+  const date = new Date(dateString);
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 };
 </script>

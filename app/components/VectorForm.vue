@@ -212,6 +212,7 @@ watch(
         blending: (newOrderData.blending || "No") as "No" | "Yes" | "Not Sure",
         rush: (newOrderData.rush || "No") as "No" | "Yes",
         instructions: newOrderData.instructions || "",
+        vectorType: newOrderData.vector_type || "",
         attachments: [],
       };
       setValues(initialValues);
