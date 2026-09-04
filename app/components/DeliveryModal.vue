@@ -42,6 +42,33 @@
         </div>
       </div>
 
+      <!-- Client Price Category Info -->
+      <div class="rounded-lg border border-blue-100 bg-blue-50/60 px-4 py-3 space-y-3">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-1.5">
+            <Icon name="Tag" class="w-3.5 h-3.5 text-blue-600" />
+            <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider">
+              Client Price Category
+            </h3>
+          </div>
+          <UiButton variant="secondary" size="sm" class="!py-1 !px-2.5 !text-xs" @click="showPriceCategoryModal = true">
+            <Icon name="Tag" class="w-3 h-3" />
+            Set Price Category
+          </UiButton>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-2.5">
+          <div v-for="field in priceCategoryFields" :key="field.key">
+            <p class="text-[10px] font-medium text-blue-900/60 uppercase tracking-wide leading-tight">
+              {{ field.label }}
+            </p>
+            <p class="text-xs font-semibold text-gray-900">
+              {{ (priceCategoryData as any)?.[field.key] || "Not set" }}
+            </p>
+          </div>
+        </div>
+      </div>
+
       <!-- Form -->
       <form @submit.prevent="handleSubmit" class="space-y-8">
         <!-- Pricing Section -->
@@ -258,10 +285,18 @@
       </div>
     </template>
   </UiModal>
+
+  <PriceCategoryModal
+    v-model="showPriceCategoryModal"
+    :userId="userId"
+    :initialValues="priceCategoryData ?? undefined"
+    @saved="handlePriceCategorySaved"
+  />
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import type { IPriceCategory } from "#shared/types";
 
 export interface DeliveryFormData {
   stitches: string;
@@ -287,6 +322,7 @@ interface Props {
   modelValue: boolean;
   orderId: string;
   orderDate: string;
+  userId: string | number;
   loading?: boolean;
 }
 
@@ -376,5 +412,42 @@ const handleSubmit = () => {
 
 const handleCancel = () => {
   isOpen.value = false;
+};
+
+// ─── Client price category ─────────────────────────────────────────────────
+const priceCategoryFields = [
+  { key: "price", label: "Price" },
+  { key: "left_chest_hat", label: "Left-Chest / Hat" },
+  { key: "simple_jacket_back", label: "Simple Jacket-Back" },
+  { key: "complex_jacket_back", label: "Complex Jacket-Back" },
+  { key: "applique_jacket_back", label: "Applique Jacket-Back" },
+  { key: "simple_vector", label: "Simple Vector" },
+  { key: "complex_vector", label: "Complex Vector" },
+] as const;
+
+const priceCategoryData = ref<IPriceCategory | null>(null);
+const showPriceCategoryModal = ref(false);
+
+const fetchPriceCategory = async () => {
+  if (!props.userId) return;
+  try {
+    const res = await $fetch<{ data: IPriceCategory | null }>(
+      `/api/price-categories/${props.userId}`,
+    );
+    priceCategoryData.value = res.data;
+  } catch (e) {
+    console.error("Failed to load price category", e);
+  }
+};
+
+watch(
+  () => props.modelValue,
+  (open) => {
+    if (open) fetchPriceCategory();
+  },
+);
+
+const handlePriceCategorySaved = (values: Partial<IPriceCategory>) => {
+  priceCategoryData.value = { ...priceCategoryData.value, ...values } as IPriceCategory;
 };
 </script>

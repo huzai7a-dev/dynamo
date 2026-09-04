@@ -150,9 +150,20 @@ export const QuoteSchema = z.object({
   attachments: z.array(z.instanceof(File)),
 });
 
+const PriceCategorySchema = z.object({
+  price: z.string().optional().describe("Price"),
+  left_chest_hat: z.string().optional().describe("Left-Chest / Hat"),
+  simple_jacket_back: z.string().optional().describe("Simple Jacket-Back"),
+  complex_jacket_back: z.string().optional().describe("Complex Jacket-Back"),
+  applique_jacket_back: z.string().optional().describe("Applique Jacket-Back"),
+  simple_vector: z.string().optional().describe("Simple Vector"),
+  complex_vector: z.string().optional().describe("Complex Vector"),
+});
+
 export {
   RegisterSchema,
   LoginSchema,
   OrderSchema,
-  VectorSchema
+  VectorSchema,
+  PriceCategorySchema
 }

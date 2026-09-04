@@ -1,7 +1,15 @@
-import type { OrderSchema, QuoteSchema, RegisterSchema, VectorSchema } from "../validationSchema";
+import type { OrderSchema, PriceCategorySchema, QuoteSchema, RegisterSchema, VectorSchema } from "../validationSchema";
 import { OrderStatus, PaymentStatus } from "./enums";
 
 export type IUser = z.infer<typeof RegisterSchema>
+
+export type PriceCategoryRequest = z.infer<typeof PriceCategorySchema>;
+export interface IPriceCategory extends PriceCategoryRequest {
+  id: number;
+  user_id: number;
+  created_at: string;
+  updated_at: string;
+}
 
 export type OrderRequest = z.infer<typeof OrderSchema>;
 export type OrderFieldsRequest = Omit<OrderRequest, 'attachments'>;
@@ -41,6 +49,7 @@ export interface TableOrders {
   created_at: string
   customer_name?: string
   metadata?: any
+  user_id?: string | number
 }
 
 export interface IOrder {

@@ -182,6 +182,28 @@ export const orderDeliveries = pgTable("order_deliveries", {
 		}).onDelete("cascade"),
 ]);
 
+export const priceCategories = pgTable("price_categories", {
+	id: bigserial({ mode: "bigint" }).primaryKey().notNull(),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	userId: bigint("user_id", { mode: "number" }).notNull(),
+	price: text(),
+	leftChestHat: text("left_chest_hat"),
+	simpleJacketBack: text("simple_jacket_back"),
+	complexJacketBack: text("complex_jacket_back"),
+	appliqueJacketBack: text("applique_jacket_back"),
+	simpleVector: text("simple_vector"),
+	complexVector: text("complex_vector"),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [users.id],
+			name: "price_categories_user_id_fkey"
+		}).onDelete("cascade"),
+	unique("price_categories_user_id_key").on(table.userId),
+]);
+
 export const vectorDeliveries = pgTable("vector_deliveries", {
 	id: bigserial({ mode: "bigint" }).primaryKey().notNull(),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
