@@ -1,4 +1,9 @@
-import type { OrderStatus, PaymentStatus } from '#shared/types/enums';
+import { OrderStatus } from '#shared/types/enums';
+import type { PaymentStatus } from '#shared/types/enums';
+
+export function isOrderProcessingOrPending(status: OrderStatus | undefined): boolean {
+  return status === OrderStatus.IN_PROGRESS || status === OrderStatus.PENDING;
+}
 
 export function getOrderStatusBadgeClass(status: OrderStatus | undefined): string {
   const statusMap: Record<OrderStatus, string> = {

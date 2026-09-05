@@ -119,6 +119,13 @@
 
         <template #column-payment_status="{ row }">
           <span
+            v-if="isOrderProcessingOrPending((row as TableOrders).status)"
+            class="text-gray-400"
+          >
+            -
+          </span>
+          <span
+            v-else
             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
             :class="
               getPaymentStatusBadgeClass(

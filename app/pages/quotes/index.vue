@@ -35,7 +35,7 @@ import type { Pagination, TableOrders } from "~~/shared/types";
 definePageMeta({
   name: "Quote Records",
   layout: "portal",
-  middleware: ["auth"],
+  middleware: ["auth", "block-admin"],
 });
 
 interface OrderResponse {

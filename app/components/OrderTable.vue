@@ -59,6 +59,13 @@
 
           <template #column-payment_status="{ row }">
             <span
+              v-if="isOrderProcessingOrPending((row as TableOrders).status)"
+              class="text-gray-400"
+            >
+              -
+            </span>
+            <span
+              v-else
               class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
               :class="
                 getPaymentStatusBadgeClass(
@@ -158,6 +165,7 @@ import {
   getPaymentStatusBadgeClass,
   formatOrderStatus,
   formatPaymentStatus,
+  isOrderProcessingOrPending,
 } from "~/utils/orderUtils";
 import { downloadBlob } from "~/utils/download";
 
@@ -195,7 +203,11 @@ const formateData = computed(() => {
   return props.data?.map((item) => ({
     ...item,
     created_at: formateDate(item.created_at),
-    price: item.price > 0 ? `$${item.price}` : "Free",
+    price: isOrderProcessingOrPending(item.status)
+      ? "-"
+      : item.price > 0
+        ? `$${item.price}`
+        : "Free",
     ...(isAdmin.value
       ? {
           customer_name: (item as any).customer_name,

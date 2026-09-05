@@ -43,10 +43,7 @@ const isIcon = computed(() => props.size === "icon");
         </button>
 
         <button
-          v-if="
-            props.status === OrderStatus.PENDING ||
-            props.status === OrderStatus.IN_PROGRESS
-          "
+          v-if="props.status === OrderStatus.PENDING"
           class="text-xs px-2 py-1 rounded border border-rose-300 text-rose-700 bg-rose-50"
           @click.stop="emit('reject')"
         >
@@ -74,7 +71,7 @@ const isIcon = computed(() => props.size === "icon");
 
         <button
           v-if="props.status !== OrderStatus.DELIVERED"
-          class="text-xs px-2 py-1 rounded border border-charcoal/20 bg-white text-secondary"
+          class="text-xs px-2 py-1 rounded bg-primary text-white hover:bg-primary-dark transition-colors"
           @click.stop="emit('edit')"
         >
           Edit
@@ -182,7 +179,7 @@ const isIcon = computed(() => props.size === "icon");
 
         <button
           v-if="props.status !== OrderStatus.DELIVERED"
-          class="rounded-2xl border border-charcoal/20 bg-white px-4 py-2 font-medium text-secondary hover:bg-sold-light hover:bg-solid-light transition"
+          class="rounded-2xl bg-primary px-4 py-2 font-medium text-white shadow hover:bg-primary-dark transition"
           @click="emit('edit')"
         >
           Edit Order

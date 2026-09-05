@@ -244,16 +244,14 @@
 
           <!-- Footer: Total Amount -->
           <template #footer>
-            <tr class="bg-primary/[0.04] border-t border-primary-light/30">
+            <tr class="bg-primary text-white border-t">
               <td colspan="3" class="px-3 py-2.5"></td>
               <td
-                class="px-3 py-2.5 text-center text-xs font-black text-secondary uppercase tracking-wider"
+                class="px-3 py-2.5 text-center text-xs font-black uppercase tracking-wider"
               >
                 Total Amount
               </td>
-              <td
-                class="px-3 py-2.5 text-center text-sm font-black text-primary"
-              >
+              <td class="px-3 py-2.5 text-center text-sm">
                 ${{
                   selectedTxDetails.reduce(
                     (s, i) => s + Number(i.price || 0),

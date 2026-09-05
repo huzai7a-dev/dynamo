@@ -72,7 +72,10 @@ class QuoteService {
         }
 
         if (quote.status === QuoteStatus.PROCEED) {
-            throw new Error("Cannot edit a quote that has already been converted");
+            throw createError({
+                statusCode: 409,
+                statusMessage: "Cannot edit a quote that has already been converted",
+            });
         }
 
         const attachmentsInput = (files || []).filter(

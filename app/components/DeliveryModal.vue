@@ -44,17 +44,11 @@
 
       <!-- Client Price Category Info -->
       <div class="rounded-lg border border-blue-100 bg-blue-50/60 px-4 py-3 space-y-3">
-        <div class="flex items-center justify-between gap-3">
-          <div class="flex items-center gap-1.5">
-            <Icon name="Tag" class="w-3.5 h-3.5 text-blue-600" />
-            <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider">
-              Client Price Category
-            </h3>
-          </div>
-          <UiButton variant="secondary" size="sm" class="!py-1 !px-2.5 !text-xs" @click="showPriceCategoryModal = true">
-            <Icon name="Tag" class="w-3 h-3" />
-            Set Price Category
-          </UiButton>
+        <div class="flex items-center gap-1.5">
+          <Icon name="Tag" class="w-3.5 h-3.5 text-blue-600" />
+          <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider">
+            Client Price Category
+          </h3>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-2.5">
@@ -285,13 +279,6 @@
       </div>
     </template>
   </UiModal>
-
-  <PriceCategoryModal
-    v-model="showPriceCategoryModal"
-    :userId="userId"
-    :initialValues="priceCategoryData ?? undefined"
-    @saved="handlePriceCategorySaved"
-  />
 </template>
 
 <script setup lang="ts">
@@ -426,7 +413,6 @@ const priceCategoryFields = [
 ] as const;
 
 const priceCategoryData = ref<IPriceCategory | null>(null);
-const showPriceCategoryModal = ref(false);
 
 const fetchPriceCategory = async () => {
   if (!props.userId) return;
@@ -446,8 +432,4 @@ watch(
     if (open) fetchPriceCategory();
   },
 );
-
-const handlePriceCategorySaved = (values: Partial<IPriceCategory>) => {
-  priceCategoryData.value = { ...priceCategoryData.value, ...values } as IPriceCategory;
-};
 </script>

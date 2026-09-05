@@ -87,6 +87,13 @@
 
           <template #column-payment_status="{ row }">
             <span
+              v-if="isOrderProcessingOrPending((row as TableOrders).status)"
+              class="text-gray-400"
+            >
+              -
+            </span>
+            <span
+              v-else
               class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
               :class="
                 getPaymentStatusBadgeClass((row as TableOrders).payment_status)
@@ -102,11 +109,24 @@
 
           <template #column-edit="{ row }">
             <button
-              class="p-2 rounded hover:bg-slate-100"
-              title="Edit this quote"
+              class="p-2 rounded transition-colors disabled:cursor-not-allowed enabled:hover:bg-slate-100"
+              :disabled="(row as TableOrders).status as unknown as QuoteStatus === QuoteStatus.PROCEED"
+              :title="
+                ((row as TableOrders).status as unknown as QuoteStatus) === QuoteStatus.PROCEED
+                  ? 'Converted quotes cannot be edited'
+                  : 'Edit this quote'
+              "
               @click.stop="handleEditOrder(row.id, row.original_q_type)"
             >
-              <Icon name="Pencil" class="w-5 h-5 text-slate-600" />
+              <Icon
+                name="Pencil"
+                class="w-5 h-5"
+                :class="
+                  ((row as TableOrders).status as unknown as QuoteStatus) === QuoteStatus.PROCEED
+                    ? 'text-slate-300'
+                    : 'text-slate-600'
+                "
+              />
             </button>
           </template>
 
@@ -152,6 +172,7 @@ import { QuoteStatus } from "~~/shared/types/enums";
 import {
   getPaymentStatusBadgeClass,
   formatPaymentStatus,
+  isOrderProcessingOrPending,
 } from "~/utils/orderUtils";
 import { downloadBlob } from "~/utils/download";
 import EntityDetailModal from "./EntityDetailModal.vue";

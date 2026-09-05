@@ -1,23 +1,28 @@
 <template>
   <transition name="fade">
-    <div v-if="modelValue" class="fixed inset-0 z-50 flex items-start justify-center p-6">
+    <div
+      v-if="modelValue"
+      class="fixed inset-0 z-50 flex items-start justify-center p-6"
+    >
       <div class="fixed inset-0 bg-black/40" @click="close"></div>
 
       <div
-        class="relative w-full max-w-[calc(100%-3rem)] max-h-[calc(100%-3rem)] overflow-auto rounded-2xl bg-white shadow-lg">
-        <div class="flex items-center justify-between border-b px-6 py-4">
-          <h3 class="text-lg font-semibold text-secondary">{{ title }}</h3>
-          <button class="p-2 rounded hover:bg-slate-100" @click="close">
-            <Icon name="X" />
+        class="relative w-full max-w-4xl max-h-[85vh] overflow-auto rounded-2xl bg-white shadow-lg"
+      >
+        <div class="flex items-center justify-between border-b px-4 py-3">
+          <h3 class="text-base font-semibold text-secondary">{{ title }}</h3>
+          <button class="p-1.5 rounded hover:bg-slate-100" @click="close">
+            <Icon name="X" :size="18" />
           </button>
         </div>
 
-        <div class="p-6">
+        <div class="p-4">
           <EntityDetailBody
             ref="bodyRef"
             :type="type"
             :entityId="entityId"
             :immediate="false"
+            :compact="true"
             @refresh="emit('refresh')"
           />
         </div>
@@ -48,7 +53,7 @@ const props = withDefaults(
   {
     modelValue: false,
     entityId: "",
-  }
+  },
 );
 
 const emit = defineEmits<{

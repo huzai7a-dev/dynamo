@@ -30,7 +30,7 @@ import type { IVector, Pagination, QueryParams } from "~~/shared/types";
 
 definePageMeta({
   layout: "portal",
-  middleware: ["auth"],
+  middleware: ["auth", "block-admin"],
   name: "Vector Records",
 });
 

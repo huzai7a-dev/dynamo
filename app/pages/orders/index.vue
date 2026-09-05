@@ -28,7 +28,7 @@ import type { OrderResponse } from "~~/shared/types";
 definePageMeta({
   name: "Order Records",
   layout: "portal",
-  middleware: ["auth"],
+  middleware: ["auth", "block-admin"],
 });
 
 const currentPage = ref(1);

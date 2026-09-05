@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import type { IOrder, IVector } from '~~/shared/types';
-import { DataSource } from '~~/shared/types/enums';
+import { DataSource, QuoteStatus } from '~~/shared/types/enums';
 
 interface QuoteResponse {
   message: string;
@@ -56,6 +56,17 @@ const { data, pending, error, refresh } = useFetch<QuoteResponse>(
 );
 
 const quote = computed(() => data.value?.data);
+
+watch(
+  quote,
+  (q) => {
+    if (q && (q as any).status === QuoteStatus.PROCEED) {
+      toast.error("This quote has already been converted and cannot be edited.");
+      router.replace(`/quotes/${route.params.id}?type=${dataSourceType.value}`);
+    }
+  },
+  { immediate: true },
+);
 
 // The stored quote row (title/po_number/instructions/estimated_price + a
 // quote_data JSON blob of type-specific fields) doesn't match the column
@@ -113,6 +124,6 @@ const handleError = () => {
 definePageMeta({
   name: "Edit Quote",
   layout: "portal",
-  middleware: ["auth"],
+  middleware: ["auth", "block-admin"],
 });
 </script>

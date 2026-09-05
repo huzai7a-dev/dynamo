@@ -21,6 +21,14 @@
                             </button>
                         </template>
 
+                        <template #column-price_category="{ row }">
+                            <button
+                                class="px-2.5 py-1 rounded-md bg-primary text-white text-xs font-medium hover:bg-primary-dark transition-colors"
+                                title="Set Price Category" @click.stop="emit('set-price-category', row.id)">
+                                Set Price Category
+                            </button>
+                        </template>
+
                         <template #column-serial_number="{ index }">
                             <span class="text-primary font-semibold">{{ index + 1 }}</span>
                         </template>
@@ -84,6 +92,7 @@ const props = defineProps<Props>();
 const emit = defineEmits<{
     'sort': [sortBy: string, sortOrder: string];
     'view': [id: number];
+    'set-price-category': [id: number];
     'update:searchUserName': [value: string];
     'update:searchEmail': [value: string];
     'update:searchCompany': [value: string];
@@ -110,6 +119,7 @@ const columns = [
     { label: "Role", key: "role" },
     { label: "Joined At", key: "created_at" },
     { label: "View", key: "view" },
+    { label: "Price Category", key: "price_category" },
 ];
 </script>
 

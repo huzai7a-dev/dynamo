@@ -61,6 +61,6 @@ const handleError = () => {
 definePageMeta({
   name: "Edit Vector",
   layout: "portal",
-  middleware: ["auth"],
+  middleware: ["auth", "block-admin"],
 });
 </script>

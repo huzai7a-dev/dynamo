@@ -69,6 +69,6 @@ const handleError = () => {
 definePageMeta({
   name: "Edit Order",
   layout: "portal",
-  middleware: ["auth"],
+  middleware: ["auth", "block-admin"],
 });
 </script>

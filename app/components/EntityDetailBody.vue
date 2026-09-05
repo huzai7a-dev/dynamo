@@ -15,7 +15,10 @@
     />
 
     <div v-else-if="entity" class="min-h-[40vh]">
-      <div class="p-8 space-y-8 bg-slate-50/50">
+      <div
+        class="bg-slate-50/50"
+        :class="compact ? 'p-4 space-y-4' : 'p-8 space-y-8'"
+      >
         <!-- Header card — same width/rounding/border as the sections below -->
         <div
           class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm"
@@ -25,12 +28,13 @@
             :po_number="entity.po_number"
             :status="entity.status"
             :updated_at="entity.updated_at"
+            :compact="compact"
           >
             <template #actions>
               <!-- Order / Vector actions -->
               <OrderActions
                 v-if="type !== 'quote'"
-                size="default"
+                :size="compact ? 'compact' : 'default'"
                 :isAdmin="isAdmin"
                 :status="entity.status"
                 @approve="handleApproveOrReject('approve')"
@@ -42,7 +46,7 @@
               <!-- Quote actions -->
               <QuoteActions
                 v-else
-                size="default"
+                :size="compact ? 'compact' : 'default'"
                 :isAdmin="isAdmin"
                 :status="entity.status"
                 @accept="handleMoveToOrder"
@@ -55,12 +59,18 @@
         <!-- Cancellation policy notice -->
         <div
           v-if="type !== 'quote' && entity.status === OrderStatus.PENDING"
-          class="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-4"
+          class="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50"
+          :class="compact ? 'p-3' : 'p-4'"
         >
-          <Icon name="Info" :size="18" class="mt-0.5 shrink-0 text-blue-600" />
-          <p class="text-sm text-blue-800">
-            You may cancel your order while it is pending approval. Once the
-            order has been approved by the admin, it cannot be cancelled.
+          <Icon
+            name="Info"
+            :size="compact ? 14 : 18"
+            class="mt-0.5 shrink-0 text-blue-600"
+          />
+          <p :class="compact ? 'text-xs' : 'text-sm'" class="text-blue-800">
+            You may cancel your {{ type }} while it is pending approval. Once
+            the {{ type }} has been approved by the admin, it cannot be
+            cancelled.
           </p>
         </div>
 
@@ -69,24 +79,27 @@
           class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm"
         >
           <div
-            class="px-6 py-4 bg-primary/5 flex items-center gap-2 border-b border-slate-100"
+            class="bg-primary/5 flex items-center gap-2 border-b border-slate-100"
+            :class="compact ? 'px-4 py-2.5' : 'px-6 py-4'"
           >
-            <Icon name="Info" :size="18" class="text-primary" />
+            <Icon name="Info" :size="compact ? 14 : 18" class="text-primary" />
             <h2 class="text-sm font-bold text-primary uppercase tracking-wider">
               {{ config.infoHeading }}
             </h2>
           </div>
-          <div class="p-6 space-y-6">
+          <div :class="compact ? 'p-3 space-y-3' : 'p-6 space-y-6'">
             <!-- Entity meta fields -->
             <OrderMetaGrid
               v-if="type === 'order'"
               :order="{ ...entity, ...deliveryData }"
+              :compact="compact"
             />
             <VectorMetaGrid
               v-else-if="type === 'vector'"
               :vector="{ ...entity, ...deliveryData }"
+              :compact="compact"
             />
-            <QuoteMetaGrid v-else :quote="entity" />
+            <QuoteMetaGrid v-else :quote="entity" :compact="compact" />
 
             <!-- Delivery fields for Order / Vector -->
             <!-- <template v-if="type !== 'quote' && deliveryData">
@@ -173,16 +186,21 @@
           class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm"
         >
           <div
-            class="px-6 py-4 bg-amber-50 flex items-center gap-2 border-b border-slate-100"
+            class="bg-amber-50 flex items-center gap-2 border-b border-slate-100"
+            :class="compact ? 'px-4 py-2.5' : 'px-6 py-4'"
           >
-            <Icon name="Paperclip" :size="18" class="text-amber-600" />
+            <Icon
+              name="Paperclip"
+              :size="compact ? 14 : 18"
+              class="text-amber-600"
+            />
             <h2
               class="text-sm font-bold text-amber-600 uppercase tracking-wider font-sans"
             >
               Attachments
             </h2>
           </div>
-          <div class="p-6 space-y-6">
+          <div :class="compact ? 'p-3 space-y-3' : 'p-6 space-y-6'">
             <!-- Entity attachments -->
             <AttachmentsGallery
               :noAttachmentsMessage="config.noAttachmentsMessage"
@@ -234,7 +252,7 @@ import QuoteActions from "./QuoteActions.vue";
 import DeliveryModal from "./DeliveryModal.vue";
 import OrderDetailSkeleton from "./skeletons/OrderDetailSkeleton.vue";
 import { ROLE } from "~~/shared/constants";
-import { OrderStatus } from "~~/shared/types/enums";
+import { OrderStatus, QuoteStatus } from "~~/shared/types/enums";
 
 type EntityType = "order" | "vector" | "quote";
 
@@ -245,10 +263,13 @@ const props = withDefaults(
     // When used inside the modal, fetching is triggered by the parent via watch on open.
     // When used on a page, we fetch immediately on mount.
     immediate?: boolean;
+    // Shrinks spacing/padding/text sizes for use inside a small modal (EntityDetailModal).
+    compact?: boolean;
   }>(),
   {
     entityId: "",
     immediate: true,
+    compact: false,
   },
 );
 
@@ -379,10 +400,7 @@ const quoteActions = useQuoteActions();
 const handleApproveOrReject = async (
   action: "approve" | "reject" | "cancel",
 ) => {
-  const success = await orderVectorActions.updateStatus(
-    entityId.value,
-    action,
-  );
+  const success = await orderVectorActions.updateStatus(entityId.value, action);
   if (success) {
     refresh();
     emit("refresh");
@@ -395,6 +413,7 @@ const handleEdit = () => {
   } else if (props.type === "vector") {
     navigateTo(`/vectors/edit/${entityId.value}`);
   } else {
+    if (entity.value?.status === QuoteStatus.PROCEED) return;
     router.push(`/quotes/edit/${entityId.value}?type=${entity.value?.q_type}`);
   }
 };
@@ -403,10 +422,7 @@ const handleEdit = () => {
 const handleDeliveryComplete = async (formData: any) => {
   delivering.value = true;
   try {
-    const success = await orderVectorActions.deliver(
-      entityId.value,
-      formData,
-    );
+    const success = await orderVectorActions.deliver(entityId.value, formData);
     if (success) {
       refresh();
       emit("refresh");
