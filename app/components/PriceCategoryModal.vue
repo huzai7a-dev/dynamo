@@ -13,13 +13,6 @@
       <form @submit.prevent="onSubmit" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <UiInput
-            v-model="price"
-            name="price"
-            label="Price"
-            placeholder="Enter price"
-            :error="errors.price"
-          />
-          <UiInput
             v-model="left_chest_hat"
             name="left_chest_hat"
             label="Left-Chest / Hat"
@@ -119,7 +112,6 @@ const isOpen = computed({
 });
 
 const defaultValues: PriceCategoryRequest = {
-  price: "",
   left_chest_hat: "",
   simple_jacket_back: "",
   complex_jacket_back: "",
@@ -134,7 +126,6 @@ const { handleSubmit, defineField, errors, isSubmitting, setValues } =
     validationSchema: toTypedSchema(PriceCategorySchema),
   });
 
-const [price] = defineField("price");
 const [left_chest_hat] = defineField("left_chest_hat");
 const [simple_jacket_back] = defineField("simple_jacket_back");
 const [complex_jacket_back] = defineField("complex_jacket_back");

@@ -151,7 +151,6 @@ export const QuoteSchema = z.object({
 });
 
 const PriceCategorySchema = z.object({
-  price: z.string().optional().describe("Price"),
   left_chest_hat: z.string().optional().describe("Left-Chest / Hat"),
   simple_jacket_back: z.string().optional().describe("Simple Jacket-Back"),
   complex_jacket_back: z.string().optional().describe("Complex Jacket-Back"),

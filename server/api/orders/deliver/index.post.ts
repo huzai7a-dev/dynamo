@@ -50,13 +50,6 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    if (!fields.stitches) {
-      return createError({
-        statusCode: 400,
-        statusMessage: 'Stitches is required'
-      });
-    }
-
     if (!files || files.length === 0) {
       return createError({
         statusCode: 400,

@@ -43,20 +43,20 @@
       </div>
 
       <!-- Client Price Category Info -->
-      <div class="rounded-lg border border-blue-100 bg-blue-50/60 px-4 py-3 space-y-3">
+      <div class="rounded-lg border border-primary/20 bg-primary-light px-4 py-3 space-y-3">
         <div class="flex items-center gap-1.5">
-          <Icon name="Tag" class="w-3.5 h-3.5 text-blue-600" />
-          <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider">
+          <!-- <Icon name="Tag" class="w-3.5 h-3.5 text-primary" /> -->
+          <h3 class="text-xs font-bold text-white uppercase tracking-wider">
             Client Price Category
           </h3>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-2.5">
           <div v-for="field in priceCategoryFields" :key="field.key">
-            <p class="text-[10px] font-medium text-blue-900/60 uppercase tracking-wide leading-tight">
+            <p class="text-[10px] font-medium text-white uppercase tracking-wide leading-tight">
               {{ field.label }}
             </p>
-            <p class="text-xs font-semibold text-gray-900">
+            <p class="text-xs font-semibold text-black">
               {{ (priceCategoryData as any)?.[field.key] || "Not set" }}
             </p>
           </div>
@@ -403,7 +403,6 @@ const handleCancel = () => {
 
 // ─── Client price category ─────────────────────────────────────────────────
 const priceCategoryFields = [
-  { key: "price", label: "Price" },
   { key: "left_chest_hat", label: "Left-Chest / Hat" },
   { key: "simple_jacket_back", label: "Simple Jacket-Back" },
   { key: "complex_jacket_back", label: "Complex Jacket-Back" },

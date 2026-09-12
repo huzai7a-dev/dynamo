@@ -17,7 +17,6 @@ class PriceCategoryRepository {
     const rows = await this.db`
       INSERT INTO price_categories (
         user_id,
-        price,
         left_chest_hat,
         simple_jacket_back,
         complex_jacket_back,
@@ -27,7 +26,6 @@ class PriceCategoryRepository {
       )
       VALUES (
         ${userId},
-        ${data.price ?? null},
         ${data.left_chest_hat ?? null},
         ${data.simple_jacket_back ?? null},
         ${data.complex_jacket_back ?? null},
@@ -36,7 +34,6 @@ class PriceCategoryRepository {
         ${data.complex_vector ?? null}
       )
       ON CONFLICT (user_id) DO UPDATE SET
-        price = EXCLUDED.price,
         left_chest_hat = EXCLUDED.left_chest_hat,
         simple_jacket_back = EXCLUDED.simple_jacket_back,
         complex_jacket_back = EXCLUDED.complex_jacket_back,
